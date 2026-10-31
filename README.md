@@ -1,51 +1,59 @@
-# FixCampus · Frontend
+# FixcampusFrontend
 
-Frontend del equipo UrbanIT para registrar y dar seguimiento a incidencias de infraestructura del campus.
+This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.2.4.
 
-## Ejecutar en local
+## Development server
 
-Requisitos: Node.js 24.16.0 (o una versión compatible con Angular 22) y npm.
+To start a local development server, run:
 
-```powershell
-npm ci
-npm start
+```bash
+ng serve
 ```
 
-Abrir http://localhost:4200.
+Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 
-## Verificar
+## Code scaffolding
 
-```powershell
-npm run build
-npm test -- --watch=false
+Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+
+```bash
+ng generate component component-name
 ```
 
-La compilación genera dist/fixcampus-frontend. Para ejecutar el servidor de producción después de compilar: npm run serve:ssr:fixcampus-frontend.
+For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
 
-## Qué incluye este inicio
+```bash
+ng generate --help
+```
 
-- Proyecto Angular con Router, SSR e hidratación.
-- Angular Material y configuración de HttpClient.
-- Pantalla inicial y encabezado de FixCampus, adaptados a escritorio y celular.
-- Colores, tipografías y recursos locales de la base visual.
-- Carpetas para componentes, servicios y modelos.
+## Building
 
-Login, registro, permisos, gráficos y evidencias todavía están pendientes. No hay autenticación simulada ni servicios conectados a endpoints sin validar. Los módulos de los demás integrantes se desarrollan por sus responsables.
+To build the project run:
 
-## Organización
+```bash
+ng build
+```
 
-- src/app/components: componentes con archivos TS, HTML y CSS separados.
-- src/app/services: llamadas HTTP y lógica compartida, pendientes de implementar.
-- src/app/models: tipos de datos, pendientes de validar con el backend.
-- src/app/app.routes.ts: rutas.
-- src/app/app.config.ts: providers.
-- src/material-theme.scss y src/styles.css: tema Material y estilos comunes.
-- docs/base-visual-fixcampus: guía visual y maqueta de referencia.
-- docs/REFERENCIA-DEL-CURSO.md: configuración tomada de los ejemplos de la profesora.
-- AGENTS.md: acuerdos para continuar el frontend.
+This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
 
-## Trabajo en equipo
+## Running unit tests
 
-Cada integrante clona este repositorio y crea una rama para su historia. Antes de integrar, revisar los cambios y compilar. Las historias US52–US58 corresponden a Matías. Cada compañero desarrolla su módulo según el reparto del equipo.
+To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
 
-La fuente local de referencia del curso es C:/Users/Matias/Documents/FRONTENTD- ARQUI WEB. Revisar los nuevos ejemplos de la profesora antes de introducir otra forma de trabajar.
+```bash
+ng test
+```
+
+## Running end-to-end tests
+
+For end-to-end (e2e) testing, run:
+
+```bash
+ng e2e
+```
+
+Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+
+## Additional Resources
+
+For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.

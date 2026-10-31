@@ -1,11 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Menucomponent } from './components/menucomponent/menucomponent';
 
 @Component({
+  imports: [RouterOutlet],
   selector: 'app-root',
-  imports: [RouterOutlet, Menucomponent],
-  templateUrl: './app.html',
   styleUrl: './app.css',
+  templateUrl: './app.html',
 })
-export class App {}
+export class App {
+  protected readonly title = signal('fixcampus-frontend');
+}

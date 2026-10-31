@@ -2,8 +2,7 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
-    "packageManager": "npm",
-    "analytics": false
+    "packageManager": "npm"
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -26,8 +25,6 @@
               }
             ],
             "styles": [
-              "src/material-theme.scss",
-              "public/assets/fonts.css",
               "src/styles.css"
             ],
             "server": "src/main.server.ts",
