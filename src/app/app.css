@@ -1,6 +1,0 @@
-:host { display: flex; flex-direction: column; min-height: 100dvh; }
-main { flex: 1; display: grid; }
-.site-footer { display: flex; justify-content: space-between; gap: 24px; width: min(1120px, calc(100% - 40px)); margin: 0 auto; padding: 24px 0; color: var(--fc-secondary); font-size: 12px; }
-.skip-link { position: fixed; top: -100px; left: 16px; z-index: 100; padding: 12px; background: white; color: var(--fc-action); }
-.skip-link:focus { top: 12px; }
-@media (max-width: 600px) { .site-footer { flex-direction: column; gap: 8px; } }

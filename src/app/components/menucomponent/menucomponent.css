@@ -1,5 +1,0 @@
-.site-header { background: white; border-bottom: 1px solid var(--fc-border); height: 84px; }
-.header-inner { display: flex; align-items: center; justify-content: space-between; width: min(1280px, 100%); margin: auto; }
-.brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--fc-text); font: 600 22px 'Poppins', sans-serif; letter-spacing: -.7px; }
-nav a { color: var(--fc-action); min-height: 44px; }
-@media (max-width: 600px) { .site-header { height: 72px; }.brand { font-size: 20px; } }
