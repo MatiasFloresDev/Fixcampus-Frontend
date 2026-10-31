@@ -1,0 +1,35 @@
+<!doctype html><html lang="es"><head><title>Iniciar sesión | FixCampus — maqueta</title><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="assets/logo.svg"><link rel="stylesheet" href="fonts.css"><link rel="stylesheet" href="fixcampus.css"><meta name="theme-color" content="#0d6a62"></head><body><svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></symbol>
+<symbol id="i-alert" viewBox="0 0 24 24"><path d="m12 3 10 18H2L12 3Z"/><path d="M12 9v4m0 4h.01"/></symbol>
+<symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+<symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9l-6-6Z"/><path d="M14 3v6h6M8 13h8m-8 4h5"/></symbol>
+<symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 4H4v16h5m5-12 4 4-4 4m-4-4h10"/></symbol>
+</svg>
+<a class="skip" href="#contenido">Saltar al contenido</a>
+<header class="app-header"><a class="brand" href="login.html" aria-label="FixCampus, inicio"><img src="assets/logo.svg" alt="" width="36" height="36"><span>FixCampus</span></a>
+<nav class="app-nav" aria-label="Navegación principal"><a class="active" href="login.html" aria-current="page">Iniciar sesión</a><button class="btn btn-secondary" data-register>Crear cuenta</button></nav>
+<button type="button" class="menu-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu-movil" id="menu-toggle"><svg class="icon" aria-hidden="true"><use href="#i-menu"></use></svg></button></header>
+<nav class="mobile-nav" id="menu-movil" aria-label="Navegación móvil"><a href="login.html" aria-current="page">Iniciar sesión</a><button type="button" data-register>Crear cuenta</button></nav>
+<div class="auth-layout"><main class="auth-main" id="contenido"><div class="auth-card">
+<section class="auth-story" aria-labelledby="historia-titulo"><h1 id="historia-titulo">Reporta lo que necesita atención.</h1><p>Una pared dañada, una fuga o un vidrio roto. Informa la incidencia y consulta cómo avanza su atención.</p><img class="campus-illustration" src="assets/campus.svg" alt="Ilustración de un campus y un reporte desde el celular" width="350" height="263"><p class="story-caption">Edificios, pasillos y espacios comunes.</p></section>
+<section class="auth-form-area" aria-labelledby="login-titulo"><h2 id="login-titulo">Iniciar sesión</h2><p class="muted">Entra con tu correo y contraseña.</p>
+<form class="auth-form" id="login-form" novalidate>
+<div class="notice notice-warning" id="session-message" role="status" hidden><svg class="icon" aria-hidden="true"><use href="#i-info"></use></svg><div><strong>Tu sesión venció</strong>Inicia sesión de nuevo para continuar.</div></div>
+<div class="notice notice-error" id="login-error" role="alert" hidden><svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg><div><strong>No pudimos iniciar sesión</strong><span id="login-error-text">El correo o la contraseña no son correctos.</span></div></div>
+<div class="notice notice-success" id="login-success" role="status" hidden><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg><div><strong>Inicio de sesión correcto</strong>Así se muestra una confirmación en la maqueta.</div></div>
+<div class="field"><label for="correo">Correo electrónico</label><input type="email" id="correo" name="correo" placeholder="tu.correo@upc.edu.pe" autocomplete="username" inputmode="email" required aria-describedby="correo-error"><span class="field-error" id="correo-error" hidden><svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>Escribe un correo electrónico válido.</span></div>
+<div class="field"><label for="contrasena">Contraseña</label><div class="password-wrap"><input type="password" id="contrasena" name="contrasena" placeholder="Escribe tu contraseña" autocomplete="current-password" required aria-describedby="contrasena-error"><button class="password-toggle" type="button" aria-label="Mostrar contraseña" aria-pressed="false" id="password-toggle"><svg class="icon" aria-hidden="true"><use href="#i-eye"></use></svg></button></div><span class="field-error" id="contrasena-error" hidden><svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>Escribe tu contraseña.</span></div>
+<button class="btn btn-primary submit" type="submit" id="login-submit"><span>Iniciar sesión</span><svg class="icon" aria-hidden="true"><use href="#i-arrow"></use></svg></button></form>
+<p class="register-invite">¿Aún no tienes una cuenta? <button type="button" class="text-button" data-register>Crear cuenta</button></p>
+</section></div></main>
+<footer class="auth-footer"><span>UrbanIT · FixCampus</span><span>Incidencias de infraestructura del campus</span></footer></div>
+<dialog id="register-dialog" aria-labelledby="register-title"><div class="dialog-top"><h2 id="register-title">Crear cuenta</h2><button class="btn btn-ghost btn-icon" type="button" id="close-register" aria-label="Cerrar registro"><svg class="icon" aria-hidden="true"><use href="#i-x"></use></svg></button></div><p class="muted small">Regístrate para reportar incidencias del campus.</p>
+<form class="dialog-form" id="register-form"><div class="form-grid"><div class="field"><label for="nombre">Nombre</label><input id="nombre" name="nombre" autocomplete="given-name" required></div><div class="field"><label for="apellido">Apellido</label><input id="apellido" name="apellido" autocomplete="family-name" required></div></div>
+<div class="field"><label for="registro-correo">Correo electrónico</label><input id="registro-correo" type="email" autocomplete="email" required></div><div class="field"><label for="registro-clave">Contraseña</label><input id="registro-clave" type="password" minlength="6" autocomplete="new-password" required><span class="help">Usa al menos 6 caracteres.</span></div>
+<label class="check"><input type="checkbox" required><span>Acepto los términos de uso.</span></label><button class="btn btn-primary" type="submit">Crear cuenta</button><p class="help">Ejemplo visual: este formulario no crea cuentas ni envía datos.</p></form></dialog>
+<script src="login.js"></script></body></html>
