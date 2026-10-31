@@ -1,0 +1,9 @@
+
+:root { --fc-brand: #408f86; --fc-action: #0d6a62; --fc-tint: #e6f2f0; --fc-text: #212529; --fc-secondary: #5f6b70; --fc-border: #d6dbde; --fc-background: #f8f9fa; }
+* { box-sizing: border-box; }
+html { min-height: 100%; }
+body { margin: 0; background: var(--fc-background); color: var(--fc-text); font: 400 16px/1.6 'Open Sans', sans-serif; }
+button, input, select, textarea { font: inherit; }
+a, button, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 3px solid var(--fc-action); outline-offset: 4px; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; } }
