@@ -1,0 +1,19 @@
+.acceso {
+  max-width: 440px;
+  margin: 48px auto;
+  padding: 32px;
+  background: white;
+  border: 1px solid #d6dbde;
+  border-radius: 12px;
+}
+form {
+  display: grid;
+  gap: 12px;
+  margin-top: 28px;
+}
+@media (max-width: 600px) {
+  .acceso {
+    margin: 24px 16px;
+    padding: 24px;
+  }
+}

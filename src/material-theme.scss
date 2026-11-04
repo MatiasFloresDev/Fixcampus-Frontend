@@ -1,0 +1,20 @@
+@use '@angular/material' as mat;
+html {
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$cyan-palette,
+        tertiary: mat.$green-palette,
+      ),
+      typography: Arial,
+      density: 0,
+    )
+  );
+  @include mat.theme-overrides(
+    (
+      primary: #0d6a62,
+      on-primary: #ffffff,
+    )
+  );
+  color-scheme: light;
+}
