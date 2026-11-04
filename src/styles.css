@@ -1,1 +1,79 @@
-/* You can add global styles to this file, and also import other style files */
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  color: #212529;
+  background: #f8f9fa;
+  font:
+    16px/1.6 Arial,
+    sans-serif;
+}
+h1 {
+  font-size: 30px;
+  line-height: 1.25;
+  margin: 4px 0 24px;
+}
+button,
+input {
+  font: inherit;
+}
+:focus-visible {
+  outline: 3px solid #0d6a62;
+  outline-offset: 3px;
+}
+.contenedor {
+  max-width: 1160px;
+  padding: 40px 24px;
+  margin: auto;
+}
+.encabezado-lista {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+.seccion {
+  margin: 0;
+  color: #5f6b70;
+  font-size: 14px;
+}
+.tabla-scroll {
+  overflow-x: auto;
+  background: white;
+  border: 1px solid #d6dbde;
+  border-radius: 8px;
+}
+table {
+  width: 100%;
+  min-width: 560px;
+}
+.sin-datos {
+  padding: 28px 24px;
+  color: #5f6b70;
+}
+.aviso {
+  padding: 20px;
+  border: 1px solid #d6dbde;
+  background: white;
+  border-radius: 8px;
+}
+.error {
+  border-color: #c0392b;
+  background: #fff5f3;
+}
+.error p {
+  margin: 0;
+}
+.total {
+  font-size: 14px;
+  color: #5f6b70;
+}
+@media (max-width: 600px) {
+  .contenedor {
+    padding: 28px 16px;
+  }
+  h1 {
+    font-size: 26px;
+  }
+}
