@@ -23,11 +23,19 @@ header {
   color: #212529;
   text-decoration: none;
 }
+.marca img {
+  border: 1px solid #d6dbde;
+  border-radius: 50%;
+  background: white;
+}
 nav {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 6px;
+}
+.menu-celular {
+  display: none;
 }
 .activo {
   background: #e6f2f0;
@@ -62,5 +70,13 @@ dialog::backdrop {
 @media (max-width: 560px) {
   .barra {
     padding-inline: 16px;
+  }
+}
+@media (max-width: 720px) {
+  nav.menu-escritorio {
+    display: none;
+  }
+  .menu-celular {
+    display: inline-flex;
   }
 }

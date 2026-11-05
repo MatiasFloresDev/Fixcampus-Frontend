@@ -90,15 +90,18 @@ describe('Acceso y reportes de FixCampus', () => {
     expect(reportes.request.headers.get('Authorization')).toBe('Bearer ' + token);
     reportes.flush([]);
     app.detectChanges();
-    expect(TestBed.inject(Router).url).toBe('/evidencias');
+    expect(TestBed.inject(Router).url).toBe('/panel');
+    expect(app.nativeElement.querySelector('h1').textContent).toBe('Mi panel');
+    expect(app.nativeElement.textContent).toContain('Todavía no hay incidencias para mostrar.');
     expect(app.nativeElement.querySelector('nav').textContent).toContain('Mis reportes');
-    expect(app.nativeElement.querySelector('nav a[href="/panel"]')).toBeNull();
+    expect(app.nativeElement.querySelector('.indicadores').textContent).not.toContain('Usuarios');
+    http.expectNone('/api/users/count');
   });
 
-  it('redirige a un usuario que intenta abrir el panel y muestra el aviso si la sesión vence', async () => {
+  it('muestra el aviso si vence la sesión al consultar el panel personal', async () => {
     const app = await abrir('/panel', 'USUARIO');
     const http = TestBed.inject(HttpTestingController);
-    expect(TestBed.inject(Router).url).toBe('/evidencias');
+    expect(TestBed.inject(Router).url).toBe('/panel');
     http.expectNone('/api/reports/estadisticas/por-usuario-mes');
     http
       .expectOne('/api/reports/mis-reportes')
@@ -107,6 +110,24 @@ describe('Acceso y reportes de FixCampus', () => {
     app.detectChanges();
     expect(app.nativeElement.textContent).toContain('Tu sesión venció');
     expect(sessionStorage.getItem('fixcampus-token')).toBeNull();
+  });
+
+  it('agrupa por mes solo los reportes del usuario y evita consultas administrativas', async () => {
+    const app = await abrir('/panel', 'USUARIO');
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne('/api/reports/mis-reportes').flush([
+      { estado: 'ABIERTO', fechaCreacion: '2026-11-01T00:05:00' },
+      { estado: 'CERRADO', fechaCreacion: '2026-11-03T08:00:00' },
+      { estado: 'RESUELTO', fechaCreacion: '2026-10-31T23:59:00' },
+    ]);
+    app.detectChanges();
+    const filas = app.nativeElement.querySelectorAll('.grafico li');
+    expect(filas.length).toBe(2);
+    expect(filas[0].textContent).toContain('11/2026');
+    expect(filas[0].querySelector('strong').textContent).toBe('2');
+    http.expectNone('/api/reports');
+    http.expectNone('/api/users/count');
+    http.expectNone('/api/reports/estadisticas/por-usuario-mes');
   });
 
   it('dibuja las incidencias con los datos de la consulta de administrador', async () => {
@@ -136,17 +157,15 @@ describe('Acceso y reportes de FixCampus', () => {
   it('reintenta las evidencias y abre los enlaces válidos en otra pestaña', async () => {
     const app = await abrir('/evidencias', 'USUARIO');
     const http = TestBed.inject(HttpTestingController);
-    http
-      .expectOne('/api/reports/mis-reportes')
-      .flush([
-        {
-          idReporte: 12,
-          titulo: 'Fuga de agua',
-          estado: 'ABIERTO',
-          prioridad: 'ALTA',
-          fechaCreacion: '2026-10-27T09:14:00',
-        },
-      ]);
+    http.expectOne('/api/reports/mis-reportes').flush([
+      {
+        idReporte: 12,
+        titulo: 'Fuga de agua',
+        estado: 'ABIERTO',
+        prioridad: 'ALTA',
+        fechaCreacion: '2026-10-27T09:14:00',
+      },
+    ]);
     const vista = app.debugElement.query(By.directive(Evidenciascomponent))
       .componentInstance as Evidenciascomponent;
     vista.seleccionar('12');

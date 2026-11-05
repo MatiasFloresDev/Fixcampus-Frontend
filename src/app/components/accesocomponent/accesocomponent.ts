@@ -45,7 +45,7 @@ export class Accesocomponent {
         this.cargando = false;
         this.formulario.controls.password.reset();
         if (this.acceso.guardarToken(respuesta.token)) {
-          this.router.navigate([this.acceso.rol() === 'ADMIN' ? '/panel' : '/evidencias']);
+          this.router.navigate(['/panel']);
         } else {
           this.mensaje = 'No se pudo iniciar la sesión. Vuelve a intentarlo.';
           this.cdr.detectChanges();

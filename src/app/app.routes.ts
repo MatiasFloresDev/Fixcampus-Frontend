@@ -6,18 +6,17 @@ import { Panelcomponent } from './components/panelcomponent/panelcomponent';
 import { Evidenciascomponent } from './components/evidenciascomponent/evidenciascomponent';
 import { Accesoservice } from './services/accesoservice';
 
-const revisarSesion: CanActivateFn = (ruta) => {
+const revisarSesion: CanActivateFn = () => {
   const acceso = inject(Accesoservice);
   const router = inject(Router);
   if (!acceso.tieneSesion()) return router.createUrlTree(['/acceso']);
-  if (ruta.data['admin'] && acceso.rol() !== 'ADMIN') return router.createUrlTree(['/evidencias']);
   return true;
 };
 
 const revisarInvitado: CanActivateFn = () => {
   const acceso = inject(Accesoservice);
   if (!acceso.tieneSesion()) return true;
-  return inject(Router).createUrlTree([acceso.rol() === 'ADMIN' ? '/panel' : '/evidencias']);
+  return inject(Router).createUrlTree(['/panel']);
 };
 
 export const routes: Routes = [
@@ -38,7 +37,6 @@ export const routes: Routes = [
     path: 'panel',
     component: Panelcomponent,
     canActivate: [revisarSesion],
-    data: { admin: true },
     title: 'Panel | FixCampus',
   },
   {
