@@ -1,13 +1,21 @@
 <section class="contenedor">
   <div class="encabezado">
     <div>
-      <h1>Panel del campus</h1>
-      <p>Indicadores y estadísticas de las incidencias registradas.</p>
+      <h1>{{ esAdmin ? 'Panel del campus' : 'Mi panel' }}</h1>
+      <p>
+        {{
+          esAdmin
+            ? 'Indicadores y estadísticas de las incidencias registradas.'
+            : 'Consulta el avance de las incidencias que registraste.'
+        }}
+      </p>
     </div>
-    <a mat-stroked-button routerLink="/evidencias">Ver reportes</a>
+    <a mat-stroked-button routerLink="/evidencias">{{
+      esAdmin ? 'Ver reportes' : 'Ver mis reportes'
+    }}</a>
   </div>
   @if (indicadores; as datos) {
-    <div class="indicadores">
+    <div class="indicadores" [class.indicadores-personales]="!esAdmin">
       <div class="tarjeta">
         Reportes registrados <strong>{{ datos.reportes }}</strong>
       </div>
@@ -17,21 +25,36 @@
       <div class="tarjeta">
         Resueltos o cerrados <strong>{{ datos.resueltos }}</strong>
       </div>
-      <div class="tarjeta">
-        Usuarios <strong>{{ datos.usuarios }}</strong>
-      </div>
+      @if (esAdmin && usuarios !== undefined) {
+        <div class="tarjeta">
+          Usuarios <strong>{{ usuarios }}</strong>
+        </div>
+      }
     </div>
   }
   <section class="tarjeta">
-    <h2>Incidencias por usuario y mes</h2>
-    <p>Cantidad de reportes que registró cada usuario en el mes.</p>
+    <h2>{{ esAdmin ? 'Incidencias por usuario y mes' : 'Mis incidencias por mes' }}</h2>
+    <p>
+      {{
+        esAdmin
+          ? 'Cantidad de reportes que registró cada usuario en el mes.'
+          : 'Cantidad de reportes que registraste en cada mes.'
+      }}
+    </p>
     @if (cargando) {
       <p role="status">Cargando gráfico…</p>
     } @else if (mensaje) {
       <p class="aviso error" role="alert">{{ mensaje }}</p>
       <button mat-stroked-button (click)="cargarGrafico()">Volver a intentar</button>
     } @else if (filas.length === 0) {
-      <p class="aviso">Todavía no hay incidencias para mostrar.</p>
+      <div class="grafico-vacio" role="status">
+        <strong>Todavía no hay incidencias para mostrar.</strong>
+        <small>{{
+          esAdmin
+            ? 'El gráfico aparecerá cuando se registren reportes.'
+            : 'El gráfico aparecerá cuando registres un reporte.'
+        }}</small>
+      </div>
     } @else {
       <ul class="grafico">
         @for (fila of filas; track fila.usuarioId + '-' + fila.anio + '-' + fila.mes) {

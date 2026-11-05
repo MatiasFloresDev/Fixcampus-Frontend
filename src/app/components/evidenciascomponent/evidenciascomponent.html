@@ -87,9 +87,9 @@
               @for (adjunto of adjuntos; track adjunto.idAdjunto) {
                 <li>
                   @if (enlaceArchivo(adjunto.urlArchivo); as enlace) {
-                    <a [href]="enlace" target="_blank" rel="noopener noreferrer"
-                      >{{ adjunto.nombreArchivo }} <span aria-hidden="true">↗</span></a
-                    >
+                    <a [href]="enlace" target="_blank" rel="noopener noreferrer">
+                      {{ adjunto.nombreArchivo }}
+                    </a>
                   } @else {
                     <span>{{ adjunto.nombreArchivo }} · enlace no disponible</span>
                   }
