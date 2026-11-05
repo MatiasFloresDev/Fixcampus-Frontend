@@ -1,0 +1,66 @@
+header {
+  border-bottom: 1px solid #d6dbde;
+  background: white;
+}
+.barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  min-height: 65px;
+  max-width: 1440px;
+  margin: auto;
+  padding: 10px 24px;
+}
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font:
+    700 20px Poppins,
+    sans-serif;
+  color: #212529;
+  text-decoration: none;
+}
+nav {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.activo {
+  background: #e6f2f0;
+}
+.saltar {
+  position: absolute;
+  top: -90px;
+  left: 12px;
+  background: white;
+  padding: 10px;
+  z-index: 1;
+}
+.saltar:focus {
+  top: 8px;
+}
+dialog {
+  width: min(430px, calc(100% - 28px));
+  padding: 24px;
+  border: 1px solid #d6dbde;
+  border-radius: 14px;
+}
+dialog::backdrop {
+  background: #182c3066;
+}
+.acciones {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+@media (max-width: 560px) {
+  .barra {
+    padding-inline: 16px;
+  }
+}
