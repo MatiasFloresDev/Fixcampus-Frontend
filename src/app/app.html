@@ -28,7 +28,7 @@
           ariaCurrentWhenActive="page"
           >Mis reportes</a
         >
-        <button mat-button disabled>Nueva incidencia</button>
+        <a mat-button routerLink="/reportar">Nueva incidencia</a>
       } @else {
         <a mat-button routerLink="/acceso" routerLinkActive="activo" ariaCurrentWhenActive="page"
           >Iniciar sesión</a
@@ -51,7 +51,7 @@
         <button mat-menu-item [matMenuTriggerFor]="administracion">Administración</button>
       } @else if (acceso.rol() === 'USUARIO') {
         <a mat-menu-item routerLink="/evidencias">Mis reportes</a>
-        <button mat-menu-item disabled>Nueva incidencia</button>
+        <a mat-menu-item routerLink="/reportar">Nueva incidencia</a>
       }
       <button mat-menu-item (click)="confirmacion.showModal()">Cerrar sesión</button>
     </mat-menu>
