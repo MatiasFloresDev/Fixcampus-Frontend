@@ -1,29 +1,47 @@
 <a class="saltar" href="#contenido">Saltar al contenido</a>
 <header>
-  <mat-toolbar
-    ><a class="marca" routerLink="/categorias/listar">FixCampus</a><span class="espacio"></span>
-    @if (acceso.tieneSesion()) {
-      <button mat-button (click)="salir()">Salir</button>
-    } @else {
-      <a mat-button routerLink="/acceso">Iniciar sesión</a>
-    }
-  </mat-toolbar>
-  <nav aria-label="Catálogos">
-    <a
-      mat-button
-      routerLink="/categorias/listar"
-      routerLinkActive="activo"
-      ariaCurrentWhenActive="page"
-      >Categorías</a
-    ><a
-      mat-button
-      routerLink="/ubicaciones/listar"
-      routerLinkActive="activo"
-      ariaCurrentWhenActive="page"
-      >Ubicaciones</a
-    ><a mat-button routerLink="/roles/listar" routerLinkActive="activo" ariaCurrentWhenActive="page"
-      >Roles</a
+  <div class="barra">
+    <a class="marca" routerLink="/"
+      ><img src="assets/logo.svg" width="34" height="34" alt="" />FixCampus</a
     >
-  </nav>
+    <nav aria-label="Menú principal">
+      @if (acceso.rol() === 'ADMIN') {
+        <a mat-button routerLink="/panel" routerLinkActive="activo" ariaCurrentWhenActive="page"
+          >Panel</a
+        >
+        <a
+          mat-button
+          routerLink="/evidencias"
+          routerLinkActive="activo"
+          ariaCurrentWhenActive="page"
+          >Reportes</a
+        >
+      } @else if (acceso.rol() === 'USUARIO') {
+        <a
+          mat-button
+          routerLink="/evidencias"
+          routerLinkActive="activo"
+          ariaCurrentWhenActive="page"
+          >Mis reportes</a
+        >
+      } @else {
+        <a mat-button routerLink="/acceso" routerLinkActive="activo" ariaCurrentWhenActive="page"
+          >Iniciar sesión</a
+        >
+        <a mat-flat-button routerLink="/crear-cuenta">Crear cuenta</a>
+      }
+      @if (acceso.rol()) {
+        <button mat-button (click)="confirmacion.showModal()">Salir</button>
+        <dialog #confirmacion aria-labelledby="titulo-salir">
+          <h2 id="titulo-salir">¿Cerrar sesión?</h2>
+          <p>Puedes volver a entrar con tu correo y contraseña.</p>
+          <div class="acciones">
+            <button mat-stroked-button (click)="confirmacion.close()" autofocus>Cancelar</button>
+            <button mat-flat-button (click)="salir(confirmacion)">Cerrar sesión</button>
+          </div>
+        </dialog>
+      }
+    </nav>
+  </div>
 </header>
 <main id="contenido"><router-outlet /></main>

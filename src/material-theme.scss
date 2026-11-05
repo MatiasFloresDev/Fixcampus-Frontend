@@ -1,4 +1,5 @@
 @use '@angular/material' as mat;
+
 html {
   @include mat.theme(
     (
@@ -6,14 +7,14 @@ html {
         primary: mat.$cyan-palette,
         tertiary: mat.$green-palette,
       ),
-      typography: Arial,
+      typography: 'Open Sans',
       density: 0,
     )
   );
   @include mat.theme-overrides(
     (
       primary: #0d6a62,
-      on-primary: #ffffff,
+      on-primary: white,
     )
   );
   color-scheme: light;

@@ -1,0 +1,58 @@
+<section class="acceso">
+  <div class="lado-campus">
+    <img src="assets/campus.svg" alt="" width="400" height="260" />
+    <h2>Súmate a cuidar tu campus.</h2>
+    <p>Registra fugas, fallas eléctricas o mobiliario dañado y sigue su atención.</p>
+  </div>
+  <div class="lado-formulario">
+    @if (correoRegistrado) {
+      <h1>Cuenta creada</h1>
+      <p class="aviso exito" role="status">Ya puedes iniciar sesión con tu correo.</p>
+      <a mat-flat-button routerLink="/acceso" [queryParams]="{ correo: correoRegistrado }"
+        >Iniciar sesión</a
+      >
+    } @else {
+      <h1>Crear cuenta</h1>
+      <p>Tu cuenta se crea con el rol de usuario.</p>
+      <form [formGroup]="formulario" (ngSubmit)="registrar()">
+        <div class="nombres">
+          <mat-form-field appearance="outline"
+            ><mat-label>Nombre</mat-label
+            ><input matInput formControlName="nombre" autocomplete="given-name" /><mat-error
+              >Ingresa tu nombre.</mat-error
+            ></mat-form-field
+          >
+          <mat-form-field appearance="outline"
+            ><mat-label>Apellido</mat-label
+            ><input matInput formControlName="apellido" autocomplete="family-name" /><mat-error
+              >Ingresa tu apellido.</mat-error
+            ></mat-form-field
+          >
+        </div>
+        <mat-form-field appearance="outline"
+          ><mat-label>Correo</mat-label
+          ><input matInput type="email" formControlName="correo" autocomplete="email" /><mat-error
+            >Ingresa un correo válido.</mat-error
+          ></mat-form-field
+        >
+        <mat-form-field appearance="outline"
+          ><mat-label>Contraseña</mat-label
+          ><input
+            matInput
+            type="password"
+            formControlName="password"
+            autocomplete="new-password"
+          /><mat-error>Mínimo 6 caracteres.</mat-error></mat-form-field
+        >
+        <mat-checkbox formControlName="terminos">Acepto los términos y condiciones</mat-checkbox>
+        @if (mensaje) {
+          <p class="aviso error" role="alert">{{ mensaje }}</p>
+        }
+        <button mat-flat-button [disabled]="formulario.invalid || cargando">
+          {{ cargando ? 'Creando cuenta…' : 'Crear mi cuenta' }}
+        </button>
+      </form>
+      <p class="pie-formulario">¿Ya tienes cuenta? <a routerLink="/acceso">Iniciar sesión</a></p>
+    }
+  </div>
+</section>

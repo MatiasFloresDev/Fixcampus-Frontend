@@ -1,0 +1,67 @@
+.indicadores {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.indicadores strong {
+  display: block;
+  font:
+    600 30px Poppins,
+    sans-serif;
+  margin-top: 8px;
+}
+.grafico {
+  list-style: none;
+  padding: 0;
+  margin: 24px 0 16px;
+}
+.grafico li {
+  display: grid;
+  grid-template-columns: minmax(100px, 21%) 1fr;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+small {
+  display: block;
+  color: #5f6b70;
+}
+.medida {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.barra {
+  display: block;
+  height: 26px;
+  border-radius: 5px;
+  background: #5c8faa;
+}
+.reciente {
+  background: #408f86;
+}
+.leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  font-size: 13px;
+  color: #5f6b70;
+}
+.leyenda span::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: #408f86;
+  margin-right: 6px;
+}
+.leyenda span + span::before {
+  background: #5c8faa;
+}
+@media (max-width: 660px) {
+  .indicadores {
+    grid-template-columns: 1fr 1fr;
+  }
+}

@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -9,34 +9,50 @@ import { Accesoservice } from '../../services/accesoservice';
 
 @Component({
   selector: 'app-accesocomponent',
-  imports: [FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule],
+  imports: [ReactiveFormsModule, RouterLink, MatFormFieldModule, MatInputModule, MatButtonModule],
   templateUrl: './accesocomponent.html',
   styleUrl: './accesocomponent.css',
 })
 export class Accesocomponent {
-  correo = '';
-  password = '';
+  formulario;
   cargando = false;
   mensaje = '';
+  mostrarClave = false;
+
   constructor(
-    private acceso: Accesoservice,
+    public acceso: Accesoservice,
     private router: Router,
+    public ruta: ActivatedRoute,
     private cdr: ChangeDetectorRef,
-  ) {}
+    fb: FormBuilder,
+  ) {
+    this.formulario = fb.nonNullable.group({
+      correo: [
+        ruta.snapshot.queryParamMap.get('correo') ?? '',
+        [Validators.required, Validators.email],
+      ],
+      password: ['', Validators.required],
+    });
+  }
+
   ingresar(): void {
-    if (this.cargando) return;
+    if (this.formulario.invalid || this.cargando) return;
     this.cargando = true;
     this.mensaje = '';
-    this.acceso.ingresar(this.correo.trim(), this.password).subscribe({
-      next: (data) => {
-        this.acceso.guardarToken(data.token);
-        this.password = '';
+    const datos = this.formulario.getRawValue();
+    this.acceso.ingresar(datos.correo.trim(), datos.password).subscribe({
+      next: (respuesta) => {
         this.cargando = false;
-        this.router.navigate(['/categorias/listar']);
+        this.formulario.controls.password.reset();
+        if (this.acceso.guardarToken(respuesta.token)) {
+          this.router.navigate([this.acceso.rol() === 'ADMIN' ? '/panel' : '/evidencias']);
+        } else {
+          this.mensaje = 'No se pudo iniciar la sesión. Vuelve a intentarlo.';
+          this.cdr.detectChanges();
+        }
       },
       error: (error: HttpErrorResponse) => {
         this.cargando = false;
-        this.password = '';
         this.mensaje =
           error.status === 401
             ? 'El correo o la contraseña no son correctos.'
