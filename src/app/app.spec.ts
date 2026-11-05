@@ -1,3 +1,4 @@
+import { environment } from '../environments/environment';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
@@ -53,14 +54,14 @@ describe('Acceso y reportes de FixCampus', () => {
       terminos: true,
     });
     vista.registrar();
-    http.expectNone('/registro');
+    http.expectNone(environment.base + '/registro');
     vista.formulario.controls.password.setValue('ClavePrueba');
     vista.formulario.controls.terminos.setValue(false);
     vista.registrar();
-    http.expectNone('/registro');
+    http.expectNone(environment.base + '/registro');
     vista.formulario.controls.terminos.setValue(true);
     vista.registrar();
-    const solicitud = http.expectOne('/registro');
+    const solicitud = http.expectOne(environment.base + '/registro');
     expect(solicitud.request.method).toBe('POST');
     expect(solicitud.request.body).toEqual({
       nombre: 'Ana',
@@ -80,13 +81,17 @@ describe('Acceso y reportes de FixCampus', () => {
     const http = TestBed.inject(HttpTestingController);
     vista.formulario.setValue({ correo: 'ana@fixcampus.test', password: 'ClavePrueba' });
     vista.ingresar();
-    http.expectOne('/login').flush({}, { status: 401, statusText: 'Unauthorized' });
+    http
+      .expectOne(environment.base + '/login')
+      .flush({}, { status: 401, statusText: 'Unauthorized' });
     expect(app.nativeElement.textContent).toContain('El correo o la contraseña no son correctos.');
     vista.ingresar();
     const token = tokenDePrueba('ROLE_USUARIO');
-    http.expectOne('/login').flush({ token, correo: 'ana@fixcampus.test', idUsuario: 1 });
+    http
+      .expectOne(environment.base + '/login')
+      .flush({ token, correo: 'ana@fixcampus.test', idUsuario: 1 });
     await app.whenStable();
-    const reportes = http.expectOne('/api/reports/mis-reportes');
+    const reportes = http.expectOne(environment.base + '/api/reports/mis-reportes');
     expect(reportes.request.headers.get('Authorization')).toBe('Bearer ' + token);
     reportes.flush([]);
     app.detectChanges();
@@ -95,16 +100,16 @@ describe('Acceso y reportes de FixCampus', () => {
     expect(app.nativeElement.textContent).toContain('Todavía no hay incidencias para mostrar.');
     expect(app.nativeElement.querySelector('nav').textContent).toContain('Mis reportes');
     expect(app.nativeElement.querySelector('.indicadores').textContent).not.toContain('Usuarios');
-    http.expectNone('/api/users/count');
+    http.expectNone(environment.base + '/api/users/count');
   });
 
   it('muestra el aviso si vence la sesión al consultar el panel personal', async () => {
     const app = await abrir('/panel', 'USUARIO');
     const http = TestBed.inject(HttpTestingController);
     expect(TestBed.inject(Router).url).toBe('/panel');
-    http.expectNone('/api/reports/estadisticas/por-usuario-mes');
+    http.expectNone(environment.base + '/api/reports/estadisticas/por-usuario-mes');
     http
-      .expectOne('/api/reports/mis-reportes')
+      .expectOne(environment.base + '/api/reports/mis-reportes')
       .flush({}, { status: 401, statusText: 'Unauthorized' });
     await app.whenStable();
     app.detectChanges();
@@ -115,7 +120,7 @@ describe('Acceso y reportes de FixCampus', () => {
   it('agrupa por mes solo los reportes del usuario y evita consultas administrativas', async () => {
     const app = await abrir('/panel', 'USUARIO');
     const http = TestBed.inject(HttpTestingController);
-    http.expectOne('/api/reports/mis-reportes').flush([
+    http.expectOne(environment.base + '/api/reports/mis-reportes').flush([
       { estado: 'ABIERTO', fechaCreacion: '2026-11-01T00:05:00' },
       { estado: 'CERRADO', fechaCreacion: '2026-11-03T08:00:00' },
       { estado: 'RESUELTO', fechaCreacion: '2026-10-31T23:59:00' },
@@ -125,21 +130,21 @@ describe('Acceso y reportes de FixCampus', () => {
     expect(filas.length).toBe(2);
     expect(filas[0].textContent).toContain('11/2026');
     expect(filas[0].querySelector('strong').textContent).toBe('2');
-    http.expectNone('/api/reports');
-    http.expectNone('/api/users/count');
-    http.expectNone('/api/reports/estadisticas/por-usuario-mes');
+    http.expectNone(environment.base + '/api/reports');
+    http.expectNone(environment.base + '/api/users/count');
+    http.expectNone(environment.base + '/api/reports/estadisticas/por-usuario-mes');
   });
 
   it('dibuja las incidencias con los datos de la consulta de administrador', async () => {
     const app = await abrir('/panel', 'ADMIN');
     const http = TestBed.inject(HttpTestingController);
     http
-      .expectOne('/api/reports/estadisticas/por-usuario-mes')
+      .expectOne(environment.base + '/api/reports/estadisticas/por-usuario-mes')
       .flush([
         { usuarioId: 1, nombre: 'Ana', apellido: 'Torres', anio: 2026, mes: 10, cantidad: 4 },
       ]);
-    http.expectOne('/api/reports').flush([{ estado: 'ABIERTO' }]);
-    http.expectOne('/api/users/count').flush(2);
+    http.expectOne(environment.base + '/api/reports').flush([{ estado: 'ABIERTO' }]);
+    http.expectOne(environment.base + '/api/users/count').flush(2);
     app.detectChanges();
     expect(app.nativeElement.querySelector('.grafico').textContent).toContain('Ana Torres');
     expect(app.nativeElement.querySelector('.grafico strong').textContent).toBe('4');
@@ -151,13 +156,15 @@ describe('Acceso y reportes de FixCampus', () => {
     const app = await abrir('/evidencias');
     expect(TestBed.inject(Router).url).toBe('/acceso');
     expect(app.nativeElement.textContent).toContain('Tu sesión venció');
-    TestBed.inject(HttpTestingController).expectNone('/api/reports/mis-reportes');
+    TestBed.inject(HttpTestingController).expectNone(
+      environment.base + '/api/reports/mis-reportes',
+    );
   });
 
   it('reintenta las evidencias y abre los enlaces válidos en otra pestaña', async () => {
     const app = await abrir('/evidencias', 'USUARIO');
     const http = TestBed.inject(HttpTestingController);
-    http.expectOne('/api/reports/mis-reportes').flush([
+    http.expectOne(environment.base + '/api/reports/mis-reportes').flush([
       {
         idReporte: 12,
         titulo: 'Fuga de agua',
@@ -169,13 +176,15 @@ describe('Acceso y reportes de FixCampus', () => {
     const vista = app.debugElement.query(By.directive(Evidenciascomponent))
       .componentInstance as Evidenciascomponent;
     vista.seleccionar('12');
-    http.expectOne('/api/attachments/reporte/12').flush({}, { status: 500, statusText: 'Error' });
+    http
+      .expectOne(environment.base + '/api/attachments/reporte/12')
+      .flush({}, { status: 500, statusText: 'Error' });
     expect(app.nativeElement.textContent).toContain('No se pudieron cargar las evidencias.');
     vista.cargarAdjuntos();
-    http.expectOne('/api/attachments/reporte/12').flush([]);
+    http.expectOne(environment.base + '/api/attachments/reporte/12').flush([]);
     expect(app.nativeElement.textContent).toContain('no tiene evidencias adjuntas');
     vista.cargarAdjuntos();
-    http.expectOne('/api/attachments/reporte/12').flush([
+    http.expectOne(environment.base + '/api/attachments/reporte/12').flush([
       { idAdjunto: 1, nombreArchivo: 'foto.jpg', urlArchivo: 'https://example.com/foto.jpg' },
       { idAdjunto: 2, nombreArchivo: 'Enlace inválido', urlArchivo: 'javascript:alert(1)' },
     ]);

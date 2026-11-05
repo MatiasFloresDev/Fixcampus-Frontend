@@ -45,5 +45,23 @@ export const routes: Routes = [
     canActivate: [revisarSesion],
     title: 'Evidencias | FixCampus',
   },
+  {
+    path: 'reportar',
+    canActivate: [revisarSesion],
+    loadComponent: () =>
+      import('./components/reporteformcomponent/reporteformcomponent').then(
+        (m) => m.Reporteformcomponent,
+      ),
+    title: 'Nueva incidencia | FixCampus',
+  },
+  {
+    path: 'reportes/:id/editar',
+    canActivate: [revisarSesion],
+    loadComponent: () =>
+      import('./components/reporteformcomponent/reporteformcomponent').then(
+        (m) => m.Reporteformcomponent,
+      ),
+    title: 'Editar incidencia | FixCampus',
+  },
   { path: '**', redirectTo: 'acceso' },
 ];
