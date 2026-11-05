@@ -1,34 +1,43 @@
 <section class="acceso">
-  <p class="seccion">FixCampus</p>
-  <h1>Iniciar sesión</h1>
-  <p>Ingresa con tu cuenta para consultar los catálogos.</p>
-  <form #form="ngForm" (ngSubmit)="ingresar()">
-    <mat-form-field appearance="outline"
-      ><mat-label>Correo electrónico</mat-label
-      ><input
-        matInput
-        type="email"
-        name="correo"
-        [(ngModel)]="correo"
-        required
-        email
-        autocomplete="username"
-    /></mat-form-field>
-    <mat-form-field appearance="outline"
-      ><mat-label>Contraseña</mat-label
-      ><input
-        matInput
-        type="password"
-        name="password"
-        [(ngModel)]="password"
-        required
-        autocomplete="current-password"
-    /></mat-form-field>
-    @if (mensaje) {
-      <p class="aviso error" role="alert">{{ mensaje }}</p>
+  <div class="lado-campus">
+    <img src="assets/campus.svg" alt="" width="400" height="260" />
+    <h2>Cuida los espacios de tu campus.</h2>
+    <p>Reporta incidencias y sigue su atención en un solo lugar.</p>
+  </div>
+  <div class="lado-formulario">
+    <h1>Iniciar sesión</h1>
+    <p>Entra con tu correo y contraseña.</p>
+    @if (acceso.vencida()) {
+      <p class="aviso" role="status">Tu sesión venció. Inicia sesión de nuevo para continuar.</p>
     }
-    <button mat-flat-button type="submit" [disabled]="form.invalid || cargando">
-      {{ cargando ? 'Ingresando…' : 'Iniciar sesión' }}
-    </button>
-  </form>
+    <form [formGroup]="formulario" (ngSubmit)="ingresar()">
+      <mat-form-field appearance="outline">
+        <mat-label>Correo electrónico</mat-label>
+        <input matInput type="email" formControlName="correo" autocomplete="username" />
+        <mat-error>Ingresa un correo válido.</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Contraseña</mat-label>
+        <input
+          matInput
+          [type]="mostrarClave ? 'text' : 'password'"
+          formControlName="password"
+          autocomplete="current-password"
+        />
+        <button mat-button matSuffix type="button" (click)="mostrarClave = !mostrarClave">
+          {{ mostrarClave ? 'Ocultar' : 'Mostrar' }}
+        </button>
+        <mat-error>Ingresa tu contraseña.</mat-error>
+      </mat-form-field>
+      @if (mensaje) {
+        <p class="aviso error" role="alert">{{ mensaje }}</p>
+      }
+      <button mat-flat-button [disabled]="formulario.invalid || cargando">
+        {{ cargando ? 'Ingresando…' : 'Iniciar sesión' }}
+      </button>
+    </form>
+    <p class="pie-formulario">
+      ¿Aún no tienes cuenta? <a routerLink="/crear-cuenta">Crear cuenta</a>
+    </p>
+  </div>
 </section>

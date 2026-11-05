@@ -1,22 +1,51 @@
-import { Routes } from '@angular/router';
-import { Listarcategoriacomponent } from './components/categoriacomponent/listarcategoriacomponent/listarcategoriacomponent';
-import { Listarubicacioncomponent } from './components/ubicacioncomponent/listarubicacioncomponent/listarubicacioncomponent';
-import { Listarrolcomponent } from './components/rolcomponent/listarrolcomponent/listarrolcomponent';
+import { inject } from '@angular/core';
+import { CanActivateFn, Router, Routes } from '@angular/router';
 import { Accesocomponent } from './components/accesocomponent/accesocomponent';
+import { Registrocomponent } from './components/registrocomponent/registrocomponent';
+import { Panelcomponent } from './components/panelcomponent/panelcomponent';
+import { Evidenciascomponent } from './components/evidenciascomponent/evidenciascomponent';
+import { Accesoservice } from './services/accesoservice';
+
+const revisarSesion: CanActivateFn = (ruta) => {
+  const acceso = inject(Accesoservice);
+  const router = inject(Router);
+  if (!acceso.tieneSesion()) return router.createUrlTree(['/acceso']);
+  if (ruta.data['admin'] && acceso.rol() !== 'ADMIN') return router.createUrlTree(['/evidencias']);
+  return true;
+};
+
+const revisarInvitado: CanActivateFn = () => {
+  const acceso = inject(Accesoservice);
+  if (!acceso.tieneSesion()) return true;
+  return inject(Router).createUrlTree([acceso.rol() === 'ADMIN' ? '/panel' : '/evidencias']);
+};
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'categorias/listar', pathMatch: 'full' },
+  { path: '', redirectTo: 'acceso', pathMatch: 'full' },
   {
-    path: 'categorias/listar',
-    component: Listarcategoriacomponent,
-    title: 'Categorías | FixCampus',
+    path: 'acceso',
+    component: Accesocomponent,
+    canActivate: [revisarInvitado],
+    title: 'Iniciar sesión | FixCampus',
   },
   {
-    path: 'ubicaciones/listar',
-    component: Listarubicacioncomponent,
-    title: 'Ubicaciones | FixCampus',
+    path: 'crear-cuenta',
+    component: Registrocomponent,
+    canActivate: [revisarInvitado],
+    title: 'Crear cuenta | FixCampus',
   },
-  { path: 'roles/listar', component: Listarrolcomponent, title: 'Roles | FixCampus' },
-  { path: 'acceso', component: Accesocomponent, title: 'Iniciar sesión | FixCampus' },
-  { path: '**', redirectTo: 'categorias/listar' },
+  {
+    path: 'panel',
+    component: Panelcomponent,
+    canActivate: [revisarSesion],
+    data: { admin: true },
+    title: 'Panel | FixCampus',
+  },
+  {
+    path: 'evidencias',
+    component: Evidenciascomponent,
+    canActivate: [revisarSesion],
+    title: 'Evidencias | FixCampus',
+  },
+  { path: '**', redirectTo: 'acceso' },
 ];

@@ -1,0 +1,105 @@
+<section class="contenedor">
+  <div class="encabezado">
+    <div>
+      <h1>{{ acceso.rol() === 'ADMIN' ? 'Evidencias de reportes' : 'Mis reportes' }}</h1>
+      <p>Selecciona un reporte para consultar sus evidencias.</p>
+    </div>
+  </div>
+  @if (cargandoLista) {
+    <p role="status">Cargando reportes…</p>
+  } @else if (errorLista) {
+    <p class="aviso error" role="alert">{{ errorLista }}</p>
+    <button mat-stroked-button (click)="cargarReportes()">Volver a intentar</button>
+  } @else if (lista.length === 0) {
+    <p class="aviso">Todavía no hay reportes para consultar.</p>
+  } @else {
+    <label for="reporte">Reporte</label>
+    <select
+      id="reporte"
+      #selector
+      (change)="seleccionar(selector.value)"
+      [disabled]="cargandoAdjuntos"
+    >
+      <option value="">Elige un reporte</option>
+      @for (item of lista; track item.idReporte) {
+        <option [value]="item.idReporte">#{{ item.idReporte }} · {{ item.titulo }}</option>
+      }
+    </select>
+  }
+  @if (reporte; as datos) {
+    <div class="titulo-reporte">
+      <small>Reporte #{{ datos.idReporte }}</small>
+      <h2>{{ datos.titulo }}</h2>
+      <span class="estado">{{ datos.estado }}</span
+      ><span class="estado">{{ datos.prioridad }}</span>
+    </div>
+    <div class="detalle">
+      <div>
+        <section class="tarjeta">
+          <h2>Descripción</h2>
+          <p>{{ datos.descripcion }}</p>
+        </section>
+        <section class="tarjeta">
+          <h2>Seguimiento</h2>
+          <dl>
+            <dt>Registrado</dt>
+            <dd>{{ datos.fechaCreacion | date: 'dd/MM/yyyy HH:mm' }}</dd>
+            <dt>Técnico asignado</dt>
+            <dd>
+              {{
+                datos.fechaAsignacion
+                  ? (datos.fechaAsignacion | date: 'dd/MM/yyyy HH:mm')
+                  : 'Pendiente'
+              }}
+            </dd>
+            <dt>Resuelto</dt>
+            <dd>
+              {{
+                datos.fechaResolucion
+                  ? (datos.fechaResolucion | date: 'dd/MM/yyyy HH:mm')
+                  : 'Pendiente'
+              }}
+            </dd>
+          </dl>
+        </section>
+      </div>
+      <div>
+        <section class="tarjeta">
+          <h2>Datos del reporte</h2>
+          <dl>
+            <dt>Categoría</dt>
+            <dd>{{ datos.categoriaNombre }}</dd>
+            <dt>Ubicación</dt>
+            <dd>{{ datos.detalleUbicacion || 'Sin detalle de ubicación' }}</dd>
+          </dl>
+        </section>
+        <section class="tarjeta evidencias">
+          <h2>Evidencias</h2>
+          @if (cargandoAdjuntos) {
+            <p role="status">Cargando evidencias…</p>
+          } @else if (errorAdjuntos) {
+            <p class="aviso error" role="alert">{{ errorAdjuntos }}</p>
+            <button mat-stroked-button (click)="cargarAdjuntos()">Volver a intentar</button>
+          } @else if (!adjuntos.length) {
+            <p>Este reporte no tiene evidencias adjuntas.</p>
+          } @else {
+            <ul>
+              @for (adjunto of adjuntos; track adjunto.idAdjunto) {
+                <li>
+                  @if (enlaceArchivo(adjunto.urlArchivo); as enlace) {
+                    <a [href]="enlace" target="_blank" rel="noopener noreferrer"
+                      >{{ adjunto.nombreArchivo }} <span aria-hidden="true">↗</span></a
+                    >
+                  } @else {
+                    <span>{{ adjunto.nombreArchivo }} · enlace no disponible</span>
+                  }
+                </li>
+              }
+            </ul>
+            <small>Los enlaces se abren en una pestaña nueva.</small>
+          }
+        </section>
+      </div>
+    </div>
+  }
+</section>
