@@ -8,6 +8,7 @@ import {
   IncidenciasPorMesDTO,
   ReporteDTO,
   ReporteFormularioDTO,
+  SugerenciaCategoriaDTO,
   UbicacionDTO,
 } from '../models/ReporteDTO';
 import { Accesoservice } from './accesoservice';
@@ -50,6 +51,14 @@ export class Reporteservice {
     return this.http.delete<void>(this.api + '/reports/' + id, {
       headers: this.acceso.obtenerCabeceras(),
     });
+  }
+
+  sugerirCategoria(descripcion: string): Observable<SugerenciaCategoriaDTO> {
+    return this.http.post<SugerenciaCategoriaDTO>(
+      this.api + '/reports/sugerir-categoria',
+      { descripcion },
+      { headers: this.acceso.obtenerCabeceras() },
+    );
   }
 
   categorias(): Observable<CategoriaDTO[]> {

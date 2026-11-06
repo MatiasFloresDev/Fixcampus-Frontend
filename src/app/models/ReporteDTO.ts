@@ -40,6 +40,10 @@ export interface ReporteFormularioDTO {
   tecnicoAsignadoId?: number | null;
 }
 
+export interface SugerenciaCategoriaDTO {
+  categoriaId: number | null;
+}
+
 export interface CategoriaDTO {
   idCategoria: number;
   nombre: string;
