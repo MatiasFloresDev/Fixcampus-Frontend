@@ -1,5 +1,6 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -29,6 +30,7 @@ export class Reporteformcomponent implements OnInit {
   private readonly router = inject(Router);
   private readonly servicio = inject(Reporteservice);
   private readonly acceso = inject(Accesoservice);
+  private readonly destruccion = inject(DestroyRef);
   protected readonly esAdmin = this.acceso.rol() === 'ADMIN';
   protected readonly editando = this.ruta.snapshot.paramMap.has('id');
   protected readonly prioridades = ['MUY_BAJA', 'BAJA', 'MEDIA', 'ALTA', 'MUY_ALTA'];
@@ -44,6 +46,10 @@ export class Reporteformcomponent implements OnInit {
   protected readonly guardando = signal(false);
   protected readonly listo = signal(false);
   protected readonly mensaje = signal('');
+  protected readonly limiteDescripcionIA = 1000;
+  protected readonly consultandoIA = signal(false);
+  protected readonly mensajeIA = signal('');
+  protected readonly sugerencia = signal<CategoriaDTO | null>(null);
   protected categorias: CategoriaDTO[] = [];
   protected ubicaciones: UbicacionDTO[] = [];
   protected original: ReporteDTO | null = null;
@@ -61,6 +67,17 @@ export class Reporteformcomponent implements OnInit {
     estado: this.fb.nonNullable.control('ABIERTO', Validators.required),
     prioridad: this.fb.control<string | null>(null),
   });
+
+  constructor() {
+    this.formulario.controls.descripcion.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
+      this.sugerencia.set(null);
+      this.mensajeIA.set('');
+    });
+  }
+
+  protected descripcionIA(): string {
+    return this.formulario.controls.descripcion.value.trim();
+  }
 
   ngOnInit(): void {
     const id = Number(this.ruta.snapshot.paramMap.get('id'));
@@ -97,6 +114,59 @@ export class Reporteformcomponent implements OnInit {
         this.cargando.set(false);
       },
     });
+  }
+
+  protected sugerirCategoria(): void {
+    const descripcion = this.descripcionIA();
+    if (
+      this.editando ||
+      !this.listo() ||
+      !this.categorias.length ||
+      this.guardando() ||
+      this.consultandoIA() ||
+      !descripcion ||
+      descripcion.length > this.limiteDescripcionIA
+    ) {
+      return;
+    }
+
+    this.consultandoIA.set(true);
+    this.sugerencia.set(null);
+    this.mensajeIA.set('');
+    this.servicio
+      .sugerirCategoria(descripcion)
+      .pipe(takeUntilDestroyed(this.destruccion))
+      .subscribe({
+        next: ({ categoriaId }) => {
+          this.consultandoIA.set(false);
+          if (descripcion !== this.descripcionIA()) return;
+          const categoria = this.categorias.find((item) => item.idCategoria === categoriaId);
+          if (categoria) this.sugerencia.set(categoria);
+          else
+            this.mensajeIA.set(
+              'No hay una sugerencia para esta descripción. Elige la categoría en el formulario.',
+            );
+        },
+        error: (error: HttpErrorResponse) => {
+          this.consultandoIA.set(false);
+          this.acceso.revisarError(error);
+          if (descripcion !== this.descripcionIA()) return;
+          const mensaje =
+            error.status === 429
+              ? 'Se alcanzó el límite de consultas de IA.'
+              : 'La sugerencia de IA no está disponible.';
+          this.mensajeIA.set(mensaje + ' Puedes elegir la categoría en el formulario.');
+        },
+      });
+  }
+
+  protected usarSugerencia(): void {
+    const categoria = this.sugerencia();
+    if (!categoria || this.guardando()) return;
+    this.formulario.controls.categoriaId.setValue(categoria.idCategoria);
+    this.formulario.controls.categoriaId.markAsDirty();
+    this.sugerencia.set(null);
+    this.mensajeIA.set('Categoría seleccionada. Puedes cambiarla antes de guardar.');
   }
 
   protected guardar(): void {

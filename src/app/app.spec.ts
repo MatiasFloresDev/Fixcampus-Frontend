@@ -41,6 +41,68 @@ describe('Acceso y reportes de FixCampus', () => {
     return app;
   }
 
+  async function abrirReporteNuevo() {
+    const app = await abrir('/reportar', 'ROLE_USUARIO');
+    const http = TestBed.inject(HttpTestingController);
+    http
+      .expectOne(environment.base + '/api/categories')
+      .flush([{ idCategoria: 7, nombre: 'Electricidad' }]);
+    http
+      .expectOne(environment.base + '/api/locations')
+      .flush([{ idUbicacion: 4, campus: 'Prueba', edificio: 'A', piso: null, zona: null }]);
+    app.detectChanges();
+    const pagina: HTMLElement = app.nativeElement;
+    const descripcion = pagina.querySelector<HTMLTextAreaElement>('textarea')!;
+    const escribir = (valor: string) => {
+      descripcion.value = valor;
+      descripcion.dispatchEvent(new Event('input'));
+      app.detectChanges();
+    };
+    const boton = (texto: string) =>
+      Array.from(pagina.querySelectorAll('button')).find(
+        (item) => item.textContent.trim() === texto,
+      );
+    return { app, http, pagina, escribir, boton };
+  }
+
+  it('aplica una categoría de IA solo después de confirmarla', async () => {
+    const { app, http, pagina, escribir, boton } = await abrirReporteNuevo();
+    const endpoint = environment.base + '/api/reports/sugerir-categoria';
+    expect(boton('Sugerir categoría con IA')?.disabled).toBe(true);
+    escribir('  Falló una lámpara del pasillo.  ');
+    http.expectNone(endpoint);
+    boton('Sugerir categoría con IA')!.click();
+    const peticion = http.expectOne(endpoint);
+    expect(peticion.request.method).toBe('POST');
+    expect(peticion.request.body).toEqual({ descripcion: 'Falló una lámpara del pasillo.' });
+    expect(peticion.request.headers.get('Authorization')).toMatch(/^Bearer /);
+    peticion.flush({ categoriaId: 7 });
+    app.detectChanges();
+    const selector = pagina.querySelector('mat-select[formcontrolname="categoriaId"]')!;
+    expect(pagina.textContent).toContain('Sugerencia: Electricidad');
+    expect(selector.textContent).not.toContain('Electricidad');
+    boton('Usar categoría sugerida')!.click();
+    app.detectChanges();
+    expect(selector.textContent).toContain('Electricidad');
+    http.expectNone(environment.base + '/api/reports');
+  });
+
+  it('descarta una respuesta de IA si cambió la descripción y permite continuar ante un fallo', async () => {
+    const { app, http, pagina, escribir, boton } = await abrirReporteNuevo();
+    const endpoint = environment.base + '/api/reports/sugerir-categoria';
+    escribir('Falló una lámpara.');
+    boton('Sugerir categoría con IA')!.click();
+    const anterior = http.expectOne(endpoint);
+    escribir('Se rompió una silla.');
+    anterior.flush({ categoriaId: 7 });
+    app.detectChanges();
+    expect(boton('Usar categoría sugerida')).toBeUndefined();
+    boton('Sugerir categoría con IA')!.click();
+    http.expectOne(endpoint).flush(null, { status: 503, statusText: 'Service Unavailable' });
+    app.detectChanges();
+    expect(pagina.textContent).toContain('Puedes elegir la categoría en el formulario.');
+  });
+
   it('valida el registro y envía únicamente los datos de la cuenta', async () => {
     const app = await abrir('/crear-cuenta');
     const vista = app.debugElement.query(By.directive(Registrocomponent))
