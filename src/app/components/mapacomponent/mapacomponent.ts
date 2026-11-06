@@ -90,7 +90,7 @@ export class Mapacomponent implements OnInit {
 
   private async mostrarMapa(punto: [number, number]): Promise<void> {
     try {
-      const { map, tileLayer, circleMarker } = await import('leaflet');
+      const { default: { map, tileLayer, circleMarker } } = await import('leaflet');
       const contenedor = this.vista()?.nativeElement;
       if (this.destruccion.destroyed || !contenedor) return;
 
