@@ -1,12 +1,8 @@
 <section class="contenedor">
   <div class="tarjeta portada">
     <div>
-      <p class="seccion">Mantenimiento del campus</p>
-      <h1>Reporta una incidencia en tu campus</h1>
-      <p>
-        Registra un problema de infraestructura, indica dónde ocurrió y consulta el avance desde tu
-        cuenta.
-      </p>
+      <h1>Reporta un problema en el campus</h1>
+      <p>Registra una incidencia de mantenimiento y revisa su estado en Mis reportes.</p>
       <div class="acciones">
         @if (acceso.rol()) {
           <a mat-flat-button routerLink="/panel">Ir al panel</a>
@@ -33,5 +29,4 @@
       <p>Revisa el seguimiento y las evidencias de tus reportes.</p>
     </li>
   </ol>
-  <a routerLink="/guia-de-estilos">Guía de estilos de FixCampus</a>
 </section>

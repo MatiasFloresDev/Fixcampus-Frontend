@@ -35,12 +35,6 @@ export const routes: Routes = [
     title: 'Inicio | FixCampus',
   },
   {
-    path: 'guia-de-estilos',
-    loadComponent: () =>
-      import('./components/guiacomponent/guiacomponent').then((m) => m.Guiacomponent),
-    title: 'Guía de estilos | FixCampus',
-  },
-  {
     path: 'acceso',
     component: Accesocomponent,
     canActivate: [revisarInvitado],

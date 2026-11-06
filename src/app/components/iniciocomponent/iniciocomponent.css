@@ -9,10 +9,6 @@
 .portada h1 {
   font-size: clamp(30px, 4vw, 46px);
 }
-.seccion {
-  color: #0d6a62;
-  font-weight: 700;
-}
 .portada img {
   width: 100%;
   height: auto;
