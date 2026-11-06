@@ -15,6 +15,8 @@
         <mat-option value="ALTA">Alta</mat-option>
         <mat-option value="MEDIA">Media</mat-option>
         <mat-option value="BAJA">Baja</mat-option>
+        <mat-option value="MUY_BAJA">Muy baja</mat-option>
+        <mat-option value="MUY_ALTA">Muy alta</mat-option>
       </mat-select>
     </mat-form-field>
   </div>
@@ -38,6 +40,9 @@
             <dt>Justificación</dt>
             <dd>{{ item.justificacion || 'Sin justificación' }}</dd>
           </dl>
+          <a mat-button [routerLink]="['/reportes', item.reporteId, 'seguimiento']"
+            >Editar recomendación</a
+          >
           <a mat-stroked-button routerLink="/evidencias" [queryParams]="{ id: item.reporteId }"
             >Ver reporte #{{ item.reporteId }}</a
           >
