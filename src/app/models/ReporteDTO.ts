@@ -51,4 +51,6 @@ export interface UbicacionDTO {
   edificio: string;
   piso: number | null;
   zona: string | null;
+  latitud?: number | null;
+  longitud?: number | null;
 }

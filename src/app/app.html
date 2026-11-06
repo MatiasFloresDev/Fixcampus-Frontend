@@ -57,12 +57,12 @@
     </mat-menu>
     <mat-menu #administracion="matMenu">
       <button mat-menu-item disabled>Comentarios</button>
-      <button mat-menu-item disabled>Recomendaciones</button>
+      <a mat-menu-item routerLink="/administracion/recomendaciones">Recomendaciones</a>
       <a mat-menu-item routerLink="/evidencias">Adjuntos</a>
-      <button mat-menu-item disabled>Categorías</button>
-      <button mat-menu-item disabled>Ubicaciones</button>
+      <a mat-menu-item routerLink="/administracion/categorias">Categorías</a>
+      <a mat-menu-item routerLink="/administracion/ubicaciones">Ubicaciones</a>
       <button mat-menu-item disabled>Usuarios</button>
-      <button mat-menu-item disabled>Roles</button>
+      <a mat-menu-item routerLink="/administracion/roles">Roles</a>
     </mat-menu>
     <dialog #confirmacion aria-labelledby="titulo-salir">
       <h2 id="titulo-salir">¿Cerrar sesión?</h2>

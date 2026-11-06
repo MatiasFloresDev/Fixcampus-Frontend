@@ -105,6 +105,9 @@
             <dt>Ubicación</dt>
             <dd>{{ datos.detalleUbicacion || 'Sin detalle de ubicación' }}</dd>
           </dl>
+          <a mat-stroked-button [routerLink]="['/reportes', datos.idReporte, 'mapa']"
+            >Ver ubicación en mapa</a
+          >
         </section>
         <section class="tarjeta evidencias">
           <h2>Evidencias</h2>
