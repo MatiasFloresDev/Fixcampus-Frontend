@@ -90,6 +90,31 @@ export const routes: Routes = [
     title: 'Mapa del reporte | FixCampus',
   },
   {
+    path: 'reportes/:id/seguimiento',
+    canActivate: [revisarAdmin],
+    loadComponent: () =>
+      import('./components/seguimientocomponent/seguimientocomponent').then(
+        (m) => m.Seguimientocomponent,
+      ),
+    title: 'Seguimiento | FixCampus',
+  },
+  {
+    path: 'administracion/usuarios',
+    canActivate: [revisarAdmin],
+    loadComponent: () =>
+      import('./components/usuarioscomponent/usuarioscomponent').then((m) => m.Usuarioscomponent),
+    title: 'Usuarios | FixCampus',
+  },
+  {
+    path: 'administracion/estadisticas',
+    canActivate: [revisarAdmin],
+    loadComponent: () =>
+      import('./components/estadisticascomponent/estadisticascomponent').then(
+        (m) => m.Estadisticascomponent,
+      ),
+    title: 'Estadísticas | FixCampus',
+  },
+  {
     path: 'administracion/recomendaciones',
     canActivate: [revisarAdmin],
     loadComponent: () =>

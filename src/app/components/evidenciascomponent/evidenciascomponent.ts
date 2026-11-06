@@ -14,6 +14,8 @@ import { Reporteservice } from '../../services/reporteservice';
   styleUrl: './evidenciascomponent.css',
 })
 export class Evidenciascomponent implements OnInit {
+  readonly prioridades = ['MUY_BAJA', 'BAJA', 'MEDIA', 'ALTA', 'MUY_ALTA'];
+  prioridad = '';
   lista: ReporteDTO[] = [];
   reporte?: ReporteDTO;
   adjuntos: AdjuntoDTO[] = [];
@@ -36,10 +38,14 @@ export class Evidenciascomponent implements OnInit {
     this.cargarReportes();
   }
 
-  cargarReportes(): void {
+  cargarReportes(prioridad = this.prioridad): void {
+    if (prioridad !== this.prioridad) {
+      this.prioridad = prioridad;
+      this.seleccionar('');
+    }
     this.errorLista = '';
     this.cargandoLista = true;
-    this.servicio.listar().subscribe({
+    this.servicio.listar(this.prioridad).subscribe({
       next: (datos) => {
         this.lista = datos;
         this.cargandoLista = false;

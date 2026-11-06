@@ -56,12 +56,13 @@
       <button mat-menu-item (click)="confirmacion.showModal()">Cerrar sesión</button>
     </mat-menu>
     <mat-menu #administracion="matMenu">
-      <button mat-menu-item disabled>Comentarios</button>
+      <a mat-menu-item routerLink="/evidencias">Seguimiento de reportes</a>
       <a mat-menu-item routerLink="/administracion/recomendaciones">Recomendaciones</a>
       <a mat-menu-item routerLink="/evidencias">Adjuntos</a>
       <a mat-menu-item routerLink="/administracion/categorias">Categorías</a>
       <a mat-menu-item routerLink="/administracion/ubicaciones">Ubicaciones</a>
-      <button mat-menu-item disabled>Usuarios</button>
+      <a mat-menu-item routerLink="/administracion/usuarios">Usuarios</a>
+      <a mat-menu-item routerLink="/administracion/estadisticas">Estadísticas</a>
       <a mat-menu-item routerLink="/administracion/roles">Roles</a>
     </mat-menu>
     <dialog #confirmacion aria-labelledby="titulo-salir">

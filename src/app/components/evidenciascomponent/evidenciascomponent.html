@@ -6,13 +6,34 @@
     </div>
     <a mat-flat-button routerLink="/reportar">Nueva incidencia</a>
   </div>
+  @if (acceso.rol() === 'ADMIN') {
+    <label for="prioridadReporte">Filtrar por prioridad</label>
+    <select
+      id="prioridadReporte"
+      #filtro
+      [value]="prioridad"
+      [disabled]="cargandoLista || cargandoAdjuntos || !!confirmacionEliminar()"
+      (change)="cargarReportes(filtro.value)"
+    >
+      <option value="">Todas</option>
+      @for (item of prioridades; track item) {
+        <option [value]="item">{{ item.replace('_', ' ') }}</option>
+      }
+    </select>
+  }
   @if (cargandoLista) {
     <p role="status">Cargando reportes…</p>
   } @else if (errorLista) {
     <p class="aviso error" role="alert">{{ errorLista }}</p>
     <button mat-stroked-button (click)="cargarReportes()">Volver a intentar</button>
   } @else if (lista.length === 0) {
-    <p class="aviso">Todavía no hay reportes para consultar.</p>
+    <p class="aviso">
+      {{
+        prioridad
+          ? 'No hay reportes con esta prioridad.'
+          : 'Todavía no hay reportes para consultar.'
+      }}
+    </p>
   } @else {
     <label for="reporte">Reporte</label>
     <select
@@ -37,6 +58,9 @@
       ><span class="estado">{{ datos.prioridad || 'Sin prioridad' }}</span>
       <a mat-button [routerLink]="['/reportes', datos.idReporte, 'editar']">Editar</a>
       @if (acceso.rol() === 'ADMIN') {
+        <a mat-button [routerLink]="['/reportes', datos.idReporte, 'seguimiento']"
+          >Comentarios y recomendación</a
+        >
         <button
           mat-button
           type="button"

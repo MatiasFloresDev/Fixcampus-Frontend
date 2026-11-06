@@ -1,0 +1,165 @@
+<section class="contenedor">
+  <div class="encabezado">
+    <div>
+      <h1>Seguimiento del reporte #{{ reporteId }}</h1>
+      @if (reporte(); as datos) {
+        <p>{{ datos.titulo }}</p>
+      }
+    </div>
+    <a mat-stroked-button routerLink="/evidencias" [queryParams]="{ id: reporteId }"
+      >Volver al reporte</a
+    >
+  </div>
+  @if (error()) {
+    <p class="aviso error" role="alert">{{ error() }}</p>
+    @if (!reporte()) {
+      <button mat-button type="button" (click)="cargar()">Volver a intentar</button>
+    }
+  }
+  @if (aviso()) {
+    <p class="aviso exito" role="status">{{ aviso() }}</p>
+  }
+  @if (cargando()) {
+    <p role="status">Cargando seguimiento…</p>
+  }
+  @if (pendiente(); as item) {
+    <div class="aviso" role="group" aria-label="Confirmar eliminación">
+      <p>¿Eliminar {{ item.tipo === 'comentario' ? 'el comentario' : 'la recomendación' }}?</p>
+      <button mat-flat-button type="button" [disabled]="guardando()" (click)="eliminar()">
+        Confirmar eliminación
+      </button>
+      <button mat-button type="button" [disabled]="guardando()" (click)="pendiente.set(null)">
+        Cancelar
+      </button>
+    </div>
+  }
+  @if (reporte()) {
+    <div class="seguimiento">
+      <section class="tarjeta">
+        <h2>Comentarios</h2>
+        @for (item of comentarios(); track item.idComentario) {
+          <article>
+            <small
+              >Usuario #{{ item.usuarioId }} ·
+              {{ item.fechaComentario | date: 'dd/MM/yyyy HH:mm' }}</small
+            >
+            <p>{{ item.textoComentario }}</p>
+            <div class="acciones">
+              <button
+                mat-button
+                type="button"
+                [disabled]="guardarBloqueado()"
+                (click)="editarComentario(item)"
+              >
+                Editar comentario
+              </button>
+              <button
+                mat-button
+                type="button"
+                [disabled]="guardarBloqueado()"
+                (click)="pendiente.set({ tipo: 'comentario', id: item.idComentario })"
+              >
+                Eliminar comentario
+              </button>
+            </div>
+          </article>
+        } @empty {
+          <p>Este reporte aún no tiene comentarios.</p>
+        }
+        <form [formGroup]="comentarioForm" (ngSubmit)="guardarComentario()">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ editado() ? 'Editar comentario' : 'Nuevo comentario' }}</mat-label>
+            <textarea
+              matInput
+              formControlName="textoComentario"
+              maxlength="2000"
+              rows="3"
+            ></textarea>
+            <mat-error>Escribe un comentario de hasta 2000 caracteres.</mat-error>
+          </mat-form-field>
+          <div class="acciones">
+            <button
+              mat-flat-button
+              type="submit"
+              [disabled]="guardarBloqueado() || comentarioForm.invalid"
+            >
+              {{ editado() ? 'Guardar comentario' : 'Publicar comentario' }}
+            </button>
+            @if (editado()) {
+              <button
+                mat-button
+                type="button"
+                (click)="cancelarComentario()"
+                [disabled]="guardando()"
+              >
+                Cancelar edición
+              </button>
+            }
+          </div>
+        </form>
+      </section>
+      <section class="tarjeta">
+        <h2>Recomendación</h2>
+        <p>
+          {{
+            recomendacion()
+              ? 'Edita la recomendación guardada para el reporte.'
+              : 'Registra una propuesta de atención para el reporte.'
+          }}
+        </p>
+        <form [formGroup]="recomendacionForm" (ngSubmit)="guardarRecomendacion()">
+          <mat-form-field appearance="outline"
+            ><mat-label>Título sugerido</mat-label
+            ><input matInput formControlName="tituloSugerido" maxlength="200" /><mat-error
+              >Escribe el título.</mat-error
+            ></mat-form-field
+          >
+          <mat-form-field appearance="outline"
+            ><mat-label>Resumen</mat-label
+            ><textarea matInput formControlName="resumen" rows="2"></textarea
+            ><mat-error>Escribe el resumen.</mat-error></mat-form-field
+          >
+          <mat-form-field appearance="outline"
+            ><mat-label>Prioridad sugerida</mat-label
+            ><mat-select formControlName="prioridadSugerida">
+              @if (recomendacion(); as actual) {
+                @if (!prioridades.includes(actual.prioridadSugerida)) {
+                  <mat-option [value]="actual.prioridadSugerida">{{
+                    actual.prioridadSugerida
+                  }}</mat-option>
+                }
+              }
+              @for (prioridad of prioridades; track prioridad) {
+                <mat-option [value]="prioridad">{{ prioridad.replace('_', ' ') }}</mat-option>
+              }
+            </mat-select></mat-form-field
+          >
+          <mat-form-field appearance="outline"
+            ><mat-label>Justificación</mat-label
+            ><textarea matInput formControlName="justificacion" rows="2"></textarea
+            ><mat-error>Escribe la justificación.</mat-error></mat-form-field
+          >
+          <div class="acciones">
+            <button
+              mat-flat-button
+              type="submit"
+              [disabled]="guardarBloqueado() || recomendacionForm.invalid"
+            >
+              Guardar recomendación
+            </button>
+            @if (recomendacion(); as item) {
+              <button
+                mat-button
+                type="button"
+                [disabled]="guardarBloqueado()"
+                (click)="pendiente.set({ tipo: 'recomendacion', id: item.idRecomendacion })"
+              >
+                Eliminar recomendación
+              </button>
+            }
+          </div>
+        </form>
+      </section>
+    </div>
+  }
+</section>

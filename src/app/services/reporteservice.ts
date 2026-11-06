@@ -22,8 +22,12 @@ export class Reporteservice {
     private acceso: Accesoservice,
   ) {}
 
-  listar(): Observable<ReporteDTO[]> {
-    const ruta = this.acceso.rol() === 'ADMIN' ? '/reports' : '/reports/mis-reportes';
+  listar(prioridad = ''): Observable<ReporteDTO[]> {
+    const ruta = prioridad
+      ? '/reports/prioridad/' + encodeURIComponent(prioridad)
+      : this.acceso.rol() === 'ADMIN'
+        ? '/reports'
+        : '/reports/mis-reportes';
     return this.http.get<ReporteDTO[]>(this.api + ruta, {
       headers: this.acceso.obtenerCabeceras(),
     });
@@ -64,6 +68,13 @@ export class Reporteservice {
   categorias(): Observable<CategoriaDTO[]> {
     return this.http.get<CategoriaDTO[]>(this.api + '/categories', {
       headers: this.acceso.obtenerCabeceras(),
+    });
+  }
+
+  buscarCategorias(palabraClave: string): Observable<CategoriaDTO[]> {
+    return this.http.get<CategoriaDTO[]>(this.api + '/categories/buscar-descripcion', {
+      headers: this.acceso.obtenerCabeceras(),
+      params: { palabraClave },
     });
   }
 

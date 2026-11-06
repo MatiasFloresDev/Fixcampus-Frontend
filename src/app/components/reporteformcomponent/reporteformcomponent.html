@@ -70,11 +70,47 @@
           }
         </div>
       }
+      <div>
+        <mat-form-field appearance="outline">
+          <mat-label>Palabra clave de categoría</mat-label>
+          <input
+            matInput
+            #palabra
+            maxlength="100"
+            (keydown.enter)="$event.preventDefault(); buscarCategorias(palabra.value)"
+          />
+        </mat-form-field>
+        <button
+          mat-button
+          type="button"
+          [disabled]="buscandoCategorias()"
+          (click)="buscarCategorias(palabra.value)"
+        >
+          Buscar categorías
+        </button>
+        <button
+          mat-button
+          type="button"
+          [disabled]="buscandoCategorias()"
+          (click)="palabra.value = ''; buscarCategorias('')"
+        >
+          Mostrar todas
+        </button>
+        @if (buscandoCategorias()) {
+          <p role="status">Buscando categorías…</p>
+        }
+        @if (errorCategorias()) {
+          <p class="aviso error" role="alert">{{ errorCategorias() }}</p>
+        }
+        @if (categoriasFiltradas()?.length === 0) {
+          <p role="status">No hay categorías para esa palabra.</p>
+        }
+      </div>
       <div class="campos">
         <mat-form-field appearance="outline">
           <mat-label>Categoría</mat-label>
           <mat-select formControlName="categoriaId">
-            @for (categoria of categorias; track categoria.idCategoria) {
+            @for (categoria of opcionesCategoria(); track categoria.idCategoria) {
               <mat-option [value]="categoria.idCategoria">{{ categoria.nombre }}</mat-option>
             }
           </mat-select>

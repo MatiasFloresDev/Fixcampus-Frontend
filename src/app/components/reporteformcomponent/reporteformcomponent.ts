@@ -50,7 +50,49 @@ export class Reporteformcomponent implements OnInit {
   protected readonly consultandoIA = signal(false);
   protected readonly mensajeIA = signal('');
   protected readonly sugerencia = signal<CategoriaDTO | null>(null);
+  protected readonly categoriasFiltradas = signal<CategoriaDTO[] | null>(null);
+  protected readonly buscandoCategorias = signal(false);
+  protected readonly errorCategorias = signal('');
   protected categorias: CategoriaDTO[] = [];
+
+  protected opcionesCategoria(): CategoriaDTO[] {
+    const filtradas = this.categoriasFiltradas();
+    if (!filtradas) return this.categorias;
+    const seleccionada = this.categorias.find(
+      (c) => c.idCategoria === this.formulario.controls.categoriaId.value,
+    );
+    return seleccionada && !filtradas.some((c) => c.idCategoria === seleccionada.idCategoria)
+      ? [seleccionada, ...filtradas]
+      : filtradas;
+  }
+
+  protected buscarCategorias(texto: string): void {
+    if (this.buscandoCategorias()) return;
+    const palabra = texto.trim();
+    this.errorCategorias.set('');
+    if (!palabra) {
+      this.categoriasFiltradas.set(null);
+      return;
+    }
+    this.buscandoCategorias.set(true);
+    this.servicio
+      .buscarCategorias(palabra)
+      .pipe(takeUntilDestroyed(this.destruccion))
+      .subscribe({
+        next: (datos) => {
+          this.categoriasFiltradas.set(datos);
+          this.buscandoCategorias.set(false);
+        },
+        error: (error: HttpErrorResponse) => {
+          this.acceso.revisarError(error);
+          this.errorCategorias.set(
+            'No se pudieron buscar categorías. Puedes usar el listado completo.',
+          );
+          this.categoriasFiltradas.set(null);
+          this.buscandoCategorias.set(false);
+        },
+      });
+  }
   protected ubicaciones: UbicacionDTO[] = [];
   protected original: ReporteDTO | null = null;
 
@@ -163,6 +205,7 @@ export class Reporteformcomponent implements OnInit {
   protected usarSugerencia(): void {
     const categoria = this.sugerencia();
     if (!categoria || this.guardando()) return;
+    this.categoriasFiltradas.set(null);
     this.formulario.controls.categoriaId.setValue(categoria.idCategoria);
     this.formulario.controls.categoriaId.markAsDirty();
     this.sugerencia.set(null);
