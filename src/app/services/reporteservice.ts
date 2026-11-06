@@ -64,6 +64,12 @@ export class Reporteservice {
     });
   }
 
+  ubicacion(id: number): Observable<UbicacionDTO> {
+    return this.http.get<UbicacionDTO>(this.api + '/locations/' + id, {
+      headers: this.acceso.obtenerCabeceras(),
+    });
+  }
+
   incidenciasPorMes(): Observable<IncidenciasPorMesDTO[]> {
     return this.http.get<IncidenciasPorMesDTO[]>(
       this.api + '/reports/estadisticas/por-usuario-mes',

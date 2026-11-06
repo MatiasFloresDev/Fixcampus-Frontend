@@ -1,0 +1,37 @@
+<section class="contenedor">
+  <div class="tarjeta portada">
+    <div>
+      <p class="seccion">Mantenimiento del campus</p>
+      <h1>Reporta una incidencia en tu campus</h1>
+      <p>
+        Registra un problema de infraestructura, indica dónde ocurrió y consulta el avance desde tu
+        cuenta.
+      </p>
+      <div class="acciones">
+        @if (acceso.rol()) {
+          <a mat-flat-button routerLink="/panel">Ir al panel</a>
+        } @else {
+          <a mat-flat-button routerLink="/acceso">Iniciar sesión</a>
+          <a mat-stroked-button routerLink="/crear-cuenta">Crear cuenta</a>
+        }
+      </div>
+    </div>
+    <img src="assets/campus.svg" alt="" width="480" height="300" />
+  </div>
+  <h2>Cómo funciona</h2>
+  <ol class="pasos">
+    <li class="tarjeta">
+      <strong>Describe el problema</strong>
+      <p>Elige la categoría y detalla qué ocurrió.</p>
+    </li>
+    <li class="tarjeta">
+      <strong>Indica la ubicación</strong>
+      <p>Selecciona el campus y el edificio donde ocurrió la incidencia.</p>
+    </li>
+    <li class="tarjeta">
+      <strong>Consulta el estado</strong>
+      <p>Revisa el seguimiento y las evidencias de tus reportes.</p>
+    </li>
+  </ol>
+  <a routerLink="/guia-de-estilos">Guía de estilos de FixCampus</a>
+</section>
