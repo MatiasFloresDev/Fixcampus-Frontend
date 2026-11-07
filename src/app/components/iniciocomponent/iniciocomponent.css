@@ -1,0 +1,35 @@
+.portada {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 28px;
+  padding: clamp(20px, 4vw, 42px);
+}
+.portada h1 {
+  font-size: clamp(30px, 4vw, 46px);
+}
+.portada img {
+  width: 100%;
+  height: auto;
+}
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+.pasos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 12px;
+  padding-left: 24px;
+}
+.pasos p {
+  margin: 4px 0 0;
+}
+@media (max-width: 660px) {
+  .portada {
+    grid-template-columns: 1fr;
+  }
+}

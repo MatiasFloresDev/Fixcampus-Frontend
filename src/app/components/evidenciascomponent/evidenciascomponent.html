@@ -4,25 +4,49 @@
       <h1>{{ acceso.rol() === 'ADMIN' ? 'Evidencias de reportes' : 'Mis reportes' }}</h1>
       <p>Selecciona un reporte para consultar sus evidencias.</p>
     </div>
+    <a mat-flat-button routerLink="/reportar">Nueva incidencia</a>
   </div>
+  @if (acceso.rol() === 'ADMIN') {
+    <label for="prioridadReporte">Filtrar por prioridad</label>
+    <select
+      id="prioridadReporte"
+      #filtro
+      [value]="prioridad"
+      [disabled]="cargandoLista || cargandoAdjuntos || !!confirmacionEliminar()"
+      (change)="cargarReportes(filtro.value)"
+    >
+      <option value="">Todas</option>
+      @for (item of prioridades; track item) {
+        <option [value]="item">{{ item.replace('_', ' ') }}</option>
+      }
+    </select>
+  }
   @if (cargandoLista) {
     <p role="status">Cargando reportes…</p>
   } @else if (errorLista) {
     <p class="aviso error" role="alert">{{ errorLista }}</p>
     <button mat-stroked-button (click)="cargarReportes()">Volver a intentar</button>
   } @else if (lista.length === 0) {
-    <p class="aviso">Todavía no hay reportes para consultar.</p>
+    <p class="aviso">
+      {{
+        prioridad
+          ? 'No hay reportes con esta prioridad.'
+          : 'Todavía no hay reportes para consultar.'
+      }}
+    </p>
   } @else {
     <label for="reporte">Reporte</label>
     <select
       id="reporte"
       #selector
       (change)="seleccionar(selector.value)"
-      [disabled]="cargandoAdjuntos"
+      [disabled]="cargandoAdjuntos || !!confirmacionEliminar()"
     >
-      <option value="">Elige un reporte</option>
+      <option value="" [selected]="!reporte">Elige un reporte</option>
       @for (item of lista; track item.idReporte) {
-        <option [value]="item.idReporte">#{{ item.idReporte }} · {{ item.titulo }}</option>
+        <option [value]="item.idReporte" [selected]="item.idReporte === reporte?.idReporte">
+          #{{ item.idReporte }} · {{ item.titulo }}
+        </option>
       }
     </select>
   }
@@ -31,8 +55,41 @@
       <small>Reporte #{{ datos.idReporte }}</small>
       <h2>{{ datos.titulo }}</h2>
       <span class="estado">{{ datos.estado }}</span
-      ><span class="estado">{{ datos.prioridad }}</span>
+      ><span class="estado">{{ datos.prioridad || 'Sin prioridad' }}</span>
+      <a mat-button [routerLink]="['/reportes', datos.idReporte, 'editar']">Editar</a>
+      @if (acceso.rol() === 'ADMIN') {
+        <a mat-button [routerLink]="['/reportes', datos.idReporte, 'seguimiento']"
+          >Comentarios y recomendación</a
+        >
+        <button
+          mat-button
+          type="button"
+          (click)="confirmacionEliminar.set(datos)"
+          [disabled]="!!confirmacionEliminar()"
+        >
+          Eliminar
+        </button>
+      }
     </div>
+    @if (confirmacionEliminar(); as candidato) {
+      <div class="aviso" role="group" aria-label="Confirmar eliminación">
+        <p>¿Eliminar el reporte #{{ candidato.idReporte }}?</p>
+        @if (errorEliminar()) {
+          <p role="alert">{{ errorEliminar() }}</p>
+        }
+        <button mat-flat-button type="button" (click)="eliminarReporte()" [disabled]="eliminando()">
+          Confirmar eliminación
+        </button>
+        <button
+          mat-button
+          type="button"
+          (click)="confirmacionEliminar.set(undefined); errorEliminar.set('')"
+          [disabled]="eliminando()"
+        >
+          Cancelar
+        </button>
+      </div>
+    }
     <div class="detalle">
       <div>
         <section class="tarjeta">
@@ -72,6 +129,9 @@
             <dt>Ubicación</dt>
             <dd>{{ datos.detalleUbicacion || 'Sin detalle de ubicación' }}</dd>
           </dl>
+          <a mat-stroked-button [routerLink]="['/reportes', datos.idReporte, 'mapa']"
+            >Ver ubicación en mapa</a
+          >
         </section>
         <section class="tarjeta evidencias">
           <h2>Evidencias</h2>
@@ -87,9 +147,9 @@
               @for (adjunto of adjuntos; track adjunto.idAdjunto) {
                 <li>
                   @if (enlaceArchivo(adjunto.urlArchivo); as enlace) {
-                    <a [href]="enlace" target="_blank" rel="noopener noreferrer"
-                      >{{ adjunto.nombreArchivo }} <span aria-hidden="true">↗</span></a
-                    >
+                    <a [href]="enlace" target="_blank" rel="noopener noreferrer">
+                      {{ adjunto.nombreArchivo }}
+                    </a>
                   } @else {
                     <span>{{ adjunto.nombreArchivo }} · enlace no disponible</span>
                   }

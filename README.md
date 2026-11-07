@@ -57,3 +57,15 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+## Conexión con Spring Boot
+
+Angular obtiene la URL base de `src/environments/environment.ts`. En local, inicia Spring Boot en `http://localhost:8080` y usa `npm.cmd start` para abrir Angular en `http://localhost:4200`.
+
+También puedes probar el build local con `npm.cmd run build` seguido de `npm.cmd run serve:ssr:fixcampus-frontend`. Abre `http://localhost:4000`.
+
+Para publicar, escribe la URL HTTPS pública de Spring en `environment.ts` y vuelve a compilar. Configura `FRONTEND_ORIGINS` en Spring con el origen exacto del frontend, por ejemplo `https://fixcampus.ejemplo.com`. Si hay más de un origen autorizado, sepáralos por comas. Si ejecutas el servidor Node del build, configura también `NG_ALLOWED_HOSTS` con el nombre de dominio del frontend, sin protocolo.
+
+### Render
+
+En el sitio estático de Render, selecciona la rama `Matias-Flores`. Usa `npm ci && npm run build:render` como comando y `dist/fixcampus-frontend/browser` como directorio público. Agrega una reescritura de `/*` a `/index.html` para abrir rutas de Angular desde un enlace directo. El build de Render toma la URL de `src/environments/environment.render.ts`. Incluye el origen HTTPS del sitio en `FRONTEND_ORIGINS` de Spring.

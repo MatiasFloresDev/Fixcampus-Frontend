@@ -1,0 +1,16 @@
+.editor,
+.confirmacion {
+  margin-bottom: 20px;
+}
+.campos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+.tabla {
+  overflow-x: auto;
+  background: white;
+  border: 1px solid #d6dbde;
+  border-radius: 14px 14px 0 0;
+}
