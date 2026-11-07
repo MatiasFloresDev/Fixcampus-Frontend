@@ -1,0 +1,53 @@
+<section class="contenedor">
+  <div class="encabezado">
+    <div>
+      <h1>Recomendaciones</h1>
+      <p>Consulta las sugerencias de mantenimiento registradas para las incidencias.</p>
+    </div>
+    <mat-form-field appearance="outline">
+      <mat-label>Prioridad sugerida</mat-label>
+      <mat-select
+        [value]="prioridad()"
+        [disabled]="cargando()"
+        (selectionChange)="cargar($event.value)"
+      >
+        <mat-option value="">Todas</mat-option>
+        <mat-option value="ALTA">Alta</mat-option>
+        <mat-option value="MEDIA">Media</mat-option>
+        <mat-option value="BAJA">Baja</mat-option>
+        <mat-option value="MUY_BAJA">Muy baja</mat-option>
+        <mat-option value="MUY_ALTA">Muy alta</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  @if (cargando()) {
+    <p role="status">Cargando recomendaciones…</p>
+  } @else if (error()) {
+    <p class="aviso error" role="alert">{{ error() }}</p>
+    <button mat-stroked-button type="button" (click)="cargar()">Volver a intentar</button>
+  } @else if (!recomendaciones().length) {
+    <p class="aviso">No hay recomendaciones para mostrar con este filtro.</p>
+  } @else {
+    <div class="listado">
+      @for (item of recomendaciones(); track item.idRecomendacion) {
+        <article class="tarjeta">
+          <small>{{ item.fechaRecomendacion | date: 'dd/MM/yyyy HH:mm' }}</small>
+          <h2>{{ item.tituloSugerido }}</h2>
+          <p>{{ item.resumen }}</p>
+          <dl>
+            <dt>Prioridad sugerida</dt>
+            <dd>{{ item.prioridadSugerida }}</dd>
+            <dt>Justificación</dt>
+            <dd>{{ item.justificacion || 'Sin justificación' }}</dd>
+          </dl>
+          <a mat-button [routerLink]="['/reportes', item.reporteId, 'seguimiento']"
+            >Editar recomendación</a
+          >
+          <a mat-stroked-button routerLink="/evidencias" [queryParams]="{ id: item.reporteId }"
+            >Ver reporte #{{ item.reporteId }}</a
+          >
+        </article>
+      }
+    </div>
+  }
+</section>

@@ -1,0 +1,16 @@
+.formulario,
+.campos {
+  display: grid;
+  gap: 12px;
+}
+.formulario {
+  max-width: 760px;
+}
+.campos {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (max-width: 600px) {
+  .campos {
+    grid-template-columns: 1fr;
+  }
+}

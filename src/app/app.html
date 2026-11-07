@@ -1,14 +1,17 @@
 <a class="saltar" href="#contenido">Saltar al contenido</a>
 <header>
   <div class="barra">
-    <a class="marca" routerLink="/"
-      ><img src="assets/logo.svg" width="34" height="34" alt="" />FixCampus</a
-    >
-    <nav aria-label="Menú principal">
-      @if (acceso.rol() === 'ADMIN') {
+    <a class="marca" routerLink="/" aria-label="FixCampus, inicio">
+      <img src="assets/logo-fixcampus.png" width="52" height="52" alt="" />
+      <span>FixCampus</span>
+    </a>
+    <nav aria-label="Menú principal" [class.menu-escritorio]="acceso.rol()">
+      @if (acceso.rol()) {
         <a mat-button routerLink="/panel" routerLinkActive="activo" ariaCurrentWhenActive="page"
           >Panel</a
         >
+      }
+      @if (acceso.rol() === 'ADMIN') {
         <a
           mat-button
           routerLink="/evidencias"
@@ -16,6 +19,7 @@
           ariaCurrentWhenActive="page"
           >Reportes</a
         >
+        <button mat-button [matMenuTriggerFor]="administracion">Administración</button>
       } @else if (acceso.rol() === 'USUARIO') {
         <a
           mat-button
@@ -24,6 +28,7 @@
           ariaCurrentWhenActive="page"
           >Mis reportes</a
         >
+        <a mat-button routerLink="/reportar">Nueva incidencia</a>
       } @else {
         <a mat-button routerLink="/acceso" routerLinkActive="activo" ariaCurrentWhenActive="page"
           >Iniciar sesión</a
@@ -32,16 +37,42 @@
       }
       @if (acceso.rol()) {
         <button mat-button (click)="confirmacion.showModal()">Salir</button>
-        <dialog #confirmacion aria-labelledby="titulo-salir">
-          <h2 id="titulo-salir">¿Cerrar sesión?</h2>
-          <p>Puedes volver a entrar con tu correo y contraseña.</p>
-          <div class="acciones">
-            <button mat-stroked-button (click)="confirmacion.close()" autofocus>Cancelar</button>
-            <button mat-flat-button (click)="salir(confirmacion)">Cerrar sesión</button>
-          </div>
-        </dialog>
       }
     </nav>
+    @if (acceso.rol()) {
+      <button class="menu-celular" mat-stroked-button [matMenuTriggerFor]="menuCelular">
+        Menú
+      </button>
+    }
+    <mat-menu #menuCelular="matMenu">
+      <a mat-menu-item routerLink="/panel">Panel</a>
+      @if (acceso.rol() === 'ADMIN') {
+        <a mat-menu-item routerLink="/evidencias">Reportes</a>
+        <button mat-menu-item [matMenuTriggerFor]="administracion">Administración</button>
+      } @else if (acceso.rol() === 'USUARIO') {
+        <a mat-menu-item routerLink="/evidencias">Mis reportes</a>
+        <a mat-menu-item routerLink="/reportar">Nueva incidencia</a>
+      }
+      <button mat-menu-item (click)="confirmacion.showModal()">Cerrar sesión</button>
+    </mat-menu>
+    <mat-menu #administracion="matMenu">
+      <a mat-menu-item routerLink="/evidencias">Seguimiento de reportes</a>
+      <a mat-menu-item routerLink="/administracion/recomendaciones">Recomendaciones</a>
+      <a mat-menu-item routerLink="/evidencias">Adjuntos</a>
+      <a mat-menu-item routerLink="/administracion/categorias">Categorías</a>
+      <a mat-menu-item routerLink="/administracion/ubicaciones">Ubicaciones</a>
+      <a mat-menu-item routerLink="/administracion/usuarios">Usuarios</a>
+      <a mat-menu-item routerLink="/administracion/estadisticas">Estadísticas</a>
+      <a mat-menu-item routerLink="/administracion/roles">Roles</a>
+    </mat-menu>
+    <dialog #confirmacion aria-labelledby="titulo-salir">
+      <h2 id="titulo-salir">¿Cerrar sesión?</h2>
+      <p>Puedes volver a entrar con tu correo y contraseña.</p>
+      <div class="acciones">
+        <button mat-stroked-button (click)="confirmacion.close()" autofocus>Cancelar</button>
+        <button mat-flat-button (click)="salir(confirmacion)">Cerrar sesión</button>
+      </div>
+    </dialog>
   </div>
 </header>
 <main id="contenido"><router-outlet /></main>

@@ -11,6 +11,17 @@
     sans-serif;
   margin-top: 8px;
 }
+.indicadores-personales {
+  grid-template-columns: repeat(3, 1fr);
+}
+.grafico-vacio {
+  min-height: 280px;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 6px;
+  text-align: center;
+}
 .grafico {
   list-style: none;
   padding: 0;

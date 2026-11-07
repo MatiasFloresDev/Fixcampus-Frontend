@@ -1,0 +1,172 @@
+<section class="contenedor">
+  <div class="encabezado">
+    <div>
+      <h1>{{ editando ? 'Editar incidencia' : 'Nueva incidencia' }}</h1>
+      <p>Describe el problema e indica dónde ocurrió.</p>
+    </div>
+    <a mat-stroked-button routerLink="/evidencias">Volver a reportes</a>
+  </div>
+  @if (cargando()) {
+    <p role="status">Cargando formulario…</p>
+  }
+  @if (mensaje()) {
+    <p class="aviso error" role="alert">{{ mensaje() }}</p>
+  }
+  @if (listo()) {
+    @if (!categorias.length || !ubicaciones.length) {
+      <p class="aviso">
+        Un administrador debe registrar categorías y ubicaciones para guardar incidencias.
+      </p>
+    }
+    <form class="tarjeta formulario" [formGroup]="formulario" (ngSubmit)="guardar()">
+      <mat-form-field appearance="outline">
+        <mat-label>Título</mat-label>
+        <input matInput formControlName="titulo" maxlength="200" />
+        <mat-error>Ingresa un título de hasta 200 caracteres.</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Descripción</mat-label>
+        <textarea matInput formControlName="descripcion" rows="4"></textarea>
+        <mat-error>Describe la incidencia.</mat-error>
+      </mat-form-field>
+      @if (!editando && categorias.length) {
+        <div>
+          <p id="nota-ia">
+            Para la demo, escribe una descripción ficticia sin datos personales. Al solicitar la
+            sugerencia, se enviará ese texto a Gemini.
+          </p>
+          @if (descripcionIA().length > limiteDescripcionIA) {
+            <p>Para solicitar una sugerencia, usa hasta {{ limiteDescripcionIA }} caracteres.</p>
+          }
+          <button
+            mat-stroked-button
+            type="button"
+            aria-describedby="nota-ia"
+            (click)="sugerirCategoria()"
+            [disabled]="
+              consultandoIA() ||
+              guardando() ||
+              !descripcionIA() ||
+              descripcionIA().length > limiteDescripcionIA
+            "
+          >
+            Sugerir categoría con IA
+          </button>
+          <div role="status">
+            @if (consultandoIA()) {
+              <p>Buscando una categoría…</p>
+            } @else if (sugerencia(); as categoria) {
+              <p>
+                Sugerencia: <strong>{{ categoria.nombre }}</strong>
+              </p>
+            } @else if (mensajeIA()) {
+              <p>{{ mensajeIA() }}</p>
+            }
+          </div>
+          @if (sugerencia()) {
+            <button mat-button type="button" (click)="usarSugerencia()" [disabled]="guardando()">
+              Usar categoría sugerida
+            </button>
+          }
+        </div>
+      }
+      <div>
+        <mat-form-field appearance="outline">
+          <mat-label>Palabra clave de categoría</mat-label>
+          <input
+            matInput
+            #palabra
+            maxlength="100"
+            (keydown.enter)="$event.preventDefault(); buscarCategorias(palabra.value)"
+          />
+        </mat-form-field>
+        <button
+          mat-button
+          type="button"
+          [disabled]="buscandoCategorias()"
+          (click)="buscarCategorias(palabra.value)"
+        >
+          Buscar categorías
+        </button>
+        <button
+          mat-button
+          type="button"
+          [disabled]="buscandoCategorias()"
+          (click)="palabra.value = ''; buscarCategorias('')"
+        >
+          Mostrar todas
+        </button>
+        @if (buscandoCategorias()) {
+          <p role="status">Buscando categorías…</p>
+        }
+        @if (errorCategorias()) {
+          <p class="aviso error" role="alert">{{ errorCategorias() }}</p>
+        }
+        @if (categoriasFiltradas()?.length === 0) {
+          <p role="status">No hay categorías para esa palabra.</p>
+        }
+      </div>
+      <div class="campos">
+        <mat-form-field appearance="outline">
+          <mat-label>Categoría</mat-label>
+          <mat-select formControlName="categoriaId">
+            @for (categoria of opcionesCategoria(); track categoria.idCategoria) {
+              <mat-option [value]="categoria.idCategoria">{{ categoria.nombre }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Ubicación</mat-label>
+          <mat-select formControlName="ubicacionId">
+            @for (ubicacion of ubicaciones; track ubicacion.idUbicacion) {
+              <mat-option [value]="ubicacion.idUbicacion">
+                {{ ubicacion.campus }} · {{ ubicacion.edificio }}
+                @if (ubicacion.piso !== null) {
+                  · Piso {{ ubicacion.piso }}
+                }
+                @if (ubicacion.zona) {
+                  · {{ ubicacion.zona }}
+                }
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <mat-form-field appearance="outline">
+        <mat-label>Detalle de ubicación (opcional)</mat-label>
+        <input matInput formControlName="detalleUbicacion" maxlength="255" />
+      </mat-form-field>
+      @if (esAdmin) {
+        <div class="campos">
+          <mat-form-field appearance="outline">
+            <mat-label>Prioridad</mat-label>
+            <mat-select formControlName="prioridad" [canSelectNullableOptions]="true">
+              <mat-option [value]="null">Sin prioridad</mat-option>
+              @for (prioridad of prioridades; track prioridad) {
+                <mat-option [value]="prioridad">{{ prioridad.replace('_', ' ') }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          @if (editando) {
+            <mat-form-field appearance="outline">
+              <mat-label>Estado</mat-label>
+              <mat-select formControlName="estado">
+                @if (original && !estados.includes(original.estado)) {
+                  <mat-option [value]="original.estado">{{ original.estado }}</mat-option>
+                }
+                @for (estado of estados; track estado) {
+                  <mat-option [value]="estado">{{ estado.replaceAll('_', ' ') }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          }
+        </div>
+      }
+      <div>
+        <button mat-flat-button type="submit" [disabled]="guardando() || formulario.invalid">
+          {{ guardando() ? 'Guardando…' : 'Guardar incidencia' }}
+        </button>
+      </div>
+    </form>
+  }
+</section>
