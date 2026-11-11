@@ -91,7 +91,11 @@ export class Seguimientocomponent implements OnInit {
   protected readonly reporteId = Number(inject(ActivatedRoute).snapshot.paramMap.get('id'));
   protected readonly reporte = signal<ReporteDTO | null>(null);
   protected readonly comentarios = signal<ComentarioDTO[]>([]);
-  protected readonly pestana = signal<'recomendaciones' | 'comentarios'>('comentarios');
+  protected readonly pestana = signal<'recomendaciones' | 'comentarios'>(
+    inject(ActivatedRoute).snapshot.queryParamMap.get('pestana') === 'recomendaciones'
+      ? 'recomendaciones'
+      : 'comentarios',
+  );
 
   protected readonly recomendacion = signal<RecomendacionDTO | null>(null);
   protected readonly editado = signal<ComentarioDTO | null>(null);
