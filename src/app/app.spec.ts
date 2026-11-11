@@ -213,6 +213,40 @@ describe('Acceso y reportes de FixCampus', () => {
     expect(app.nativeElement.querySelector('.indicadores').textContent).toContain('Usuarios');
   });
 
+  it('abre la pestaña de recomendaciones desde la accion de editar de la tabla', async () => {
+    const app = await abrir('/administracion/recomendaciones', 'ADMIN');
+    const http = TestBed.inject(HttpTestingController);
+    const recomendacion = {
+      idRecomendacion: 3,
+      reporteId: 12,
+      tituloSugerido: 'Revisar la tubería',
+      resumen: 'Reparar la fuga del baño.',
+      prioridadSugerida: 'ALTA',
+      justificacion: 'El piso está mojado.',
+      fechaRecomendacion: '2026-11-10T09:00:00',
+    };
+    http.expectOne(environment.base + '/api/recomendaciones').flush([recomendacion]);
+    http.expectOne(environment.base + '/api/reports').flush([
+      { idReporte: 12, titulo: 'Fuga de agua' },
+    ]);
+    app.detectChanges();
+    const enlace: HTMLAnchorElement = app.nativeElement.querySelector(
+      'a[aria-label="Editar recomendación"]',
+    );
+
+    await TestBed.inject(Router).navigateByUrl(enlace.getAttribute('href')!);
+    app.detectChanges();
+    http.expectOne(environment.base + '/api/reports/12').flush({ idReporte: 12, titulo: 'Fuga de agua' });
+    http.expectOne(environment.base + '/api/comments/reporte/12').flush([]);
+    http.expectOne(environment.base + '/api/recomendaciones/reporte/12').flush(recomendacion);
+    app.detectChanges();
+
+    const secciones = app.nativeElement.querySelectorAll('.seguimiento > section');
+    expect(secciones[0].hidden).toBe(true);
+    expect(secciones[1].hidden).toBe(false);
+    expect(secciones[1].querySelector('input').value).toBe('Revisar la tubería');
+  });
+
   it('avisa al volver a abrir una ruta con un token vencido', async () => {
     sessionStorage.setItem('fixcampus-token', tokenDePrueba('USUARIO', -1));
     const app = await abrir('/evidencias');
