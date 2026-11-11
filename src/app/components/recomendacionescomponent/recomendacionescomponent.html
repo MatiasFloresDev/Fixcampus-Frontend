@@ -1,11 +1,23 @@
 <section class="contenedor">
-  <div class="encabezado">
+<div class="encabezado">
     <div>
       <h1>Recomendaciones</h1>
-      <p>Consulta las sugerencias de mantenimiento registradas para las incidencias.</p>
+      <p>Filtra tu búsqueda por el nombre del reporte.</p>
     </div>
+  </div>
+
+  <div class="barra-filtros">
+    <div class="buscador">
+      <input
+        type="search"
+        #campoBusqueda
+        placeholder="Buscar por reporte..."
+        (input)="busqueda.set(campoBusqueda.value)"
+      />
+    </div>
+
     <mat-form-field appearance="outline">
-      <mat-label>Prioridad sugerida</mat-label>
+      <mat-label>Prioridad</mat-label>
       <mat-select
         [value]="prioridad()"
         [disabled]="cargando()"
@@ -20,34 +32,113 @@
       </mat-select>
     </mat-form-field>
   </div>
+
   @if (cargando()) {
     <p role="status">Cargando recomendaciones…</p>
   } @else if (error()) {
     <p class="aviso error" role="alert">{{ error() }}</p>
     <button mat-stroked-button type="button" (click)="cargar()">Volver a intentar</button>
-  } @else if (!recomendaciones().length) {
+  } @else if (!recomendacionesFiltradas().length) {
     <p class="aviso">No hay recomendaciones para mostrar con este filtro.</p>
   } @else {
-    <div class="listado">
-      @for (item of recomendaciones(); track item.idRecomendacion) {
-        <article class="tarjeta">
-          <small>{{ item.fechaRecomendacion | date: 'dd/MM/yyyy HH:mm' }}</small>
-          <h2>{{ item.tituloSugerido }}</h2>
-          <p>{{ item.resumen }}</p>
-          <dl>
-            <dt>Prioridad sugerida</dt>
-            <dd>{{ item.prioridadSugerida }}</dd>
-            <dt>Justificación</dt>
-            <dd>{{ item.justificacion || 'Sin justificación' }}</dd>
-          </dl>
-          <a mat-button [routerLink]="['/reportes', item.reporteId, 'seguimiento']"
-            >Editar recomendación</a
-          >
-          <a mat-stroked-button routerLink="/evidencias" [queryParams]="{ id: item.reporteId }"
-            >Ver reporte #{{ item.reporteId }}</a
-          >
-        </article>
+    
+<div class="tabla-contenedor">
+  <table class="tabla-recomendaciones">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Reporte</th>
+        <th>Recomendación</th>
+        <th>Prioridad</th>
+        <th>Fecha</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      @for (item of recomendacionesFiltradas(); track item.idRecomendacion) {
+        <tr>
+          <td>#{{ item.reporteId }}</td>
+
+          <td>{{ tituloReporte(item.reporteId) }}</td>
+
+          <td>
+            <strong>{{ item.tituloSugerido }}</strong>
+            <p>{{ item.resumen }}</p>
+          </td>
+
+          
+          <td>
+            <span
+              class="prioridad-chip"
+              [class.alta]="item.prioridadSugerida === 'ALTA' || item.prioridadSugerida === 'MUY_ALTA'"
+              [class.media]="item.prioridadSugerida === 'MEDIA'"
+              [class.baja]="item.prioridadSugerida === 'BAJA' || item.prioridadSugerida === 'MUY_BAJA'"
+            >
+              {{ item.prioridadSugerida.replace('_', ' ') }}
+            </span>
+        </td>
+
+
+          <td>
+            {{ item.fechaRecomendacion | date: 'dd/MM/yyyy' }}
+          </td>
+
+          <td>
+            
+<div class="acciones-tabla">
+  <!-- Comentar -->
+  <a
+    mat-icon-button
+    [routerLink]="['/reportes', item.reporteId, 'seguimiento']"
+    title="Comentar"
+    aria-label="Comentar"
+  >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5H5l-2 2v-9.5a9 9 0 1 1 18-1z"/>
+    </svg>
+  </a>
+
+  <!-- Editar -->
+  <a
+    mat-icon-button
+    [routerLink]="['/reportes', item.reporteId, 'seguimiento']"
+    title="Editar recomendación"
+    aria-label="Editar recomendación"
+  >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 20h9"/>
+      <path d="M16 4l4 4-12 12H4v-4L16 4z"/>
+    </svg>
+  </a>
+
+  <!-- Eliminar -->
+  <button
+    mat-icon-button
+    type="button"
+    class="boton-eliminar"
+    [disabled]="cargando()"
+    (click)="eliminarRecomendacion(item)"
+    title="Eliminar recomendación"
+    aria-label="Eliminar recomendación"
+  >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 6h18"/>
+      <path d="M8 6V4h8v2M6 6l1 15h10l1-15"/>
+      <path d="M10 10v7M14 10v7"/>
+    </svg>
+  </button>
+</div>
+
+          </td>
+        </tr>
       }
-    </div>
+    </tbody>
+  </table>
+</div>
+
   }
 </section>
