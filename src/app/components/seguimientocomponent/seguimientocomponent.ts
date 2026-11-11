@@ -54,6 +54,31 @@ import { Reporteservice } from '../../services/reporteservice';
       gap: 8px;
       flex-wrap: wrap;
     }
+    
+    .pestanas {
+      display: flex;
+      gap: 24px;
+      margin: 24px 0;
+      border-bottom: 1px solid #D6DBDE;
+    }
+
+    .pestanas button {
+      border-radius: 0;
+      padding: 12px 16px;
+      color: #666;
+      border-bottom: 3px solid transparent;
+    }
+
+    .pestanas button.activa {
+      color: #0D6A62;
+      border-bottom-color: #0D6A62;
+      font-weight: 600;
+    }
+
+    .tarjeta[hidden] {
+      display: none !important;
+    }
+
   `,
 })
 export class Seguimientocomponent implements OnInit {
@@ -66,6 +91,12 @@ export class Seguimientocomponent implements OnInit {
   protected readonly reporteId = Number(inject(ActivatedRoute).snapshot.paramMap.get('id'));
   protected readonly reporte = signal<ReporteDTO | null>(null);
   protected readonly comentarios = signal<ComentarioDTO[]>([]);
+  protected readonly pestana = signal<'recomendaciones' | 'comentarios'>(
+    inject(ActivatedRoute).snapshot.queryParamMap.get('pestana') === 'recomendaciones'
+      ? 'recomendaciones'
+      : 'comentarios',
+  );
+
   protected readonly recomendacion = signal<RecomendacionDTO | null>(null);
   protected readonly editado = signal<ComentarioDTO | null>(null);
   protected readonly pendiente = signal<{

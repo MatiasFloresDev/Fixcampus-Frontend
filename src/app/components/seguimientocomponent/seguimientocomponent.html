@@ -34,8 +34,29 @@
     </div>
   }
   @if (reporte()) {
-    <div class="seguimiento">
-      <section class="tarjeta">
+    
+    
+<div class="pestanas">
+  <button
+    mat-button
+    type="button"
+    [class.activa]="pestana() === 'recomendaciones'"
+    (click)="pestana.set('recomendaciones')"
+  >
+    Recomendaciones ({{ recomendacion() ? 1 : 0 }})
+  </button>
+
+  <button
+    mat-button
+    type="button"
+    [class.activa]="pestana() === 'comentarios'"
+    (click)="pestana.set('comentarios')"
+  >
+    Comentarios ({{ comentarios().length }})
+  </button>
+</div>
+<div class="seguimiento">
+      <section class="tarjeta" [hidden]="pestana() !== 'comentarios'">
         <h2>Comentarios</h2>
         @for (item of comentarios(); track item.idComentario) {
           <article>
@@ -98,7 +119,7 @@
           </div>
         </form>
       </section>
-      <section class="tarjeta">
+      <section class="tarjeta" [hidden]="pestana() !== 'recomendaciones'">
         <h2>Recomendación</h2>
         <p>
           {{
