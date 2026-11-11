@@ -23,11 +23,6 @@ header {
   color: #212529;
   text-decoration: none;
 }
-.marca img {
-  border: 1px solid #d6dbde;
-  border-radius: 50%;
-  background: white;
-}
 nav {
   display: flex;
   align-items: center;
