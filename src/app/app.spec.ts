@@ -363,6 +363,36 @@ describe('Acceso y reportes de FixCampus', () => {
     http.expectOne(environment.base + '/api/attachments/reporte/12').flush([]);
   });
 
+  it('exige nombre de tres caracteres y descripción al registrar categorías', async () => {
+    const app = await abrir('/administracion/categorias', 'ADMIN');
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne(environment.base + '/api/categories').flush([]);
+    app.detectChanges();
+    const botones: NodeListOf<HTMLButtonElement> = app.nativeElement.querySelectorAll('button');
+    Array.from(botones)
+      .find((b) => b.textContent?.trim() === 'Nuevo registro')!
+      .click();
+    app.detectChanges();
+    const formulario = app.debugElement
+      .query(By.directive(FormGroupDirective))
+      .injector.get(FormGroupDirective).form;
+    formulario.setValue({ nombre: 'ab', descripcion: '' });
+    formulario.markAllAsTouched();
+    app.detectChanges();
+    expect(app.nativeElement.querySelector('button[type="submit"]').disabled).toBe(true);
+    expect(app.nativeElement.textContent).toContain('al menos 3 caracteres');
+    expect(app.nativeElement.textContent).toContain('El campo Descripción es obligatorio.');
+    formulario.setValue({ nombre: 'Electricidad', descripcion: 'Instalaciones eléctricas' });
+    app.detectChanges();
+    expect(app.nativeElement.querySelector('button[type="submit"]').disabled).toBe(false);
+    app.nativeElement.querySelector('form').dispatchEvent(new Event('submit'));
+    const guardar = http.expectOne(environment.base + '/api/categories');
+    expect(guardar.request.method).toBe('POST');
+    expect(guardar.request.body.descripcion).toBe('Instalaciones eléctricas');
+    guardar.flush({ idCategoria: 10 });
+    http.expectOne(environment.base + '/api/categories').flush([]);
+  });
+
   it('avisa al volver a abrir una ruta con un token vencido', async () => {
     sessionStorage.setItem('fixcampus-token', tokenDePrueba('USUARIO', -1));
     const app = await abrir('/evidencias');
