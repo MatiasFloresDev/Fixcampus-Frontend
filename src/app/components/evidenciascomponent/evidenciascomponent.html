@@ -42,6 +42,9 @@
         <article class="tarjeta" [class.seleccionado]="item.idReporte === reporte?.idReporte">
           <small>Reporte #{{ item.idReporte }}</small>
           <h2>{{ item.titulo }}</h2>
+          <p>
+            {{ item.categoriaNombre }} · {{ item.detalleUbicacion || 'Sin detalle de ubicación' }}
+          </p>
           <p>{{ item.fechaCreacion | date: 'dd/MM/yyyy' }}</p>
           <span class="estado">{{ item.estado.replaceAll('_', ' ') }}</span>
           <button
