@@ -66,3 +66,12 @@ dd {
     gap: 0;
   }
 }
+
+.editor-adjunto {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+}
+.editor-adjunto mat-form-field {
+  width: 100%;
+}

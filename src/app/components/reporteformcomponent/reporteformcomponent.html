@@ -19,6 +19,7 @@
       </p>
     }
     <form class="tarjeta formulario" [formGroup]="formulario" (ngSubmit)="guardar()">
+      <p>Los campos con asterisco son obligatorios.</p>
       <mat-form-field appearance="outline">
         <mat-label>Título</mat-label>
         <input matInput formControlName="titulo" maxlength="200" />
@@ -32,8 +33,8 @@
       @if (!editando && categorias.length) {
         <div>
           <p id="nota-ia">
-            Para la demo, escribe una descripción ficticia sin datos personales. Al solicitar la
-            sugerencia, se enviará ese texto a Gemini.
+            Al solicitar la sugerencia, compartiremos la descripción con Gemini. Evita incluir datos
+            personales.
           </p>
           @if (descripcionIA().length > limiteDescripcionIA) {
             <p>Para solicitar una sugerencia, usa hasta {{ limiteDescripcionIA }} caracteres.</p>
@@ -114,6 +115,7 @@
               <mat-option [value]="categoria.idCategoria">{{ categoria.nombre }}</mat-option>
             }
           </mat-select>
+          <mat-error>Selecciona una categoría.</mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>Ubicación</mat-label>
@@ -130,11 +132,14 @@
               </mat-option>
             }
           </mat-select>
+          <mat-error>Selecciona una ubicación.</mat-error>
         </mat-form-field>
       </div>
       <mat-form-field appearance="outline">
         <mat-label>Detalle de ubicación (opcional)</mat-label>
         <input matInput formControlName="detalleUbicacion" maxlength="255" />
+        <mat-hint>Puedes dejarlo vacío. Máximo 255 caracteres.</mat-hint>
+        <mat-error>El detalle admite hasta 255 caracteres.</mat-error>
       </mat-form-field>
       @if (esAdmin) {
         <div class="campos">

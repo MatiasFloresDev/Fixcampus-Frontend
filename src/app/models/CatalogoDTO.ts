@@ -23,6 +23,7 @@ interface CampoFormulario {
   etiqueta: string;
   obligatorio?: boolean;
   longitud?: number;
+  minimo?: number;
   rango?: readonly [number, number];
   entero?: boolean;
 }
@@ -43,8 +44,8 @@ export const catalogos = {
     recurso: 'categories',
     id: 'idCategoria',
     campos: [
-      { clave: 'nombre', etiqueta: 'Nombre', obligatorio: true, longitud: 100 },
-      { clave: 'descripcion', etiqueta: 'Descripción', longitud: 255 },
+      { clave: 'nombre', etiqueta: 'Nombre', obligatorio: true, minimo: 3, longitud: 100 },
+      { clave: 'descripcion', etiqueta: 'Descripción', obligatorio: true, longitud: 255 },
     ],
     columnas: ['nombre', 'descripcion'],
   },

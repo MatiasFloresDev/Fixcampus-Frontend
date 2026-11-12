@@ -12,7 +12,9 @@
       id="prioridadReporte"
       #filtro
       [value]="prioridad"
-      [disabled]="cargandoLista || cargandoAdjuntos || !!confirmacionEliminar()"
+      [disabled]="
+        cargandoLista || cargandoAdjuntos || guardandoAdjunto() || !!confirmacionEliminar()
+      "
       (change)="cargarReportes(filtro.value)"
     >
       <option value="">Todas</option>
@@ -35,20 +37,36 @@
       }}
     </p>
   } @else {
-    <label for="reporte">Reporte</label>
-    <select
-      id="reporte"
-      #selector
-      (change)="seleccionar(selector.value)"
-      [disabled]="cargandoAdjuntos || !!confirmacionEliminar()"
-    >
-      <option value="" [selected]="!reporte">Elige un reporte</option>
-      @for (item of lista; track item.idReporte) {
-        <option [value]="item.idReporte" [selected]="item.idReporte === reporte?.idReporte">
-          #{{ item.idReporte }} · {{ item.titulo }}
-        </option>
+    <div class="lista-tarjetas" aria-label="Listado de reportes">
+      @for (item of filasReportes; track item.idReporte) {
+        <article class="tarjeta" [class.seleccionado]="item.idReporte === reporte?.idReporte">
+          <small>Reporte #{{ item.idReporte }}</small>
+          <h2>{{ item.titulo }}</h2>
+          <p>
+            {{ item.categoriaNombre }} · {{ item.detalleUbicacion || 'Sin detalle de ubicación' }}
+          </p>
+          <p>{{ item.fechaCreacion | date: 'dd/MM/yyyy' }}</p>
+          <span class="estado">{{ item.estado.replaceAll('_', ' ') }}</span>
+          <button
+            mat-button
+            type="button"
+            (click)="seleccionar(item.idReporte.toString())"
+            [disabled]="cargandoAdjuntos || guardandoAdjunto() || !!confirmacionEliminar()"
+            [attr.aria-pressed]="item.idReporte === reporte?.idReporte"
+          >
+            Ver detalle
+          </button>
+        </article>
       }
-    </select>
+    </div>
+    <mat-paginator
+      [length]="lista.length"
+      [pageIndex]="pagina"
+      [pageSize]="porPagina"
+      [pageSizeOptions]="[5, 10, 25]"
+      (page)="cambiarPagina($event)"
+      aria-label="Páginas de reportes"
+    />
   }
   @if (reporte; as datos) {
     <div class="titulo-reporte">
@@ -65,7 +83,7 @@
           mat-button
           type="button"
           (click)="confirmacionEliminar.set(datos)"
-          [disabled]="!!confirmacionEliminar()"
+          [disabled]="guardandoAdjunto() || !!confirmacionEliminar()"
         >
           Eliminar
         </button>
@@ -144,7 +162,7 @@
             <p>Este reporte no tiene evidencias adjuntas.</p>
           } @else {
             <ul>
-              @for (adjunto of adjuntos; track adjunto.idAdjunto) {
+              @for (adjunto of filasAdjuntos; track adjunto.idAdjunto) {
                 <li>
                   @if (enlaceArchivo(adjunto.urlArchivo); as enlace) {
                     <a [href]="enlace" target="_blank" rel="noopener noreferrer">
@@ -153,10 +171,104 @@
                   } @else {
                     <span>{{ adjunto.nombreArchivo }} · enlace no disponible</span>
                   }
+                  @if (acceso.rol() === 'ADMIN') {
+                    <button
+                      mat-button
+                      type="button"
+                      (click)="editarAdjunto(adjunto)"
+                      [disabled]="guardandoAdjunto()"
+                    >
+                      Editar evidencia
+                    </button>
+                    <button
+                      mat-button
+                      type="button"
+                      class="accion-eliminar"
+                      (click)="adjuntoPendiente.set(adjunto)"
+                      [disabled]="guardandoAdjunto()"
+                    >
+                      Eliminar evidencia
+                    </button>
+                  }
                 </li>
               }
             </ul>
+            <mat-paginator
+              [length]="adjuntos.length"
+              [pageIndex]="paginaAdjuntos"
+              [pageSize]="porPaginaAdjuntos"
+              [pageSizeOptions]="[5, 10, 25]"
+              (page)="cambiarPaginaAdjuntos($event)"
+              aria-label="Páginas de evidencias"
+            />
             <small>Los enlaces se abren en una pestaña nueva.</small>
+          }
+          @if (avisoAdjunto()) {
+            <p class="aviso exito" role="status">{{ avisoAdjunto() }}</p>
+          }
+          @if (acceso.rol() === 'ADMIN') {
+            @if (adjuntoPendiente(); as adjunto) {
+              <div class="aviso" role="group" aria-label="Confirmar eliminación de evidencia">
+                <p>¿Eliminar {{ adjunto.nombreArchivo }}?</p>
+                <button
+                  mat-flat-button
+                  type="button"
+                  (click)="eliminarAdjunto()"
+                  [disabled]="guardandoAdjunto()"
+                >
+                  Confirmar eliminación
+                </button>
+                <button
+                  mat-button
+                  type="button"
+                  (click)="adjuntoPendiente.set(null)"
+                  [disabled]="guardandoAdjunto()"
+                >
+                  Cancelar
+                </button>
+              </div>
+            }
+            <form class="editor-adjunto" [formGroup]="adjuntoForm" (ngSubmit)="guardarAdjunto()">
+              <h3>{{ adjuntoEditado() ? 'Editar evidencia' : 'Añadir evidencia' }}</h3>
+              <p>Ingresa el enlace del archivo. Los campos con asterisco son obligatorios.</p>
+              <mat-form-field appearance="outline"
+                ><mat-label>Nombre del archivo</mat-label>
+                <input matInput formControlName="nombreArchivo" required maxlength="255" />
+                <mat-error>Ingresa un nombre de hasta 255 caracteres.</mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="outline"
+                ><mat-label>Enlace del archivo</mat-label>
+                <input matInput formControlName="urlArchivo" required type="url" maxlength="500" />
+                <mat-error>Ingresa un enlace HTTP o HTTPS de hasta 500 caracteres.</mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="outline"
+                ><mat-label>Tipo de archivo (opcional)</mat-label>
+                <input
+                  matInput
+                  formControlName="tipoArchivo"
+                  maxlength="100"
+                  placeholder="image/jpeg"
+                />
+                <mat-error>El tipo admite hasta 100 caracteres.</mat-error>
+              </mat-form-field>
+              <button
+                mat-flat-button
+                type="submit"
+                [disabled]="guardandoAdjunto() || cargandoAdjuntos"
+              >
+                Guardar evidencia
+              </button>
+              @if (adjuntoEditado()) {
+                <button
+                  mat-button
+                  type="button"
+                  (click)="cancelarAdjunto()"
+                  [disabled]="guardandoAdjunto()"
+                >
+                  Cancelar edición
+                </button>
+              }
+            </form>
           }
         </section>
       </div>

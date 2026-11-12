@@ -51,11 +51,18 @@
               />
             }
             <mat-error>
-              @if (campo.rango; as rango) {
+              @if (
+                formulario.controls[campo.clave].hasError('required') ||
+                formulario.controls[campo.clave].hasError('pattern')
+              ) {
+                El campo {{ campo.etiqueta }} es obligatorio.
+              } @else if (formulario.controls[campo.clave].hasError('minlength')) {
+                {{ campo.etiqueta }} debe tener al menos {{ campo.minimo }} caracteres.
+              } @else if (campo.rango; as rango) {
                 Ingresa {{ campo.entero ? 'un entero' : 'un valor' }} entre {{ rango[0] }} y
                 {{ rango[1] }}.
               } @else {
-                Revisa el contenido de {{ campo.etiqueta.toLowerCase() }}.
+                {{ campo.etiqueta }} admite hasta {{ campo.longitud }} caracteres.
               }
             </mat-error>
           </mat-form-field>
@@ -63,7 +70,7 @@
       </div>
       <div>
         @if (modo() !== 'detalle') {
-          <button mat-flat-button type="submit" [disabled]="ocupado()">
+          <button mat-flat-button type="submit" [disabled]="ocupado() || formulario.invalid">
             {{ ocupado() ? 'Guardando…' : 'Guardar' }}
           </button>
         }
@@ -83,6 +90,10 @@
   } @else {
     <div class="tabla">
       <table mat-table [dataSource]="filas()" [attr.aria-label]="catalogo.titulo">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let registro">{{ registro[catalogo.id] }}</td>
+        </ng-container>
         @for (columna of catalogo.columnas; track columna) {
           <ng-container [matColumnDef]="columna">
             <th mat-header-cell *matHeaderCellDef>{{ etiqueta(columna) }}</th>

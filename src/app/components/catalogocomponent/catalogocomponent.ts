@@ -37,7 +37,7 @@ export class Catalogocomponent implements OnInit {
   private readonly aviso = inject(MatSnackBar);
   protected readonly catalogo: DefinicionCatalogo =
     inject(ActivatedRoute).snapshot.data['catalogo'];
-  protected readonly columnas = [...this.catalogo.columnas, 'acciones'];
+  protected readonly columnas = ['id', ...this.catalogo.columnas, 'acciones'];
   protected readonly formulario = new FormRecord<FormControl<string | number | null>>({});
   protected readonly registros = signal<RegistroCatalogoDTO[]>([]);
   protected readonly cargando = signal(false);
@@ -68,6 +68,7 @@ export class Catalogocomponent implements OnInit {
       const validadores: ValidatorFn[] = [];
       if (campo.obligatorio) validadores.push(Validators.required, Validators.pattern(/\S/));
       if (campo.longitud) validadores.push(Validators.maxLength(campo.longitud));
+      if (campo.minimo) validadores.push(Validators.minLength(campo.minimo));
       if (campo.rango)
         validadores.push(Validators.min(campo.rango[0]), Validators.max(campo.rango[1]));
       if (campo.entero)
