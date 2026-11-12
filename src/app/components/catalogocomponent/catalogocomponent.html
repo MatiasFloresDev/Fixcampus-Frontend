@@ -51,11 +51,16 @@
               />
             }
             <mat-error>
-              @if (campo.rango; as rango) {
+              @if (
+                formulario.controls[campo.clave].hasError('required') ||
+                formulario.controls[campo.clave].hasError('pattern')
+              ) {
+                {{ campo.etiqueta }} es obligatorio.
+              } @else if (campo.rango; as rango) {
                 Ingresa {{ campo.entero ? 'un entero' : 'un valor' }} entre {{ rango[0] }} y
                 {{ rango[1] }}.
               } @else {
-                Revisa el contenido de {{ campo.etiqueta.toLowerCase() }}.
+                {{ campo.etiqueta }} admite hasta {{ campo.longitud }} caracteres.
               }
             </mat-error>
           </mat-form-field>

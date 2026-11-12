@@ -3,7 +3,7 @@
 }
 body {
   margin: 0;
-  background: #f5f7f8;
+  background: #f8f9fa;
   color: #212529;
   font:
     400 15px/1.6 'Open Sans',
@@ -129,4 +129,27 @@ a {
   .lado-formulario {
     padding: 26px 24px;
   }
+}
+
+.lista-tarjetas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.lista-tarjetas .tarjeta {
+  overflow-wrap: anywhere;
+}
+.tarjeta.seleccionado {
+  border-color: #0d6a62;
+  box-shadow: 0 0 0 1px #0d6a62;
+}
+.accion-eliminar {
+  color: #9d2b21 !important;
+}
+mat-paginator {
+  background: white;
+  border: 1px solid #d6dbde;
+  border-radius: 8px;
+  margin: 12px 0 24px;
 }

@@ -1,6 +1,11 @@
 <section class="acceso">
   <div class="lado-campus">
-    <img src="assets/campus-monterrico.jpg" alt="Campus Monterrico de la UPC" width="1280" height="960" />
+    <img
+      src="assets/campus-monterrico.jpg"
+      alt="Campus Monterrico de la UPC"
+      width="1280"
+      height="960"
+    />
     <h2>Súmate a cuidar tu campus.</h2>
     <p>Registra fugas, fallas eléctricas o mobiliario dañado y sigue su atención.</p>
   </div>
@@ -18,22 +23,32 @@
         <div class="nombres">
           <mat-form-field appearance="outline"
             ><mat-label>Nombre</mat-label
-            ><input matInput formControlName="nombre" autocomplete="given-name" /><mat-error
-              >Ingresa tu nombre.</mat-error
-            ></mat-form-field
+            ><input
+              matInput
+              formControlName="nombre"
+              autocomplete="given-name"
+              maxlength="100"
+            /><mat-error>Ingresa tu nombre. Máximo 100 caracteres.</mat-error></mat-form-field
           >
           <mat-form-field appearance="outline"
             ><mat-label>Apellido</mat-label
-            ><input matInput formControlName="apellido" autocomplete="family-name" /><mat-error
-              >Ingresa tu apellido.</mat-error
-            ></mat-form-field
+            ><input
+              matInput
+              formControlName="apellido"
+              autocomplete="family-name"
+              maxlength="100"
+            /><mat-error>Ingresa tu apellido. Máximo 100 caracteres.</mat-error></mat-form-field
           >
         </div>
         <mat-form-field appearance="outline"
           ><mat-label>Correo</mat-label
-          ><input matInput type="email" formControlName="correo" autocomplete="email" /><mat-error
-            >Ingresa un correo válido.</mat-error
-          ></mat-form-field
+          ><input
+            matInput
+            type="email"
+            formControlName="correo"
+            autocomplete="email"
+            maxlength="150"
+          /><mat-error>Ingresa un correo válido de hasta 150 caracteres.</mat-error></mat-form-field
         >
         <mat-form-field appearance="outline"
           ><mat-label>Contraseña</mat-label

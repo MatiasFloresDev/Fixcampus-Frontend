@@ -27,6 +27,14 @@ export interface AdjuntoDTO {
   idAdjunto: number;
   nombreArchivo: string;
   urlArchivo: string;
+  tipoArchivo?: string | null;
+}
+
+export interface AdjuntoFormularioDTO {
+  reporteId: number;
+  nombreArchivo: string;
+  urlArchivo: string;
+  tipoArchivo: string | null;
 }
 
 export interface ReporteFormularioDTO {

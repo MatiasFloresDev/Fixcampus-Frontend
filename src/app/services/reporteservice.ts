@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {
   AdjuntoDTO,
+  AdjuntoFormularioDTO,
   CategoriaDTO,
   IncidenciasPorMesDTO,
   ReporteDTO,
@@ -105,6 +106,24 @@ export class Reporteservice {
 
   evidencias(idReporte: number): Observable<AdjuntoDTO[]> {
     return this.http.get<AdjuntoDTO[]>(this.api + '/attachments/reporte/' + idReporte, {
+      headers: this.acceso.obtenerCabeceras(),
+    });
+  }
+
+  registrarAdjunto(datos: AdjuntoFormularioDTO): Observable<AdjuntoDTO> {
+    return this.http.post<AdjuntoDTO>(this.api + '/attachments', datos, {
+      headers: this.acceso.obtenerCabeceras(),
+    });
+  }
+
+  actualizarAdjunto(id: number, datos: AdjuntoFormularioDTO): Observable<AdjuntoDTO> {
+    return this.http.put<AdjuntoDTO>(this.api + '/attachments/' + id, datos, {
+      headers: this.acceso.obtenerCabeceras(),
+    });
+  }
+
+  eliminarAdjunto(id: number): Observable<void> {
+    return this.http.delete<void>(this.api + '/attachments/' + id, {
       headers: this.acceso.obtenerCabeceras(),
     });
   }

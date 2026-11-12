@@ -9,6 +9,7 @@ import { routes } from './app.routes';
 import { Registrocomponent } from './components/registrocomponent/registrocomponent';
 import { Accesocomponent } from './components/accesocomponent/accesocomponent';
 import { Evidenciascomponent } from './components/evidenciascomponent/evidenciascomponent';
+import { FormGroupDirective } from '@angular/forms';
 import { Accesoservice } from './services/accesoservice';
 
 function tokenDePrueba(roles: string, segundos = 60): string {
@@ -226,9 +227,9 @@ describe('Acceso y reportes de FixCampus', () => {
       fechaRecomendacion: '2026-11-10T09:00:00',
     };
     http.expectOne(environment.base + '/api/recomendaciones').flush([recomendacion]);
-    http.expectOne(environment.base + '/api/reports').flush([
-      { idReporte: 12, titulo: 'Fuga de agua' },
-    ]);
+    http
+      .expectOne(environment.base + '/api/reports')
+      .flush([{ idReporte: 12, titulo: 'Fuga de agua' }]);
     app.detectChanges();
     const enlace: HTMLAnchorElement = app.nativeElement.querySelector(
       'a[aria-label="Editar recomendación"]',
@@ -236,7 +237,9 @@ describe('Acceso y reportes de FixCampus', () => {
 
     await TestBed.inject(Router).navigateByUrl(enlace.getAttribute('href')!);
     app.detectChanges();
-    http.expectOne(environment.base + '/api/reports/12').flush({ idReporte: 12, titulo: 'Fuga de agua' });
+    http
+      .expectOne(environment.base + '/api/reports/12')
+      .flush({ idReporte: 12, titulo: 'Fuga de agua' });
     http.expectOne(environment.base + '/api/comments/reporte/12').flush([]);
     http.expectOne(environment.base + '/api/recomendaciones/reporte/12').flush(recomendacion);
     app.detectChanges();
@@ -245,6 +248,119 @@ describe('Acceso y reportes de FixCampus', () => {
     expect(secciones[0].hidden).toBe(true);
     expect(secciones[1].hidden).toBe(false);
     expect(secciones[1].querySelector('input').value).toBe('Revisar la tubería');
+  });
+
+  it('pagina y busca usuarios y conserva la contraseña al editar una cuenta', async () => {
+    const app = await abrir('/administracion/usuarios', 'ADMIN');
+    const http = TestBed.inject(HttpTestingController);
+    const usuarios = Array.from({ length: 6 }, (_, i) => ({
+      idUsuario: i + 1,
+      nombre: 'Persona ' + (i + 1),
+      apellido: 'Prueba',
+      correo: 'persona' + i + '@example.com',
+      rolId: 2,
+      estado: 'ACTIVO',
+      fechaRegistro: '2026-11-12T09:00:00',
+    }));
+    http.expectOne(environment.base + '/api/users').flush(usuarios);
+    http.expectOne(environment.base + '/api/roles').flush([{ idRol: 2, nombre: 'USUARIO' }]);
+    app.detectChanges();
+    expect(app.nativeElement.querySelectorAll('.lista-tarjetas article').length).toBe(5);
+    app.nativeElement.querySelector('button[aria-label="Página siguiente"]').click();
+    app.detectChanges();
+    expect(app.nativeElement.querySelectorAll('.lista-tarjetas article').length).toBe(1);
+    const busqueda = app.nativeElement.querySelector('input[type="search"]');
+    busqueda.value = 'Persona 1';
+    busqueda.dispatchEvent(new Event('input'));
+    app.detectChanges();
+    const tarjeta = app.nativeElement.querySelector('.lista-tarjetas article');
+    expect(tarjeta.textContent).toContain('Persona 1');
+    const acciones: NodeListOf<HTMLButtonElement> = tarjeta.querySelectorAll('button');
+    Array.from(acciones)
+      .find((b) => b.textContent?.trim() === 'Editar')!
+      .click();
+    app.detectChanges();
+    const formulario = app.debugElement
+      .query(By.directive(FormGroupDirective))
+      .injector.get(FormGroupDirective).form;
+    formulario.patchValue({ nombre: 'Persona editada', password: '' });
+    app.nativeElement.querySelector('form').dispatchEvent(new Event('submit'));
+    const guardar = http.expectOne(environment.base + '/api/users/1');
+    expect(guardar.request.method).toBe('PUT');
+    expect(guardar.request.body.password).toBeUndefined();
+    expect(guardar.request.body.rolId).toBe(2);
+    guardar.flush({ ...usuarios[0], nombre: 'Persona editada' });
+    http.expectOne(environment.base + '/api/users').flush(usuarios);
+    http.expectOne(environment.base + '/api/roles').flush([{ idRol: 2, nombre: 'USUARIO' }]);
+  });
+
+  it('muestra los campos obligatorios antes de crear una cuenta administrativa', async () => {
+    const app = await abrir('/administracion/usuarios', 'ADMIN');
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne(environment.base + '/api/users').flush([]);
+    http.expectOne(environment.base + '/api/roles').flush([{ idRol: 2, nombre: 'USUARIO' }]);
+    app.detectChanges();
+    const botones: NodeListOf<HTMLButtonElement> = app.nativeElement.querySelectorAll('button');
+    Array.from(botones)
+      .find((b) => b.textContent?.trim() === 'Crear cuenta')!
+      .click();
+    app.detectChanges();
+    app.nativeElement.querySelector('form').dispatchEvent(new Event('submit'));
+    app.detectChanges();
+    expect(app.nativeElement.querySelectorAll('mat-error').length).toBeGreaterThanOrEqual(4);
+    http.expectNone((r) => r.method === 'POST');
+  });
+
+  it('descarta evidencias que llegan después de seleccionar otro reporte', async () => {
+    const app = await abrir('/evidencias', 'USUARIO');
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne(environment.base + '/api/reports/mis-reportes').flush([
+      { idReporte: 1, titulo: 'Primer reporte', estado: 'ABIERTO' },
+      { idReporte: 2, titulo: 'Segundo reporte', estado: 'ABIERTO' },
+    ]);
+    const vista = app.debugElement.query(By.directive(Evidenciascomponent))
+      .componentInstance as Evidenciascomponent;
+    vista.seleccionar('1');
+    vista.seleccionar('2');
+    http
+      .expectOne(environment.base + '/api/attachments/reporte/2')
+      .flush([
+        { idAdjunto: 2, nombreArchivo: 'correcta.jpg', urlArchivo: 'https://example.com/2.jpg' },
+      ]);
+    http
+      .expectOne(environment.base + '/api/attachments/reporte/1')
+      .flush([
+        { idAdjunto: 1, nombreArchivo: 'anterior.jpg', urlArchivo: 'https://example.com/1.jpg' },
+      ]);
+    expect(vista.adjuntos[0].nombreArchivo).toBe('correcta.jpg');
+    app.detectChanges();
+    expect(app.nativeElement.querySelector('.editor-adjunto')).toBeNull();
+  });
+
+  it('valida el enlace de una evidencia y la guarda asociada al reporte seleccionado', async () => {
+    const app = await abrir('/evidencias?id=12', 'ADMIN');
+    const http = TestBed.inject(HttpTestingController);
+    http
+      .expectOne(environment.base + '/api/reports')
+      .flush([{ idReporte: 12, titulo: 'Fuga', estado: 'ABIERTO' }]);
+    http.expectOne(environment.base + '/api/attachments/reporte/12').flush([]);
+    app.detectChanges();
+    const form = app.debugElement
+      .query(By.directive(FormGroupDirective))
+      .injector.get(FormGroupDirective).form;
+    form.setValue({
+      nombreArchivo: 'foto.jpg',
+      urlArchivo: 'javascript:alert(1)',
+      tipoArchivo: '',
+    });
+    app.nativeElement.querySelector('.editor-adjunto').dispatchEvent(new Event('submit'));
+    http.expectNone((r) => r.method === 'POST');
+    form.patchValue({ urlArchivo: 'https://example.com/foto.jpg' });
+    app.nativeElement.querySelector('.editor-adjunto').dispatchEvent(new Event('submit'));
+    const guardar = http.expectOne(environment.base + '/api/attachments');
+    expect(guardar.request.body.reporteId).toBe(12);
+    guardar.flush({ idAdjunto: 1 });
+    http.expectOne(environment.base + '/api/attachments/reporte/12').flush([]);
   });
 
   it('avisa al volver a abrir una ruta con un token vencido', async () => {
