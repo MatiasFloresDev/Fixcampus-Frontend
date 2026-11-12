@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { forkJoin, of } from 'rxjs';
 import { CategoriaDTO, ReporteDTO, UbicacionDTO } from '../../models/ReporteDTO';
 import { Accesoservice } from '../../services/accesoservice';
@@ -20,6 +21,7 @@ import { Reporteservice } from '../../services/reporteservice';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatSnackBarModule,
   ],
   templateUrl: './reporteformcomponent.html',
   styleUrl: './reporteformcomponent.css',
@@ -30,6 +32,7 @@ export class Reporteformcomponent implements OnInit {
   private readonly router = inject(Router);
   private readonly servicio = inject(Reporteservice);
   private readonly acceso = inject(Accesoservice);
+  private readonly aviso = inject(MatSnackBar);
   private readonly destruccion = inject(DestroyRef);
   protected readonly esAdmin = this.acceso.rol() === 'ADMIN';
   protected readonly editando = this.ruta.snapshot.paramMap.has('id');
@@ -186,7 +189,7 @@ export class Reporteformcomponent implements OnInit {
           if (categoria) this.sugerencia.set(categoria);
           else
             this.mensajeIA.set(
-              'No hay una sugerencia para esta descripción. Elige la categoría en el formulario.',
+              'No se encontró una categoría para esa descripción. Describe el daño con más detalle o elige una categoría en el formulario.',
             );
         },
         error: (error: HttpErrorResponse) => {
@@ -196,7 +199,9 @@ export class Reporteformcomponent implements OnInit {
           const mensaje =
             error.status === 429
               ? 'Se alcanzó el límite de consultas de IA.'
-              : 'La sugerencia de IA no está disponible.';
+              : error.status === 503
+                ? 'El servicio de IA no está disponible en este momento.'
+                : 'No se pudo consultar la sugerencia. Revisa la conexión y vuelve a intentarlo.';
           this.mensajeIA.set(mensaje + ' Puedes elegir la categoría en el formulario.');
         },
       });
@@ -233,6 +238,11 @@ export class Reporteformcomponent implements OnInit {
     peticion.subscribe({
       next: (resultado) => {
         this.guardando.set(false);
+        this.aviso.open(
+          this.editando ? 'Se actualizó la incidencia.' : 'Se registró la incidencia.',
+          'Cerrar',
+          { duration: 4000 },
+        );
         void this.router.navigate(['/evidencias'], { queryParams: { id: resultado.idReporte } });
       },
       error: (error: HttpErrorResponse) => {
