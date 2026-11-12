@@ -1,0 +1,185 @@
+<section class="contenedor">
+  <div class="encabezado">
+    <div>
+      <h1>Usuarios</h1>
+      <p>Consulta las cuentas y administra sus roles.</p>
+    </div>
+    <button mat-flat-button type="button" (click)="abrir(null, 'nuevo')" [disabled]="ocupado()">
+      Crear cuenta
+    </button>
+  </div>
+  @if (error()) {
+    <p class="aviso error" role="alert">{{ error() }}</p>
+  }
+  @if (pendiente(); as usuario) {
+    <div class="aviso" role="group" aria-label="Confirmar eliminación">
+      <p>¿Eliminar la cuenta de {{ usuario.nombre }} {{ usuario.apellido }}?</p>
+      <button mat-flat-button type="button" (click)="eliminar()" [disabled]="ocupado()">
+        Confirmar eliminación
+      </button>
+      <button mat-button type="button" (click)="cerrar()" [disabled]="ocupado()">Cancelar</button>
+    </div>
+  }
+  @if (modo() === 'detalle') {
+    @if (seleccionado(); as usuario) {
+      <section class="tarjeta editor" aria-label="Perfil del usuario">
+        <h2>{{ usuario.nombre }} {{ usuario.apellido }}</h2>
+        <dl>
+          <dt>Correo</dt>
+          <dd>{{ usuario.correo }}</dd>
+          <dt>Rol</dt>
+          <dd>{{ nombreRol(usuario.rolId) }}</dd>
+          <dt>Estado</dt>
+          <dd>{{ usuario.estado }}</dd>
+          <dt>Registro</dt>
+          <dd>{{ usuario.fechaRegistro | date: 'dd/MM/yyyy HH:mm' }}</dd>
+        </dl>
+        <button mat-button type="button" (click)="cerrar()">Cerrar perfil</button>
+      </section>
+    }
+  } @else if (modo()) {
+    <form class="tarjeta editor" [formGroup]="formulario" (ngSubmit)="guardar()">
+      <h2>{{ modo() === 'nuevo' ? 'Crear cuenta' : 'Editar cuenta' }}</h2>
+      <p>Los campos con asterisco son obligatorios.</p>
+      <div class="campos">
+        <mat-form-field appearance="outline"
+          ><mat-label>Nombre</mat-label>
+          <input
+            matInput
+            formControlName="nombre"
+            required
+            maxlength="100"
+            autocomplete="given-name"
+          />
+          <mat-error>El nombre es obligatorio. Máximo 100 caracteres.</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline"
+          ><mat-label>Apellido</mat-label>
+          <input
+            matInput
+            formControlName="apellido"
+            required
+            maxlength="100"
+            autocomplete="family-name"
+          />
+          <mat-error>El apellido es obligatorio. Máximo 100 caracteres.</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline"
+          ><mat-label>Correo</mat-label>
+          <input
+            matInput
+            type="email"
+            formControlName="correo"
+            required
+            maxlength="150"
+            autocomplete="email"
+          />
+          <mat-error>Ingresa un correo válido de hasta 150 caracteres.</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline"
+          ><mat-label>Rol</mat-label>
+          <mat-select formControlName="rolId" required>
+            @for (rol of roles(); track rol.idRol) {
+              <mat-option [value]="rol.idRol">{{ rol.nombre }}</mat-option>
+            }</mat-select
+          ><mat-error>Selecciona un rol.</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline"
+          ><mat-label>Estado</mat-label>
+          <mat-select formControlName="estado" required>
+            <mat-option value="ACTIVO">ACTIVO</mat-option
+            ><mat-option value="INACTIVO">INACTIVO</mat-option>
+            @if (seleccionado(); as usuario) {
+              @if (usuario.estado !== 'ACTIVO' && usuario.estado !== 'INACTIVO') {
+                <mat-option [value]="usuario.estado">{{ usuario.estado }}</mat-option>
+              }
+            }</mat-select
+          ><mat-error>Selecciona un estado.</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{
+            modo() === 'nuevo' ? 'Contraseña' : 'Nueva contraseña (opcional)'
+          }}</mat-label>
+          <input
+            matInput
+            type="password"
+            formControlName="password"
+            [required]="modo() === 'nuevo'"
+            autocomplete="new-password"
+          />
+          <mat-hint>{{
+            modo() === 'editar' ? 'Déjala vacía para conservar la actual.' : 'Mínimo 6 caracteres.'
+          }}</mat-hint>
+          <mat-error>La contraseña debe tener al menos 6 caracteres.</mat-error>
+        </mat-form-field>
+      </div>
+      <button mat-flat-button type="submit" [disabled]="ocupado()">
+        {{ ocupado() ? 'Guardando…' : 'Guardar cuenta' }}
+      </button>
+      <button mat-button type="button" (click)="cerrar()" [disabled]="ocupado()">Cancelar</button>
+    </form>
+  }
+  <div class="resumen-roles" aria-label="Usuarios por rol">
+    @for (rol of totales(); track rol.nombre) {
+      <span class="estado">{{ rol.nombre }} · {{ rol.cantidad }}</span>
+    }
+  </div>
+  <mat-form-field appearance="outline" class="buscador"
+    ><mat-label>Buscar por nombre o correo</mat-label>
+    <input matInput #texto (input)="buscar(texto.value)" type="search" />
+  </mat-form-field>
+  @if (cargando()) {
+    <p role="status">Cargando usuarios…</p>
+  } @else {
+    @if (!filtrados().length) {
+      <p class="aviso">No hay usuarios para mostrar con esta búsqueda.</p>
+    }
+    <div class="lista-tarjetas">
+      @for (usuario of filas(); track usuario.idUsuario) {
+        <article class="tarjeta">
+          <h2>{{ usuario.nombre }} {{ usuario.apellido }}</h2>
+          <p>{{ usuario.correo }}</p>
+          <span class="estado">{{ nombreRol(usuario.rolId) }}</span>
+          <div class="acciones">
+            <button
+              mat-button
+              type="button"
+              (click)="abrir(usuario, 'detalle')"
+              [disabled]="ocupado()"
+            >
+              Ver perfil
+            </button>
+            <button
+              mat-button
+              type="button"
+              (click)="abrir(usuario, 'editar')"
+              [disabled]="ocupado()"
+            >
+              Editar
+            </button>
+            <button
+              mat-button
+              type="button"
+              class="accion-eliminar"
+              (click)="cerrar(); pendiente.set(usuario)"
+              [disabled]="ocupado()"
+            >
+              Eliminar
+            </button>
+          </div>
+        </article>
+      }
+    </div>
+    <mat-paginator
+      [length]="filtrados().length"
+      [pageIndex]="pagina()"
+      [pageSize]="porPagina()"
+      [pageSizeOptions]="[5, 10, 25]"
+      (page)="cambiarPagina($event)"
+      aria-label="Páginas de usuarios"
+    />
+    @if (error()) {
+      <button mat-stroked-button type="button" (click)="cargar()">Volver a intentar</button>
+    }
+  }
+</section>

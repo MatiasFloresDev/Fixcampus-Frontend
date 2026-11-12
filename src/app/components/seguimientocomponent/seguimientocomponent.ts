@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { finalize, forkJoin, Observable } from 'rxjs';
 import { ComentarioDTO } from '../../models/ComentarioDTO';
@@ -26,6 +27,7 @@ import { Reporteservice } from '../../services/reporteservice';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatPaginatorModule,
   ],
   templateUrl: './seguimientocomponent.html',
   styles: `
@@ -54,12 +56,12 @@ import { Reporteservice } from '../../services/reporteservice';
       gap: 8px;
       flex-wrap: wrap;
     }
-    
+
     .pestanas {
       display: flex;
       gap: 24px;
       margin: 24px 0;
-      border-bottom: 1px solid #D6DBDE;
+      border-bottom: 1px solid #d6dbde;
     }
 
     .pestanas button {
@@ -70,15 +72,14 @@ import { Reporteservice } from '../../services/reporteservice';
     }
 
     .pestanas button.activa {
-      color: #0D6A62;
-      border-bottom-color: #0D6A62;
+      color: #0d6a62;
+      border-bottom-color: #0d6a62;
       font-weight: 600;
     }
 
     .tarjeta[hidden] {
       display: none !important;
     }
-
   `,
 })
 export class Seguimientocomponent implements OnInit {
@@ -91,6 +92,20 @@ export class Seguimientocomponent implements OnInit {
   protected readonly reporteId = Number(inject(ActivatedRoute).snapshot.paramMap.get('id'));
   protected readonly reporte = signal<ReporteDTO | null>(null);
   protected readonly comentarios = signal<ComentarioDTO[]>([]);
+  protected readonly paginaComentarios = signal(0);
+  protected readonly porPaginaComentarios = signal(5);
+
+  protected comentariosVisibles(): ComentarioDTO[] {
+    return this.comentarios().slice(
+      this.paginaComentarios() * this.porPaginaComentarios(),
+      (this.paginaComentarios() + 1) * this.porPaginaComentarios(),
+    );
+  }
+
+  protected cambiarPaginaComentarios(evento: PageEvent): void {
+    this.paginaComentarios.set(evento.pageIndex);
+    this.porPaginaComentarios.set(evento.pageSize);
+  }
   protected readonly pestana = signal<'recomendaciones' | 'comentarios'>(
     inject(ActivatedRoute).snapshot.queryParamMap.get('pestana') === 'recomendaciones'
       ? 'recomendaciones'
@@ -175,6 +190,7 @@ export class Seguimientocomponent implements OnInit {
           : [comentario, ...lista],
       );
       this.cancelarComentario();
+      this.paginaComentarios.set(0);
     });
   }
 
@@ -204,6 +220,12 @@ export class Seguimientocomponent implements OnInit {
           lista.filter((item) => item.idComentario !== pendiente.id),
         );
         if (this.editado()?.idComentario === pendiente.id) this.cancelarComentario();
+        this.paginaComentarios.set(
+          Math.min(
+            this.paginaComentarios(),
+            Math.max(0, Math.ceil(this.comentarios().length / this.porPaginaComentarios()) - 1),
+          ),
+        );
         this.pendiente.set(null);
       });
     } else {

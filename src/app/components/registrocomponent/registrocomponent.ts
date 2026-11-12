@@ -33,9 +33,9 @@ export class Registrocomponent {
     fb: FormBuilder,
   ) {
     this.formulario = fb.nonNullable.group({
-      nombre: ['', [Validators.required, Validators.pattern(/\S/)]],
-      apellido: ['', [Validators.required, Validators.pattern(/\S/)]],
-      correo: ['', [Validators.required, Validators.email]],
+      nombre: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(100)]],
+      apellido: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(100)]],
+      correo: ['', [Validators.required, Validators.email, Validators.maxLength(150)]],
       password: ['', [Validators.required, Validators.minLength(6), Validators.pattern(/\S/)]],
       terminos: [false, Validators.requiredTrue],
     });

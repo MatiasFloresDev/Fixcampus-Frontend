@@ -34,31 +34,29 @@
     </div>
   }
   @if (reporte()) {
-    
-    
-<div class="pestanas">
-  <button
-    mat-button
-    type="button"
-    [class.activa]="pestana() === 'recomendaciones'"
-    (click)="pestana.set('recomendaciones')"
-  >
-    Recomendaciones ({{ recomendacion() ? 1 : 0 }})
-  </button>
+    <div class="pestanas">
+      <button
+        mat-button
+        type="button"
+        [class.activa]="pestana() === 'recomendaciones'"
+        (click)="pestana.set('recomendaciones')"
+      >
+        Recomendaciones ({{ recomendacion() ? 1 : 0 }})
+      </button>
 
-  <button
-    mat-button
-    type="button"
-    [class.activa]="pestana() === 'comentarios'"
-    (click)="pestana.set('comentarios')"
-  >
-    Comentarios ({{ comentarios().length }})
-  </button>
-</div>
-<div class="seguimiento">
+      <button
+        mat-button
+        type="button"
+        [class.activa]="pestana() === 'comentarios'"
+        (click)="pestana.set('comentarios')"
+      >
+        Comentarios ({{ comentarios().length }})
+      </button>
+    </div>
+    <div class="seguimiento">
       <section class="tarjeta" [hidden]="pestana() !== 'comentarios'">
         <h2>Comentarios</h2>
-        @for (item of comentarios(); track item.idComentario) {
+        @for (item of comentariosVisibles(); track item.idComentario) {
           <article>
             <small
               >Usuario #{{ item.usuarioId }} ·
@@ -87,6 +85,14 @@
         } @empty {
           <p>Este reporte aún no tiene comentarios.</p>
         }
+        <mat-paginator
+          [length]="comentarios().length"
+          [pageIndex]="paginaComentarios()"
+          [pageSize]="porPaginaComentarios()"
+          [pageSizeOptions]="[5, 10, 25]"
+          (page)="cambiarPaginaComentarios($event)"
+          aria-label="Páginas de comentarios"
+        />
         <form [formGroup]="comentarioForm" (ngSubmit)="guardarComentario()">
           <mat-form-field appearance="outline">
             <mat-label>{{ editado() ? 'Editar comentario' : 'Nuevo comentario' }}</mat-label>
