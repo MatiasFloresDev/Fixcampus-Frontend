@@ -1,15 +1,14 @@
 import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators, FormGroup } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { finalize, forkJoin } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { RolUsuarioDTO, UsuarioDTO } from '../../models/UsuarioDTO';
 import { Accesoservice } from '../../services/accesoservice';
 import { Usuarioservice } from '../../services/usuarioservice';
@@ -28,97 +27,95 @@ import { Usuarioservice } from '../../services/usuarioservice';
   templateUrl: './usuarioscomponent.html',
   styleUrl: './usuarioscomponent.css',
 })
-export class Usuarioscomponent implements OnInit {
-  private readonly servicio = inject(Usuarioservice);
-  private readonly acceso = inject(Accesoservice);
-  private readonly destruccion = inject(DestroyRef);
-  private readonly aviso = inject(MatSnackBar);
-  protected readonly usuarios = signal<UsuarioDTO[]>([]);
-  protected readonly roles = signal<RolUsuarioDTO[]>([]);
-  protected readonly cargando = signal(false);
-  protected readonly ocupado = signal(false);
-  protected readonly error = signal('');
-  protected readonly busqueda = signal('');
-  protected readonly pagina = signal(0);
-  protected readonly porPagina = signal(5);
-  protected readonly modo = signal<'nuevo' | 'editar' | 'detalle' | null>(null);
-  protected readonly seleccionado = signal<UsuarioDTO | null>(null);
-  protected readonly pendiente = signal<UsuarioDTO | null>(null);
-  protected readonly filtrados = computed(() => {
-    const texto = this.busqueda().trim().toLocaleLowerCase('es');
-    return this.usuarios().filter((u) =>
-      (u.nombre + ' ' + u.apellido + ' ' + u.correo).toLocaleLowerCase('es').includes(texto),
-    );
-  });
-  protected readonly filas = computed(() =>
-    this.filtrados().slice(
-      this.pagina() * this.porPagina(),
-      (this.pagina() + 1) * this.porPagina(),
-    ),
-  );
-  protected readonly totales = computed(() =>
-    this.roles().map((rol) => ({
-      nombre: rol.nombre,
-      cantidad: this.usuarios().filter((u) => u.rolId === rol.idRol).length,
-    })),
-  );
-  protected readonly formulario = inject(FormBuilder).group({
-    nombre: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(100)]],
-    apellido: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(100)]],
-    correo: ['', [Validators.required, Validators.email, Validators.maxLength(150)]],
-    rolId: [null as number | null, Validators.required],
-    estado: ['ACTIVO', Validators.required],
-    password: [''],
-  });
+export class Usuarioscomponent implements OnInit, OnDestroy {
+  protected usuarios: UsuarioDTO[] = [];
+  protected roles: RolUsuarioDTO[] = [];
+  protected cargando = false;
+  protected ocupado = false;
+  protected error = '';
+  protected busqueda = '';
+  protected pagina = 0;
+  protected porPagina = 5;
+  protected modo: 'nuevo' | 'editar' | 'detalle' | null = null;
+  protected seleccionado: UsuarioDTO | null = null;
+  protected pendiente: UsuarioDTO | null = null;
+  protected readonly formulario: FormGroup;
+  private suscripciones = new Subscription();
+
+  constructor(
+    private servicio: Usuarioservice,
+    private acceso: Accesoservice,
+    private aviso: MatSnackBar,
+    private fb: FormBuilder,
+    private cdr: ChangeDetectorRef,
+  ) {
+    this.formulario = this.fb.group({
+      nombre: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(100)]],
+      apellido: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(100)]],
+      correo: ['', [Validators.required, Validators.email, Validators.maxLength(150)]],
+      rolId: [null as number | null, Validators.required],
+      estado: ['ACTIVO', Validators.required],
+      password: [''],
+    });
+  }
 
   ngOnInit(): void {
     this.cargar();
   }
 
+  protected get filtrados() {
+    const texto = this.busqueda.trim().toLocaleLowerCase('es');
+    return this.usuarios.filter((u) =>
+      (u.nombre + ' ' + u.apellido + ' ' + u.correo).toLocaleLowerCase('es').includes(texto),
+    );
+  }
+
+  protected get filas() {
+    return this.filtrados.slice(this.pagina * this.porPagina, (this.pagina + 1) * this.porPagina);
+  }
+
+  protected get totales() {
+    return this.roles.map((rol) => ({
+      nombre: rol.nombre,
+      cantidad: this.usuarios.filter((u) => u.rolId === rol.idRol).length,
+    }));
+  }
+
   protected cargar(): void {
-    this.cargando.set(true);
-    this.error.set('');
-    forkJoin({ usuarios: this.servicio.listar(), roles: this.servicio.roles() })
-      .pipe(
-        takeUntilDestroyed(this.destruccion),
-        finalize(() => this.cargando.set(false)),
-      )
-      .subscribe({
-        next: ({ usuarios, roles }) => {
-          this.usuarios.set(usuarios);
-          this.roles.set(roles);
-          this.pagina.set(
-            Math.min(
-              this.pagina(),
-              Math.max(0, Math.ceil(this.filtrados().length / this.porPagina()) - 1),
-            ),
-          );
+    this.cargando = true;
+    this.error = '';
+    this.suscripciones.add(
+      this.servicio.listar().subscribe({
+        next: (usuarios) => {
+          this.usuarios = usuarios;
+          this.cargarRoles();
         },
-        error: (error) => this.mostrarError(error),
-      });
+        error: (error: HttpErrorResponse) => this.falloCarga(error),
+      }),
+    );
   }
 
   protected nombreRol(id: number): string {
-    return this.roles().find((rol) => rol.idRol === id)?.nombre ?? 'Rol no disponible';
+    return this.roles.find((rol) => rol.idRol === id)?.nombre ?? 'Rol no disponible';
   }
 
   protected buscar(texto: string): void {
-    this.busqueda.set(texto);
-    this.pagina.set(0);
+    this.busqueda = texto;
+    this.pagina = 0;
   }
 
   protected cambiarPagina(evento: PageEvent): void {
-    this.pagina.set(evento.pageIndex);
-    this.porPagina.set(evento.pageSize);
+    this.pagina = evento.pageIndex;
+    this.porPagina = evento.pageSize;
   }
 
   protected abrir(usuario: UsuarioDTO | null, modo: 'nuevo' | 'editar' | 'detalle'): void {
-    if (this.ocupado()) return;
+    if (this.ocupado) return;
     this.cerrar();
-    this.seleccionado.set(usuario);
-    this.modo.set(modo);
+    this.seleccionado = usuario;
+    this.modo = modo;
     this.formulario.reset({ ...usuario, estado: usuario?.estado ?? 'ACTIVO', password: '' });
-    const clave = this.formulario.controls.password;
+    const clave = this.formulario.controls['password'];
     clave.setValidators(
       modo === 'nuevo'
         ? [Validators.required, Validators.minLength(6), Validators.pattern(/\S/)]
@@ -128,14 +125,14 @@ export class Usuarioscomponent implements OnInit {
   }
 
   protected cerrar(): void {
-    this.modo.set(null);
-    this.seleccionado.set(null);
-    this.pendiente.set(null);
-    this.error.set('');
+    this.modo = null;
+    this.seleccionado = null;
+    this.pendiente = null;
+    this.error = '';
   }
 
   protected guardar(): void {
-    if (this.ocupado() || !this.modo() || this.modo() === 'detalle') return;
+    if (this.ocupado || !this.modo || this.modo === 'detalle') return;
     this.formulario.markAllAsTouched();
     if (this.formulario.invalid) return;
     const valores = this.formulario.getRawValue();
@@ -147,34 +144,43 @@ export class Usuarioscomponent implements OnInit {
       estado: valores.estado!,
       password: valores.password || undefined,
     };
-    const id = this.seleccionado()?.idUsuario;
+    const id = this.seleccionado?.idUsuario;
     const peticion = id ? this.servicio.actualizar(id, datos) : this.servicio.registrar(datos);
-    this.ocupado.set(true);
-    peticion
-      .pipe(
-        takeUntilDestroyed(this.destruccion),
-        finalize(() => this.ocupado.set(false)),
-      )
-      .subscribe({
-        next: () => this.finalizar('Se guardó la cuenta.'),
-        error: (error) => this.mostrarError(error),
-      });
+    this.ocupado = true;
+    this.suscripciones.add(
+      peticion.subscribe({
+        next: () => {
+          this.finalizar('Se guardó la cuenta.');
+          this.ocupado = false;
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          this.mostrarError(error);
+          this.ocupado = false;
+          this.cdr.detectChanges();
+        },
+      }),
+    );
   }
 
   protected eliminar(): void {
-    const usuario = this.pendiente();
-    if (!usuario || this.ocupado()) return;
-    this.ocupado.set(true);
-    this.servicio
-      .eliminar(usuario.idUsuario)
-      .pipe(
-        takeUntilDestroyed(this.destruccion),
-        finalize(() => this.ocupado.set(false)),
-      )
-      .subscribe({
-        next: () => this.finalizar('Se eliminó la cuenta.'),
-        error: (error) => this.mostrarError(error),
-      });
+    const usuario = this.pendiente;
+    if (!usuario || this.ocupado) return;
+    this.ocupado = true;
+    this.suscripciones.add(
+      this.servicio.eliminar(usuario.idUsuario).subscribe({
+        next: () => {
+          this.finalizar('Se eliminó la cuenta.');
+          this.ocupado = false;
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          this.mostrarError(error);
+          this.ocupado = false;
+          this.cdr.detectChanges();
+        },
+      }),
+    );
   }
 
   private finalizar(mensaje: string): void {
@@ -185,10 +191,36 @@ export class Usuarioscomponent implements OnInit {
 
   private mostrarError(error: HttpErrorResponse): void {
     this.acceso.revisarError(error);
-    this.error.set(
+    this.error =
       [400, 404, 409].includes(error.status) && typeof error.error?.message === 'string'
         ? error.error.message
-        : 'No se pudo completar la consulta. Vuelve a intentarlo.',
+        : 'No se pudo completar la consulta. Vuelve a intentarlo.';
+  }
+
+  private cargarRoles(): void {
+    this.suscripciones.add(
+      this.servicio.roles().subscribe({
+        next: (roles) => {
+          this.roles = roles;
+          this.pagina = Math.min(
+            this.pagina,
+            Math.max(0, Math.ceil(this.filtrados.length / this.porPagina) - 1),
+          );
+          this.cargando = false;
+          this.cdr.detectChanges();
+        },
+        error: (error: HttpErrorResponse) => this.falloCarga(error),
+      }),
     );
+  }
+
+  private falloCarga(error: HttpErrorResponse): void {
+    this.mostrarError(error);
+    this.cargando = false;
+    this.cdr.detectChanges();
+  }
+
+  ngOnDestroy(): void {
+    this.suscripciones.unsubscribe();
   }
 }

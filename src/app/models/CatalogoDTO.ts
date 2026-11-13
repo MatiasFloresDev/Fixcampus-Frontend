@@ -12,10 +12,20 @@ export type CampoCatalogo =
 
 export type DatosCatalogo = Partial<Record<CampoCatalogo, string | number | null>>;
 
-export interface RegistroCatalogoDTO extends DatosCatalogo {
-  idCategoria?: number;
-  idUbicacion?: number;
-  idRol?: number;
+export class RegistroCatalogoDTO {
+  idCategoria?: number = 0;
+  idUbicacion?: number = 0;
+  idRol?: number = 0;
+  nombre?: string | number | null = null;
+  descripcion?: string | number | null = null;
+  campus?: string | number | null = null;
+  edificio?: string | number | null = null;
+  piso?: string | number | null = null;
+  zona?: string | number | null = null;
+  tipo?: string | number | null = null;
+  nivelAcceso?: string | number | null = null;
+  latitud?: string | number | null = null;
+  longitud?: string | number | null = null;
 }
 
 interface CampoFormulario {

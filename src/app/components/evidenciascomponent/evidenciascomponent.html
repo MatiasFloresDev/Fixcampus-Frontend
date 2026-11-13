@@ -12,9 +12,7 @@
       id="prioridadReporte"
       #filtro
       [value]="prioridad"
-      [disabled]="
-        cargandoLista || cargandoAdjuntos || guardandoAdjunto() || !!confirmacionEliminar()
-      "
+      [disabled]="cargandoLista || cargandoAdjuntos || guardandoAdjunto || !!confirmacionEliminar"
       (change)="cargarReportes(filtro.value)"
     >
       <option value="">Todas</option>
@@ -51,7 +49,7 @@
             mat-button
             type="button"
             (click)="seleccionar(item.idReporte.toString())"
-            [disabled]="cargandoAdjuntos || guardandoAdjunto() || !!confirmacionEliminar()"
+            [disabled]="cargandoAdjuntos || guardandoAdjunto || !!confirmacionEliminar"
             [attr.aria-pressed]="item.idReporte === reporte?.idReporte"
           >
             Ver detalle
@@ -82,27 +80,27 @@
         <button
           mat-button
           type="button"
-          (click)="confirmacionEliminar.set(datos)"
-          [disabled]="guardandoAdjunto() || !!confirmacionEliminar()"
+          (click)="confirmacionEliminar = datos"
+          [disabled]="guardandoAdjunto || !!confirmacionEliminar"
         >
           Eliminar
         </button>
       }
     </div>
-    @if (confirmacionEliminar(); as candidato) {
+    @if (confirmacionEliminar; as candidato) {
       <div class="aviso" role="group" aria-label="Confirmar eliminación">
         <p>¿Eliminar el reporte #{{ candidato.idReporte }}?</p>
-        @if (errorEliminar()) {
-          <p role="alert">{{ errorEliminar() }}</p>
+        @if (errorEliminar) {
+          <p role="alert">{{ errorEliminar }}</p>
         }
-        <button mat-flat-button type="button" (click)="eliminarReporte()" [disabled]="eliminando()">
+        <button mat-flat-button type="button" (click)="eliminarReporte()" [disabled]="eliminando">
           Confirmar eliminación
         </button>
         <button
           mat-button
           type="button"
-          (click)="confirmacionEliminar.set(undefined); errorEliminar.set('')"
-          [disabled]="eliminando()"
+          (click)="confirmacionEliminar = undefined; errorEliminar = ''"
+          [disabled]="eliminando"
         >
           Cancelar
         </button>
@@ -176,7 +174,7 @@
                       mat-button
                       type="button"
                       (click)="editarAdjunto(adjunto)"
-                      [disabled]="guardandoAdjunto()"
+                      [disabled]="guardandoAdjunto"
                     >
                       Editar evidencia
                     </button>
@@ -184,8 +182,8 @@
                       mat-button
                       type="button"
                       class="accion-eliminar"
-                      (click)="adjuntoPendiente.set(adjunto)"
-                      [disabled]="guardandoAdjunto()"
+                      (click)="adjuntoPendiente = adjunto"
+                      [disabled]="guardandoAdjunto"
                     >
                       Eliminar evidencia
                     </button>
@@ -203,33 +201,33 @@
             />
             <small>Los enlaces se abren en una pestaña nueva.</small>
           }
-          @if (avisoAdjunto()) {
-            <p class="aviso exito" role="status">{{ avisoAdjunto() }}</p>
+          @if (avisoAdjunto) {
+            <p class="aviso exito" role="status">{{ avisoAdjunto }}</p>
           }
           @if (acceso.rol() === 'ADMIN') {
-            @if (adjuntoPendiente(); as adjunto) {
+            @if (adjuntoPendiente; as adjunto) {
               <div class="aviso" role="group" aria-label="Confirmar eliminación de evidencia">
                 <p>¿Eliminar {{ adjunto.nombreArchivo }}?</p>
                 <button
                   mat-flat-button
                   type="button"
                   (click)="eliminarAdjunto()"
-                  [disabled]="guardandoAdjunto()"
+                  [disabled]="guardandoAdjunto"
                 >
                   Confirmar eliminación
                 </button>
                 <button
                   mat-button
                   type="button"
-                  (click)="adjuntoPendiente.set(null)"
-                  [disabled]="guardandoAdjunto()"
+                  (click)="adjuntoPendiente = null"
+                  [disabled]="guardandoAdjunto"
                 >
                   Cancelar
                 </button>
               </div>
             }
             <form class="editor-adjunto" [formGroup]="adjuntoForm" (ngSubmit)="guardarAdjunto()">
-              <h3>{{ adjuntoEditado() ? 'Editar evidencia' : 'Añadir evidencia' }}</h3>
+              <h3>{{ adjuntoEditado ? 'Editar evidencia' : 'Añadir evidencia' }}</h3>
               <p>Ingresa el enlace del archivo. Los campos con asterisco son obligatorios.</p>
               <mat-form-field appearance="outline"
                 ><mat-label>Nombre del archivo</mat-label>
@@ -254,16 +252,16 @@
               <button
                 mat-flat-button
                 type="submit"
-                [disabled]="guardandoAdjunto() || cargandoAdjuntos"
+                [disabled]="guardandoAdjunto || cargandoAdjuntos"
               >
                 Guardar evidencia
               </button>
-              @if (adjuntoEditado()) {
+              @if (adjuntoEditado) {
                 <button
                   mat-button
                   type="button"
                   (click)="cancelarAdjunto()"
-                  [disabled]="guardandoAdjunto()"
+                  [disabled]="guardandoAdjunto"
                 >
                   Cancelar edición
                 </button>
