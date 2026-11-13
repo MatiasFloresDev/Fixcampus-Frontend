@@ -6,13 +6,13 @@
     </div>
     <a mat-stroked-button routerLink="/evidencias">Volver a reportes</a>
   </div>
-  @if (cargando()) {
+  @if (cargando) {
     <p role="status">Cargando formulario…</p>
   }
-  @if (mensaje()) {
-    <p class="aviso error" role="alert">{{ mensaje() }}</p>
+  @if (mensaje) {
+    <p class="aviso error" role="alert">{{ mensaje }}</p>
   }
-  @if (listo()) {
+  @if (listo) {
     @if (!categorias.length || !ubicaciones.length) {
       <p class="aviso">
         Un administrador debe registrar categorías y ubicaciones para guardar incidencias.
@@ -45,8 +45,8 @@
             aria-describedby="nota-ia"
             (click)="sugerirCategoria()"
             [disabled]="
-              consultandoIA() ||
-              guardando() ||
+              consultandoIA ||
+              guardando ||
               !descripcionIA() ||
               descripcionIA().length > limiteDescripcionIA
             "
@@ -54,18 +54,18 @@
             Sugerir categoría con IA
           </button>
           <div role="status">
-            @if (consultandoIA()) {
+            @if (consultandoIA) {
               <p>Buscando una categoría…</p>
-            } @else if (sugerencia(); as categoria) {
+            } @else if (sugerencia; as categoria) {
               <p>
                 Sugerencia: <strong>{{ categoria.nombre }}</strong>
               </p>
-            } @else if (mensajeIA()) {
-              <p>{{ mensajeIA() }}</p>
+            } @else if (mensajeIA) {
+              <p>{{ mensajeIA }}</p>
             }
           </div>
-          @if (sugerencia()) {
-            <button mat-button type="button" (click)="usarSugerencia()" [disabled]="guardando()">
+          @if (sugerencia) {
+            <button mat-button type="button" (click)="usarSugerencia()" [disabled]="guardando">
               Usar categoría sugerida
             </button>
           }
@@ -84,7 +84,7 @@
         <button
           mat-button
           type="button"
-          [disabled]="buscandoCategorias()"
+          [disabled]="buscandoCategorias"
           (click)="buscarCategorias(palabra.value)"
         >
           Buscar categorías
@@ -92,18 +92,18 @@
         <button
           mat-button
           type="button"
-          [disabled]="buscandoCategorias()"
+          [disabled]="buscandoCategorias"
           (click)="palabra.value = ''; buscarCategorias('')"
         >
           Mostrar todas
         </button>
-        @if (buscandoCategorias()) {
+        @if (buscandoCategorias) {
           <p role="status">Buscando categorías…</p>
         }
-        @if (errorCategorias()) {
-          <p class="aviso error" role="alert">{{ errorCategorias() }}</p>
+        @if (errorCategorias) {
+          <p class="aviso error" role="alert">{{ errorCategorias }}</p>
         }
-        @if (categoriasFiltradas()?.length === 0) {
+        @if (categoriasFiltradas?.length === 0) {
           <p role="status">No hay categorías para esa palabra.</p>
         }
       </div>
@@ -168,8 +168,8 @@
         </div>
       }
       <div>
-        <button mat-flat-button type="submit" [disabled]="guardando() || formulario.invalid">
-          {{ guardando() ? 'Guardando…' : 'Guardar incidencia' }}
+        <button mat-flat-button type="submit" [disabled]="guardando || formulario.invalid">
+          {{ guardando ? 'Guardando…' : 'Guardar incidencia' }}
         </button>
       </div>
     </form>

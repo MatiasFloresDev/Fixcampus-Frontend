@@ -1,23 +1,21 @@
-export interface UsuarioDTO {
-  idUsuario: number;
-  nombre: string;
-  apellido: string;
-  correo: string;
-  rolId: number;
-  estado: string;
-  fechaRegistro: string;
+export class UsuarioDTO {
+  idUsuario: number = 0;
+  nombre: string = '';
+  apellido: string = '';
+  correo: string = '';
+  rolId: number = 0;
+  estado: string = '';
+  fechaRegistro: string = '';
 }
-
-export interface UsuarioFormularioDTO {
-  nombre: string;
-  apellido: string;
-  correo: string;
-  rolId: number;
-  estado: string;
-  password?: string;
+export class UsuarioFormularioDTO {
+  nombre: string = '';
+  apellido: string = '';
+  correo: string = '';
+  rolId: number = 0;
+  estado: string = '';
+  password?: string = '';
 }
-
-export interface RolUsuarioDTO {
-  idRol: number;
-  nombre: string;
+export class RolUsuarioDTO {
+  idRol: number = 0;
+  nombre: string = '';
 }
