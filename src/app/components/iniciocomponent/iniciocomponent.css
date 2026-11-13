@@ -1,4 +1,6 @@
 .portada {
+  background: var(--verde-claro);
+  border-color: #b9d7d2;
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: center;
@@ -7,11 +9,13 @@
   padding: clamp(20px, 4vw, 42px);
 }
 .portada h1 {
+  color: var(--verde-principal);
   font-size: clamp(30px, 4vw, 46px);
 }
 .portada img {
   width: 100%;
   height: auto;
+  border-radius: 12px;
 }
 .acciones {
   display: flex;
@@ -27,6 +31,16 @@
 }
 .pasos p {
   margin: 4px 0 0;
+}
+.pasos .tarjeta {
+  border-top: 4px solid var(--verde-marca);
+}
+.pasos .tarjeta:nth-child(2) {
+  background: var(--azul-claro);
+  border-top-color: var(--azul-apoyo);
+}
+.pasos .tarjeta:nth-child(3) {
+  background: var(--verde-claro);
 }
 @media (max-width: 660px) {
   .portada {
