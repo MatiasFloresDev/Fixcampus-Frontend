@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 import { Accesoservice } from '../../services/accesoservice';
@@ -9,5 +9,5 @@ import { Accesoservice } from '../../services/accesoservice';
   styleUrl: './iniciocomponent.css',
 })
 export class Iniciocomponent {
-  protected readonly acceso = inject(Accesoservice);
+  constructor(private acceso: Accesoservice) {}
 }

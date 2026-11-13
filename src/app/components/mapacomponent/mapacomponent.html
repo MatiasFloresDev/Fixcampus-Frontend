@@ -6,12 +6,12 @@
     </div>
     <a mat-stroked-button routerLink="/evidencias" [queryParams]="{ id }">Volver al reporte</a>
   </div>
-  @if (cargando()) {
+  @if (cargando) {
     <p role="status">Consultando ubicación…</p>
-  } @else if (error()) {
-    <p class="aviso error" role="alert">{{ error() }}</p>
+  } @else if (error) {
+    <p class="aviso error" role="alert">{{ error }}</p>
     <button mat-stroked-button type="button" (click)="cargar()">Volver a intentar</button>
-  } @else if (ubicacion(); as lugar) {
+  } @else if (ubicacion; as lugar) {
     <div class="tarjeta">
       <h2>{{ lugar.campus }} · {{ lugar.edificio }}</h2>
       @if (lugar.piso != null) {
@@ -23,8 +23,8 @@
       @if (lugar.latitud != null && lugar.longitud != null) {
         <div #mapa class="mapa" role="region" aria-label="Mapa de la ubicación del reporte"></div>
         <p>Latitud {{ lugar.latitud }} · Longitud {{ lugar.longitud }}</p>
-        @if (errorMapa()) {
-          <p class="aviso" role="status">{{ errorMapa() }}</p>
+        @if (errorMapa) {
+          <p class="aviso" role="status">{{ errorMapa }}</p>
         }
       } @else {
         <p class="aviso">Esta ubicación aún no tiene coordenadas registradas.</p>

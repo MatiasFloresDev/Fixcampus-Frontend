@@ -1,0 +1,49 @@
+.seguimiento,
+form {
+  display: grid;
+  gap: 16px;
+}
+.seguimiento {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  align-items: start;
+}
+form {
+  margin-block: 16px;
+}
+article {
+  border-block-end: 1px solid #d6dbe0;
+  padding-block: 12px;
+}
+article p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.acciones {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pestanas {
+  display: flex;
+  gap: 24px;
+  margin: 24px 0;
+  border-bottom: 1px solid #d6dbde;
+}
+
+.pestanas button {
+  border-radius: 0;
+  padding: 12px 16px;
+  color: #666;
+  border-bottom: 3px solid transparent;
+}
+
+.pestanas button.activa {
+  color: #0d6a62;
+  border-bottom-color: #0d6a62;
+  font-weight: 600;
+}
+
+.tarjeta[hidden] {
+  display: none !important;
+}

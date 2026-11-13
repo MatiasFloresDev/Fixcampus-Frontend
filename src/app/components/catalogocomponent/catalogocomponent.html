@@ -4,26 +4,26 @@
       <h1>{{ catalogo.titulo }}</h1>
       <p>Administra los registros del catálogo de FixCampus.</p>
     </div>
-    <button mat-flat-button type="button" (click)="nuevo()" [disabled]="ocupado()">
+    <button mat-flat-button type="button" (click)="nuevo()" [disabled]="ocupado">
       Nuevo registro
     </button>
   </div>
-  @if (errorAccion()) {
-    <p class="aviso error" role="alert">{{ errorAccion() }}</p>
+  @if (errorAccion) {
+    <p class="aviso error" role="alert">{{ errorAccion }}</p>
   }
-  @if (pendiente(); as id) {
+  @if (pendiente; as id) {
     <div class="aviso confirmacion" role="group" aria-label="Confirmar eliminación">
       <p>¿Eliminar el registro #{{ id }} de {{ catalogo.titulo.toLowerCase() }}?</p>
-      <button mat-flat-button type="button" (click)="eliminar()" [disabled]="ocupado()">
+      <button mat-flat-button type="button" (click)="eliminar()" [disabled]="ocupado">
         Confirmar eliminación
       </button>
-      <button mat-button type="button" (click)="cerrar()" [disabled]="ocupado()">Cancelar</button>
+      <button mat-button type="button" (click)="cerrar()" [disabled]="ocupado">Cancelar</button>
     </div>
   }
-  @if (modo()) {
+  @if (modo) {
     <form class="tarjeta editor" [formGroup]="formulario" (ngSubmit)="guardar()">
       <h2>
-        {{ modo() === 'nuevo' ? 'Registrar' : modo() === 'editar' ? 'Editar' : 'Detalle de' }}
+        {{ modo === 'nuevo' ? 'Registrar' : modo === 'editar' ? 'Editar' : 'Detalle de' }}
         {{ catalogo.singular }}
       </h2>
       @if (catalogo.id === 'idUbicacion') {
@@ -69,27 +69,27 @@
         }
       </div>
       <div>
-        @if (modo() !== 'detalle') {
-          <button mat-flat-button type="submit" [disabled]="ocupado() || formulario.invalid">
-            {{ ocupado() ? 'Guardando…' : 'Guardar' }}
+        @if (modo !== 'detalle') {
+          <button mat-flat-button type="submit" [disabled]="ocupado || formulario.invalid">
+            {{ ocupado ? 'Guardando…' : 'Guardar' }}
           </button>
         }
-        <button mat-button type="button" (click)="cerrar()" [disabled]="ocupado()">
-          {{ modo() === 'detalle' ? 'Cerrar detalle' : 'Cancelar' }}
+        <button mat-button type="button" (click)="cerrar()" [disabled]="ocupado">
+          {{ modo === 'detalle' ? 'Cerrar detalle' : 'Cancelar' }}
         </button>
       </div>
     </form>
   }
-  @if (cargando()) {
+  @if (cargando) {
     <p role="status">Cargando catálogo…</p>
-  } @else if (errorLista()) {
-    <p class="aviso error" role="alert">{{ errorLista() }}</p>
+  } @else if (errorLista) {
+    <p class="aviso error" role="alert">{{ errorLista }}</p>
     <button mat-stroked-button type="button" (click)="cargar()">Volver a intentar</button>
-  } @else if (!registros().length) {
+  } @else if (!registros.length) {
     <p class="aviso">Aún no hay registros en este catálogo.</p>
   } @else {
     <div class="tabla">
-      <table mat-table [dataSource]="filas()" [attr.aria-label]="catalogo.titulo">
+      <table mat-table [dataSource]="filas" [attr.aria-label]="catalogo.titulo">
         <ng-container matColumnDef="id">
           <th mat-header-cell *matHeaderCellDef>ID</th>
           <td mat-cell *matCellDef="let registro">{{ registro[catalogo.id] }}</td>
@@ -107,7 +107,7 @@
               mat-button
               type="button"
               (click)="abrir(registro, 'detalle')"
-              [disabled]="ocupado()"
+              [disabled]="ocupado"
             >
               Ver detalle
             </button>
@@ -115,7 +115,7 @@
               mat-button
               type="button"
               (click)="abrir(registro, 'editar')"
-              [disabled]="ocupado()"
+              [disabled]="ocupado"
             >
               Editar
             </button>
@@ -124,7 +124,7 @@
                 mat-button
                 type="button"
                 (click)="pedirEliminar(registro)"
-                [disabled]="ocupado()"
+                [disabled]="ocupado"
               >
                 Eliminar
               </button>
@@ -136,9 +136,9 @@
       </table>
     </div>
     <mat-paginator
-      [length]="registros().length"
-      [pageIndex]="pagina()"
-      [pageSize]="porPagina()"
+      [length]="registros.length"
+      [pageIndex]="pagina"
+      [pageSize]="porPagina"
       [pageSizeOptions]="[5, 10, 25]"
       (page)="cambiarPagina($event)"
       aria-label="Páginas del catálogo"

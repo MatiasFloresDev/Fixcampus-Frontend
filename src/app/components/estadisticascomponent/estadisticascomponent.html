@@ -1,0 +1,43 @@
+<section class="contenedor">
+  <div class="encabezado">
+    <div>
+      <h1>Estadísticas de mantenimiento</h1>
+      <p>Consulta la distribución de reportes y recomendaciones.</p>
+    </div>
+  </div>
+  @if (cargando) {
+    <p role="status">Cargando estadísticas…</p>
+  } @else if (error) {
+    <p role="alert" class="aviso error">No se pudieron consultar las estadísticas.</p>
+    <button mat-stroked-button type="button" (click)="cargar()">Volver a intentar</button>
+  } @else {
+    <div class="grupos">
+      <section class="tarjeta">
+        <h2>Reportes por categoría</h2>
+        <ul>
+          @for (item of categorias; track item.idCategoria) {
+            <li>
+              <span>{{ item.nombre }}</span
+              ><strong>{{ item.totalReportes }}</strong>
+            </li>
+          } @empty {
+            <li>Todavía no hay categorías.</li>
+          }
+        </ul>
+      </section>
+      <section class="tarjeta">
+        <h2>Recomendaciones por prioridad del reporte</h2>
+        <ul>
+          @for (item of prioridades; track item.prioridad) {
+            <li>
+              <span>{{ item.prioridad?.replace('_', ' ') || 'Sin prioridad' }}</span
+              ><strong>{{ item.cantidad }}</strong>
+            </li>
+          } @empty {
+            <li>Todavía no hay recomendaciones.</li>
+          }
+        </ul>
+      </section>
+    </div>
+  }
+</section>

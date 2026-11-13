@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -14,7 +14,7 @@ import { Accesoservice } from '../../services/accesoservice';
   styleUrl: './accesocomponent.css',
 })
 export class Accesocomponent {
-  formulario;
+  formulario: FormGroup;
   cargando = false;
   mensaje = '';
   mostrarClave = false;
@@ -26,7 +26,7 @@ export class Accesocomponent {
     private cdr: ChangeDetectorRef,
     fb: FormBuilder,
   ) {
-    this.formulario = fb.nonNullable.group({
+    this.formulario = fb.group({
       correo: [
         ruta.snapshot.queryParamMap.get('correo') ?? '',
         [Validators.required, Validators.email],
@@ -43,7 +43,7 @@ export class Accesocomponent {
     this.acceso.ingresar(datos.correo.trim(), datos.password).subscribe({
       next: (respuesta) => {
         this.cargando = false;
-        this.formulario.controls.password.reset();
+        this.formulario.controls['password'].reset('');
         if (this.acceso.guardarToken(respuesta.token)) {
           this.router.navigate(['/panel']);
         } else {
