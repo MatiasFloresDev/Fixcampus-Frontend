@@ -9,6 +9,7 @@ import { routes } from './app.routes';
 import { Registrocomponent } from './components/registrocomponent/registrocomponent';
 import { Accesocomponent } from './components/accesocomponent/accesocomponent';
 import { Evidenciascomponent } from './components/evidenciascomponent/evidenciascomponent';
+import { Panelcomponent } from './components/panelcomponent/panelcomponent';
 import { FormGroupDirective } from '@angular/forms';
 import { Accesoservice } from './services/accesoservice';
 
@@ -193,6 +194,13 @@ describe('Acceso y reportes de FixCampus', () => {
     expect(filas.length).toBe(2);
     expect(filas[0].textContent).toContain('11/2026');
     expect(filas[0].querySelector('strong').textContent).toBe('2');
+    const selector = app.debugElement.query(By.css('mat-select'));
+    selector.triggerEventHandler('valueChange', '2026-10');
+    selector.triggerEventHandler('selectionChange', { value: '2026-10' });
+    app.detectChanges();
+    expect(app.nativeElement.querySelectorAll('.grafico li').length).toBe(1);
+    expect(app.nativeElement.querySelector('.indicadores .total strong').textContent).toBe('1');
+    expect(app.nativeElement.querySelector('.indicadores .resueltos strong').textContent).toBe('1');
     http.expectNone(environment.base + '/api/reports');
     http.expectNone(environment.base + '/api/users/count');
     http.expectNone(environment.base + '/api/reports/estadisticas/por-usuario-mes');
@@ -212,6 +220,86 @@ describe('Acceso y reportes de FixCampus', () => {
     expect(app.nativeElement.querySelector('.grafico').textContent).toContain('Ana Torres');
     expect(app.nativeElement.querySelector('.grafico strong').textContent).toBe('4');
     expect(app.nativeElement.querySelector('.indicadores').textContent).toContain('Usuarios');
+  });
+
+  it('filtra el panel por mes, limpia el filtro y actualiza los datos del administrador', async () => {
+    const app = await abrir('/panel', 'ADMIN');
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne(environment.base + '/api/reports/estadisticas/por-usuario-mes').flush([
+      { usuarioId: 1, nombre: 'Ana', apellido: 'Torres', anio: 2026, mes: 10, cantidad: 1 },
+      { usuarioId: 2, nombre: 'Luis', apellido: 'Prueba', anio: 2026, mes: 11, cantidad: 2 },
+    ]);
+    http.expectOne(environment.base + '/api/reports').flush([
+      { estado: 'EN_ATENCION', fechaCreacion: '2026-10-10T09:00:00' },
+      { estado: 'ABIERTO', fechaCreacion: '2026-11-10T09:00:00' },
+      { estado: 'RESUELTO', fechaCreacion: '2026-11-11T09:00:00' },
+    ]);
+    http.expectOne(environment.base + '/api/users/count').flush(7);
+    app.detectChanges();
+    const panel = app.debugElement.query(By.directive(Panelcomponent))
+      .componentInstance as Panelcomponent;
+    const selector = app.debugElement.query(By.css('mat-select'));
+    selector.triggerEventHandler('valueChange', '2026-10');
+    selector.triggerEventHandler('selectionChange', { value: '2026-10' });
+    app.detectChanges();
+    expect(app.nativeElement.querySelectorAll('.grafico li').length).toBe(1);
+    expect(app.nativeElement.querySelector('.grafico').textContent).toContain('Ana Torres');
+    expect(app.nativeElement.querySelector('.indicadores .total strong').textContent).toBe('1');
+    expect(app.nativeElement.querySelector('.indicadores .atencion strong').textContent).toBe('1');
+    expect(app.nativeElement.querySelector('.indicadores .usuarios strong').textContent).toBe('7');
+    const boton = (texto: string) =>
+      Array.from(
+        app.nativeElement.querySelectorAll('button') as NodeListOf<HTMLButtonElement>,
+      ).find((b) => b.textContent?.trim() === texto)!;
+    boton('Limpiar filtro').click();
+    app.detectChanges();
+    expect(app.nativeElement.querySelectorAll('.grafico li').length).toBe(2);
+    expect(app.nativeElement.querySelector('.indicadores .total strong').textContent).toBe('3');
+    selector.triggerEventHandler('valueChange', '2026-10');
+    selector.triggerEventHandler('selectionChange', { value: '2026-10' });
+    boton('Actualizar').click();
+    app.detectChanges();
+    expect(boton('Actualizando…').disabled).toBe(true);
+    http
+      .expectOne(environment.base + '/api/reports/estadisticas/por-usuario-mes')
+      .flush([
+        { usuarioId: 2, nombre: 'Luis', apellido: 'Prueba', anio: 2026, mes: 11, cantidad: 1 },
+      ]);
+    http
+      .expectOne(environment.base + '/api/reports')
+      .flush([{ estado: 'ABIERTO', fechaCreacion: '2026-11-10T09:00:00' }]);
+    http.expectOne(environment.base + '/api/users/count').flush(8);
+    app.detectChanges();
+    expect(panel.mesSeleccionado).toBe('');
+    expect(app.nativeElement.querySelector('.indicadores .total strong').textContent).toBe('1');
+    expect(app.nativeElement.querySelector('.indicadores .usuarios strong').textContent).toBe('8');
+    expect(boton('Actualizar').disabled).toBe(false);
+  });
+
+  it('informa cuando fallan los totales del panel y permite volver a consultar', async () => {
+    const app = await abrir('/panel', 'ADMIN');
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne(environment.base + '/api/reports/estadisticas/por-usuario-mes').flush([]);
+    http
+      .expectOne(environment.base + '/api/reports')
+      .flush({}, { status: 500, statusText: 'Error' });
+    http
+      .expectOne(environment.base + '/api/users/count')
+      .flush({}, { status: 500, statusText: 'Error' });
+    app.detectChanges();
+    expect(app.nativeElement.textContent).toContain('No se pudieron cargar los totales');
+    expect(app.nativeElement.textContent).toContain('No se pudo consultar el total de usuarios');
+    expect(app.nativeElement.querySelector('.indicadores')).toBeNull();
+    const botones = app.nativeElement.querySelectorAll('button') as NodeListOf<HTMLButtonElement>;
+    Array.from(botones)
+      .find((b) => b.textContent?.trim() === 'Actualizar')!
+      .click();
+    http.expectOne(environment.base + '/api/reports/estadisticas/por-usuario-mes').flush([]);
+    http.expectOne(environment.base + '/api/reports').flush([]);
+    http.expectOne(environment.base + '/api/users/count').flush(0);
+    app.detectChanges();
+    expect(app.nativeElement.querySelectorAll('[role="alert"]').length).toBe(0);
+    expect(app.nativeElement.querySelector('.indicadores .total strong').textContent).toBe('0');
   });
 
   it('abre la pestaña de recomendaciones desde la accion de editar de la tabla', async () => {

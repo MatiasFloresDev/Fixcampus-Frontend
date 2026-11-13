@@ -10,29 +10,84 @@
         }}
       </p>
     </div>
-    <a mat-stroked-button routerLink="/evidencias">{{
-      esAdmin ? 'Ver reportes' : 'Ver mis reportes'
-    }}</a>
+    <div class="acciones-panel">
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="actualizarPanel()"
+        [disabled]="actualizando"
+      >
+        {{ actualizando ? 'Actualizando…' : 'Actualizar' }}
+      </button>
+      <a mat-flat-button routerLink="/evidencias">{{
+        esAdmin ? 'Ver reportes' : 'Ver mis reportes'
+      }}</a>
+    </div>
   </div>
+  <div class="filtros-panel">
+    <div>
+      <strong>Período del panel</strong>
+      <p>Filtra por el mes en que se registró la incidencia.</p>
+    </div>
+    <mat-form-field appearance="outline">
+      <mat-label>Mes de registro</mat-label>
+      <mat-select
+        [(value)]="mesSeleccionado"
+        (selectionChange)="filtrarPorMes()"
+        [disabled]="actualizando || !!mensaje || !meses.length"
+      >
+        <mat-option value="">Todos los meses</mat-option>
+        @for (mes of meses; track mes.valor) {
+          <mat-option [value]="mes.valor">{{ mes.nombre }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <button
+      mat-button
+      type="button"
+      (click)="limpiarFiltro()"
+      [disabled]="!mesSeleccionado || actualizando"
+    >
+      Limpiar filtro
+    </button>
+  </div>
+  @if (cargandoIndicadores) {
+    <p role="status">Cargando totales…</p>
+  }
+  @if (mensajeIndicadores) {
+    <p class="aviso error" role="alert">{{ mensajeIndicadores }}</p>
+  }
+  @if (mensajeUsuarios) {
+    <p class="aviso error" role="alert">{{ mensajeUsuarios }}</p>
+  }
   @if (indicadores; as datos) {
-    <div class="indicadores" [class.indicadores-personales]="!esAdmin">
-      <div class="tarjeta">
-        Reportes registrados <strong>{{ datos.reportes }}</strong>
+    <div class="indicadores" aria-label="Resumen de reportes">
+      <div class="tarjeta total">
+        Registrados <strong>{{ datos.reportes }}</strong>
       </div>
-      <div class="tarjeta">
+      <div class="tarjeta abiertos">
         Abiertos <strong>{{ datos.abiertos }}</strong>
       </div>
-      <div class="tarjeta">
+      <div class="tarjeta atencion">
+        En revisión o atención <strong>{{ datos.enAtencion }}</strong>
+      </div>
+      <div class="tarjeta resueltos">
         Resueltos o cerrados <strong>{{ datos.resueltos }}</strong>
       </div>
       @if (esAdmin && usuarios !== undefined) {
-        <div class="tarjeta">
-          Usuarios <strong>{{ usuarios }}</strong>
+        <div class="tarjeta usuarios">
+          Usuarios del sistema <strong>{{ usuarios }}</strong>
         </div>
       }
     </div>
+    <p class="nota-periodo">
+      {{ nombrePeriodo }}. Los estados muestran el avance actual de los reportes.
+      @if (esAdmin) {
+        El total de usuarios corresponde a todo el sistema.
+      }
+    </p>
   }
-  <section class="tarjeta">
+  <section class="tarjeta seccion-grafico">
     <h2>{{ esAdmin ? 'Incidencias por usuario y mes' : 'Mis incidencias por mes' }}</h2>
     <p>
       {{
@@ -56,8 +111,9 @@
         }}</small>
       </div>
     } @else {
+      <p class="periodo-grafico">{{ nombrePeriodo }}</p>
       <ul class="grafico">
-        @for (fila of filas; track fila.usuarioId + '-' + fila.anio + '-' + fila.mes) {
+        @for (fila of filasFiltradas; track fila.usuarioId + '-' + fila.anio + '-' + fila.mes) {
           <li>
             <div>
               {{ fila.nombre }} {{ fila.apellido }}<small>{{ fila.mes }}/{{ fila.anio }}</small>
