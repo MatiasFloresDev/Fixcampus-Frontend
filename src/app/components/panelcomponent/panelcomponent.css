@@ -1,6 +1,6 @@
 .indicadores {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr));
   gap: 16px;
   margin-bottom: 20px;
 }
@@ -11,8 +11,69 @@
     sans-serif;
   margin-top: 8px;
 }
-.indicadores-personales {
-  grid-template-columns: repeat(3, 1fr);
+.acciones-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.filtros-panel {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 18px 20px 0;
+  margin-bottom: 20px;
+  border: 1px solid #bfd6e2;
+  border-radius: 14px;
+  background: var(--azul-claro);
+}
+.filtros-panel > div {
+  flex: 1;
+  min-width: 200px;
+  padding-bottom: 16px;
+}
+.filtros-panel p {
+  margin: 4px 0 0;
+}
+.filtros-panel mat-form-field {
+  width: 235px;
+}
+.filtros-panel > button {
+  margin-bottom: 18px;
+}
+.indicadores .tarjeta {
+  border-top-width: 4px;
+}
+.total {
+  background: var(--verde-claro);
+  border-top-color: var(--verde-principal);
+}
+.abiertos {
+  background: var(--azul-claro);
+  border-top-color: var(--azul-apoyo);
+}
+.atencion {
+  background: #fef3e2;
+  border-top-color: #9a5b00;
+}
+.resueltos {
+  background: #e5f6ec;
+  border-top-color: var(--verde-marca);
+}
+.usuarios {
+  border-top-color: var(--verde-marca);
+}
+.nota-periodo {
+  color: #5f6b70;
+  font-size: 13px;
+  margin-bottom: 24px;
+}
+.seccion-grafico {
+  border-top: 4px solid var(--verde-marca);
+}
+.periodo-grafico {
+  color: var(--verde-principal);
+  font-weight: 600;
 }
 .grafico-vacio {
   min-height: 280px;
@@ -47,10 +108,10 @@ small {
   display: block;
   height: 26px;
   border-radius: 5px;
-  background: #5c8faa;
+  background: var(--azul-apoyo);
 }
 .reciente {
-  background: #408f86;
+  background: var(--verde-marca);
 }
 .leyenda {
   display: flex;
@@ -74,5 +135,22 @@ small {
 @media (max-width: 660px) {
   .indicadores {
     grid-template-columns: 1fr 1fr;
+  }
+  .filtros-panel mat-form-field {
+    width: 100%;
+  }
+  .filtros-panel {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 16px;
+  }
+  .filtros-panel > div {
+    min-width: 0;
+    padding-bottom: 0;
+  }
+  .filtros-panel > button {
+    justify-self: start;
+    margin-bottom: 0;
   }
 }

@@ -1,6 +1,6 @@
 header {
-  border-bottom: 1px solid #d6dbde;
-  background: white;
+  border-bottom: 4px solid var(--verde-marca);
+  background: var(--verde-principal);
 }
 .barra {
   display: flex;
@@ -20,8 +20,29 @@ header {
   font:
     700 20px Poppins,
     sans-serif;
-  color: #212529;
+  color: white;
   text-decoration: none;
+}
+.marca img {
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: white;
+  object-fit: contain;
+}
+nav a,
+nav button,
+.barra .menu-celular {
+  color: white;
+}
+.barra .menu-celular {
+  border-color: #a8d2cd;
+}
+nav a[mat-flat-button] {
+  background: var(--verde-claro);
+  color: var(--verde-principal);
+}
+header :focus-visible {
+  outline-color: white;
 }
 nav {
   display: flex;
@@ -32,8 +53,9 @@ nav {
 .menu-celular {
   display: none;
 }
-.activo {
-  background: #e6f2f0;
+nav a.activo {
+  background: var(--verde-claro);
+  color: var(--verde-principal);
 }
 .saltar {
   position: absolute;

@@ -1,3 +1,10 @@
+:root {
+  --verde-principal: #0d6a62;
+  --verde-marca: #408f86;
+  --verde-claro: #e6f2f0;
+  --azul-apoyo: #5c8faa;
+  --azul-claro: #e8f0f5;
+}
 * {
   box-sizing: border-box;
 }
@@ -27,7 +34,7 @@ p {
   margin: 0 0 12px;
 }
 a {
-  color: #0d6a62;
+  color: var(--verde-principal);
 }
 :focus-visible {
   outline: 3px solid #0d6a62;
