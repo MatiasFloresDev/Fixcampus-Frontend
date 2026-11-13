@@ -20,8 +20,8 @@
     <mat-form-field appearance="outline">
       <mat-label>Prioridad</mat-label>
       <mat-select
-        [value]="prioridad()"
-        [disabled]="cargando()"
+        [value]="prioridad"
+        [disabled]="cargando"
         (selectionChange)="cargar($event.value)"
       >
         <mat-option value="">Todas</mat-option>
@@ -34,10 +34,10 @@
     </mat-form-field>
   </div>
 
-  @if (cargando()) {
+  @if (cargando) {
     <p role="status">Cargando recomendaciones…</p>
-  } @else if (error()) {
-    <p class="aviso error" role="alert">{{ error() }}</p>
+  } @else if (error) {
+    <p class="aviso error" role="alert">{{ error }}</p>
     <button mat-stroked-button type="button" (click)="cargar()">Volver a intentar</button>
   } @else if (!recomendacionesFiltradas().length) {
     <p class="aviso">No hay recomendaciones para mostrar con este filtro.</p>
@@ -110,7 +110,7 @@
                     mat-button
                     type="button"
                     class="boton-eliminar"
-                    [disabled]="cargando()"
+                    [disabled]="cargando"
                     (click)="eliminarRecomendacion(item)"
                     title="Eliminar recomendación"
                     aria-label="Eliminar recomendación"
@@ -125,11 +125,11 @@
       </table>
     </div>
   }
-  @if (!cargando() && !error()) {
+  @if (!cargando && !error) {
     <mat-paginator
       [length]="recomendacionesFiltradas().length"
-      [pageIndex]="pagina()"
-      [pageSize]="porPagina()"
+      [pageIndex]="pagina"
+      [pageSize]="porPagina"
       [pageSizeOptions]="[5, 10, 25]"
       (page)="cambiarPagina($event)"
       aria-label="Páginas de recomendaciones"

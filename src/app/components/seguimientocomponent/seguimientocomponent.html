@@ -2,7 +2,7 @@
   <div class="encabezado">
     <div>
       <h1>Seguimiento del reporte #{{ reporteId }}</h1>
-      @if (reporte(); as datos) {
+      @if (reporte; as datos) {
         <p>{{ datos.titulo }}</p>
       }
     </div>
@@ -10,51 +10,51 @@
       >Volver al reporte</a
     >
   </div>
-  @if (error()) {
-    <p class="aviso error" role="alert">{{ error() }}</p>
-    @if (!reporte()) {
+  @if (error) {
+    <p class="aviso error" role="alert">{{ error }}</p>
+    @if (!reporte) {
       <button mat-button type="button" (click)="cargar()">Volver a intentar</button>
     }
   }
-  @if (aviso()) {
-    <p class="aviso exito" role="status">{{ aviso() }}</p>
+  @if (aviso) {
+    <p class="aviso exito" role="status">{{ aviso }}</p>
   }
-  @if (cargando()) {
+  @if (cargando) {
     <p role="status">Cargando seguimiento…</p>
   }
-  @if (pendiente(); as item) {
+  @if (pendiente; as item) {
     <div class="aviso" role="group" aria-label="Confirmar eliminación">
       <p>¿Eliminar {{ item.tipo === 'comentario' ? 'el comentario' : 'la recomendación' }}?</p>
-      <button mat-flat-button type="button" [disabled]="guardando()" (click)="eliminar()">
+      <button mat-flat-button type="button" [disabled]="guardando" (click)="eliminar()">
         Confirmar eliminación
       </button>
-      <button mat-button type="button" [disabled]="guardando()" (click)="pendiente.set(null)">
+      <button mat-button type="button" [disabled]="guardando" (click)="pendiente = null">
         Cancelar
       </button>
     </div>
   }
-  @if (reporte()) {
+  @if (reporte) {
     <div class="pestanas">
       <button
         mat-button
         type="button"
-        [class.activa]="pestana() === 'recomendaciones'"
-        (click)="pestana.set('recomendaciones')"
+        [class.activa]="pestana === 'recomendaciones'"
+        (click)="pestana = 'recomendaciones'"
       >
-        Recomendaciones ({{ recomendacion() ? 1 : 0 }})
+        Recomendaciones ({{ recomendacion ? 1 : 0 }})
       </button>
 
       <button
         mat-button
         type="button"
-        [class.activa]="pestana() === 'comentarios'"
-        (click)="pestana.set('comentarios')"
+        [class.activa]="pestana === 'comentarios'"
+        (click)="pestana = 'comentarios'"
       >
-        Comentarios ({{ comentarios().length }})
+        Comentarios ({{ comentarios.length }})
       </button>
     </div>
     <div class="seguimiento">
-      <section class="tarjeta" [hidden]="pestana() !== 'comentarios'">
+      <section class="tarjeta" [hidden]="pestana !== 'comentarios'">
         <h2>Comentarios</h2>
         @for (item of comentariosVisibles(); track item.idComentario) {
           <article>
@@ -76,7 +76,7 @@
                 mat-button
                 type="button"
                 [disabled]="guardarBloqueado()"
-                (click)="pendiente.set({ tipo: 'comentario', id: item.idComentario })"
+                (click)="pendiente = { tipo: 'comentario', id: item.idComentario }"
               >
                 Eliminar comentario
               </button>
@@ -86,16 +86,16 @@
           <p>Este reporte aún no tiene comentarios.</p>
         }
         <mat-paginator
-          [length]="comentarios().length"
-          [pageIndex]="paginaComentarios()"
-          [pageSize]="porPaginaComentarios()"
+          [length]="comentarios.length"
+          [pageIndex]="paginaComentarios"
+          [pageSize]="porPaginaComentarios"
           [pageSizeOptions]="[5, 10, 25]"
           (page)="cambiarPaginaComentarios($event)"
           aria-label="Páginas de comentarios"
         />
         <form [formGroup]="comentarioForm" (ngSubmit)="guardarComentario()">
           <mat-form-field appearance="outline">
-            <mat-label>{{ editado() ? 'Editar comentario' : 'Nuevo comentario' }}</mat-label>
+            <mat-label>{{ editado ? 'Editar comentario' : 'Nuevo comentario' }}</mat-label>
             <textarea
               matInput
               formControlName="textoComentario"
@@ -110,14 +110,14 @@
               type="submit"
               [disabled]="guardarBloqueado() || comentarioForm.invalid"
             >
-              {{ editado() ? 'Guardar comentario' : 'Publicar comentario' }}
+              {{ editado ? 'Guardar comentario' : 'Publicar comentario' }}
             </button>
-            @if (editado()) {
+            @if (editado) {
               <button
                 mat-button
                 type="button"
                 (click)="cancelarComentario()"
-                [disabled]="guardando()"
+                [disabled]="guardando"
               >
                 Cancelar edición
               </button>
@@ -125,11 +125,11 @@
           </div>
         </form>
       </section>
-      <section class="tarjeta" [hidden]="pestana() !== 'recomendaciones'">
+      <section class="tarjeta" [hidden]="pestana !== 'recomendaciones'">
         <h2>Recomendación</h2>
         <p>
           {{
-            recomendacion()
+            recomendacion
               ? 'Edita la recomendación guardada para el reporte.'
               : 'Registra una propuesta de atención para el reporte.'
           }}
@@ -149,7 +149,7 @@
           <mat-form-field appearance="outline"
             ><mat-label>Prioridad sugerida</mat-label
             ><mat-select formControlName="prioridadSugerida">
-              @if (recomendacion(); as actual) {
+              @if (recomendacion; as actual) {
                 @if (!prioridades.includes(actual.prioridadSugerida)) {
                   <mat-option [value]="actual.prioridadSugerida">{{
                     actual.prioridadSugerida
@@ -174,12 +174,12 @@
             >
               Guardar recomendación
             </button>
-            @if (recomendacion(); as item) {
+            @if (recomendacion; as item) {
               <button
                 mat-button
                 type="button"
                 [disabled]="guardarBloqueado()"
-                (click)="pendiente.set({ tipo: 'recomendacion', id: item.idRecomendacion })"
+                (click)="pendiente = { tipo: 'recomendacion', id: item.idRecomendacion }"
               >
                 Eliminar recomendación
               </button>

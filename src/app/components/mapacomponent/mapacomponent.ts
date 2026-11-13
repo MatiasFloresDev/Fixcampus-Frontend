@@ -1,20 +1,19 @@
+import { isPlatformBrowser } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
+  ChangeDetectorRef,
   Component,
-  DestroyRef,
   ElementRef,
-  Injector,
+  Inject,
+  OnDestroy,
   OnInit,
-  afterNextRender,
-  inject,
-  signal,
-  viewChild,
+  PLATFORM_ID,
+  ViewChild,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import type { Map as MapaLeaflet } from 'leaflet';
-import { switchMap } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { UbicacionDTO } from '../../models/ReporteDTO';
 import { Accesoservice } from '../../services/accesoservice';
 import { Reporteservice } from '../../services/reporteservice';
@@ -22,90 +21,111 @@ import { Reporteservice } from '../../services/reporteservice';
 @Component({
   imports: [MatButtonModule, RouterLink],
   templateUrl: './mapacomponent.html',
-  styles: `
-    .mapa {
-      width: 100%;
-      height: clamp(240px, 55vh, 480px);
-      border: 1px solid #d6dbde;
-      border-radius: 12px;
-      margin: 12px 0;
-    }
-  `,
+  styleUrl: './mapacomponent.css',
 })
-export class Mapacomponent implements OnInit {
-  private readonly reportes = inject(Reporteservice);
-  private readonly acceso = inject(Accesoservice);
-  private readonly destruccion = inject(DestroyRef);
-  private readonly inyector = inject(Injector);
-  private readonly vista = viewChild<ElementRef<HTMLDivElement>>('mapa');
+export class Mapacomponent implements OnInit, OnDestroy {
+  @ViewChild('mapa') contenedorMapa?: ElementRef<HTMLDivElement>;
+  id: number;
+  ubicacion: UbicacionDTO | null = null;
+  cargando = false;
+  error = '';
+  errorMapa = '';
   private mapa?: MapaLeaflet;
-  protected readonly id = Number(inject(ActivatedRoute).snapshot.paramMap.get('id'));
-  protected readonly ubicacion = signal<UbicacionDTO | null>(null);
-  protected readonly cargando = signal(false);
-  protected readonly error = signal('');
-  protected readonly errorMapa = signal('');
+  private suscripciones = new Subscription();
+  private destruido = false;
+  private navegador: boolean;
 
-  constructor() {
-    this.destruccion.onDestroy(() => this.mapa?.remove());
+  constructor(
+    private reportes: Reporteservice,
+    private acceso: Accesoservice,
+    private ruta: ActivatedRoute,
+    private cdr: ChangeDetectorRef,
+    @Inject(PLATFORM_ID) plataforma: object,
+  ) {
+    this.id = Number(this.ruta.snapshot.paramMap.get('id'));
+    this.navegador = isPlatformBrowser(plataforma);
   }
 
   ngOnInit(): void {
     this.cargar();
   }
 
-  protected cargar(): void {
+  cargar(): void {
     if (!Number.isSafeInteger(this.id) || this.id <= 0) {
-      this.error.set('El número de reporte no es válido.');
+      this.error = 'El número de reporte no es válido.';
       return;
     }
+    this.error = '';
+    this.errorMapa = '';
+    this.cargando = true;
+    this.suscripciones.add(
+      this.reportes.obtener(this.id).subscribe({
+        next: (reporte) => this.cargarUbicacion(reporte.ubicacionId),
+        error: (error: HttpErrorResponse) => this.mostrarError(error),
+      }),
+    );
+  }
 
-    this.error.set('');
-    this.cargando.set(true);
-    this.reportes
-      .obtener(this.id)
-      .pipe(
-        switchMap((reporte) => this.reportes.ubicacion(reporte.ubicacionId)),
-        takeUntilDestroyed(this.destruccion),
-      )
-      .subscribe({
+  private cargarUbicacion(id: number): void {
+    this.suscripciones.add(
+      this.reportes.ubicacion(id).subscribe({
         next: (datos) => {
-          this.ubicacion.set(datos);
-          this.cargando.set(false);
-          if (datos.latitud != null && datos.longitud != null) {
-            const punto: [number, number] = [datos.latitud, datos.longitud];
-            afterNextRender(() => void this.mostrarMapa(punto), { injector: this.inyector });
+          this.ubicacion = datos;
+          this.cargando = false;
+          this.cdr.detectChanges();
+          if (this.navegador && datos.latitud != null && datos.longitud != null) {
+            void this.mostrarMapa([datos.latitud, datos.longitud]);
           }
         },
-        error: (error: HttpErrorResponse) => {
-          this.acceso.revisarError(error);
-          this.error.set(
-            error.status === 403
-              ? 'No tienes permiso para consultar este reporte.'
-              : 'No se pudo consultar la ubicación.',
-          );
-          this.cargando.set(false);
-        },
-      });
+        error: (error: HttpErrorResponse) => this.mostrarError(error),
+      }),
+    );
+  }
+
+  private mostrarError(error: HttpErrorResponse): void {
+    this.acceso.revisarError(error);
+    this.error =
+      error.status === 403
+        ? 'No tienes permiso para consultar este reporte.'
+        : 'No se pudo consultar la ubicación.';
+    this.cargando = false;
+    this.cdr.detectChanges();
   }
 
   private async mostrarMapa(punto: [number, number]): Promise<void> {
     try {
-      const { default: { map, tileLayer, circleMarker } } = await import('leaflet');
-      const contenedor = this.vista()?.nativeElement;
-      if (this.destruccion.destroyed || !contenedor) return;
-
-      this.mapa = map(contenedor, { scrollWheelZoom: false }).setView(punto, 17);
+      const {
+        default: { map, tileLayer, circleMarker },
+      } = await import('leaflet');
+      if (this.destruido || !this.contenedorMapa) return;
+      this.mapa?.remove();
+      this.mapa = map(this.contenedorMapa.nativeElement, { scrollWheelZoom: false }).setView(
+        punto,
+        17,
+      );
       tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       })
-        .on('tileerror', () =>
-          this.errorMapa.set('Algunas imágenes del mapa no están disponibles.'),
-        )
+        .on('tileerror', () => {
+          if (!this.destruido) {
+            this.errorMapa = 'Algunas imágenes del mapa no están disponibles.';
+            this.cdr.detectChanges();
+          }
+        })
         .addTo(this.mapa);
       circleMarker(punto, { color: '#0d6a62', fillOpacity: 0.8, radius: 9 }).addTo(this.mapa);
     } catch {
-      if (!this.destruccion.destroyed) this.errorMapa.set('No se pudo abrir el mapa.');
+      if (!this.destruido) {
+        this.errorMapa = 'No se pudo abrir el mapa.';
+        this.cdr.detectChanges();
+      }
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destruido = true;
+    this.suscripciones.unsubscribe();
+    this.mapa?.remove();
   }
 }

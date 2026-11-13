@@ -1,6 +1,6 @@
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { Inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -13,9 +13,16 @@ export class Accesoservice {
   private temporizador?: ReturnType<typeof setTimeout>;
   private navegador: boolean;
   private clave = 'fixcampus-token';
-  private rolActual = signal('');
-  readonly rol = this.rolActual.asReadonly();
-  readonly vencida = signal(false);
+  private rolActual = '';
+  private sesionVencida = false;
+
+  rol(): string {
+    return this.rolActual;
+  }
+
+  vencida(): boolean {
+    return this.sesionVencida;
+  }
 
   constructor(
     private http: HttpClient,
@@ -27,7 +34,7 @@ export class Accesoservice {
       const guardado = sessionStorage.getItem(this.clave);
       if (guardado && !this.guardarToken(guardado)) {
         this.salir();
-        this.vencida.set(true);
+        this.sesionVencida = true;
       }
     }
   }
@@ -51,8 +58,8 @@ export class Accesoservice {
       clearTimeout(this.temporizador);
       this.token = token;
       this.vence = datos.exp * 1000;
-      this.rolActual.set(rol);
-      this.vencida.set(false);
+      this.rolActual = rol;
+      this.sesionVencida = false;
       if (this.navegador) {
         sessionStorage.setItem(this.clave, token);
         this.temporizador = setTimeout(() => this.vencer(), tiempo);
@@ -77,8 +84,8 @@ export class Accesoservice {
     clearTimeout(this.temporizador);
     this.token = '';
     this.vence = 0;
-    this.rolActual.set('');
-    this.vencida.set(false);
+    this.rolActual = '';
+    this.sesionVencida = false;
     if (this.navegador) sessionStorage.removeItem(this.clave);
   }
 
@@ -88,7 +95,7 @@ export class Accesoservice {
 
   private vencer(): void {
     this.salir();
-    this.vencida.set(true);
+    this.sesionVencida = true;
     this.router.navigate(['/acceso']);
   }
 }

@@ -105,6 +105,17 @@ describe('Acceso y reportes de FixCampus', () => {
     expect(pagina.textContent).toContain('Puedes elegir la categoría en el formulario.');
   });
 
+  it('cancela la consulta de IA al salir de la pantalla del reporte', async () => {
+    const { app, http, escribir, boton } = await abrirReporteNuevo();
+    escribir('El foco del pasillo no enciende.');
+    boton('Sugerir categoría con IA')!.click();
+    const consulta = http.expectOne(environment.base + '/api/reports/sugerir-categoria');
+    await TestBed.inject(Router).navigateByUrl('/');
+    app.detectChanges();
+    expect(consulta.cancelled).toBe(true);
+    expect(app.nativeElement.textContent).toContain('Reporta un problema en el campus');
+  });
+
   it('valida el registro y envía únicamente los datos de la cuenta', async () => {
     const app = await abrir('/crear-cuenta');
     const vista = app.debugElement.query(By.directive(Registrocomponent))
@@ -119,11 +130,11 @@ describe('Acceso y reportes de FixCampus', () => {
     });
     vista.registrar();
     http.expectNone(environment.base + '/registro');
-    vista.formulario.controls.password.setValue('ClavePrueba');
-    vista.formulario.controls.terminos.setValue(false);
+    vista.formulario.controls['password'].setValue('ClavePrueba');
+    vista.formulario.controls['terminos'].setValue(false);
     vista.registrar();
     http.expectNone(environment.base + '/registro');
-    vista.formulario.controls.terminos.setValue(true);
+    vista.formulario.controls['terminos'].setValue(true);
     vista.registrar();
     const solicitud = http.expectOne(environment.base + '/registro');
     expect(solicitud.request.method).toBe('POST');
@@ -336,6 +347,106 @@ describe('Acceso y reportes de FixCampus', () => {
     expect(secciones[0].hidden).toBe(true);
     expect(secciones[1].hidden).toBe(false);
     expect(secciones[1].querySelector('input').value).toBe('Revisar la tubería');
+  });
+
+  it('consulta las estadísticas mediante el servicio y presenta categorías sin reportes', async () => {
+    const app = await abrir('/administracion/estadisticas', 'ADMIN');
+    const http = TestBed.inject(HttpTestingController);
+    const categorias = http.expectOne(environment.base + '/api/categories/reporte-por-categoria');
+    expect(categorias.request.headers.get('Authorization')).toMatch(/^Bearer /);
+    categorias.flush([{ idCategoria: 7, nombre: 'Electricidad', totalReportes: 0 }]);
+    http
+      .expectOne(environment.base + '/api/recomendaciones/estadisticas/por-prioridad-reporte')
+      .flush([{ prioridad: 'ALTA', cantidad: 2 }]);
+    app.detectChanges();
+    const grupos = app.nativeElement.querySelectorAll('.grupos section');
+    expect(grupos[0].textContent).toContain('Electricidad');
+    expect(grupos[0].querySelector('strong').textContent).toBe('0');
+    expect(grupos[1].textContent).toContain('ALTA');
+    expect(grupos[1].querySelector('strong').textContent).toBe('2');
+  });
+
+  it('permite reintentar la ubicación e informa cuando aún no tiene coordenadas', async () => {
+    const app = await abrir('/reportes/12/mapa', 'USUARIO');
+    const http = TestBed.inject(HttpTestingController);
+    http
+      .expectOne(environment.base + '/api/reports/12')
+      .flush({}, { status: 404, statusText: 'No encontrado' });
+    app.detectChanges();
+    expect(app.nativeElement.textContent).toContain('No se pudo consultar la ubicación.');
+    const botones = app.nativeElement.querySelectorAll('button') as NodeListOf<HTMLButtonElement>;
+    Array.from(botones)
+      .find((b) => b.textContent?.trim() === 'Volver a intentar')!
+      .click();
+    http.expectOne(environment.base + '/api/reports/12').flush({ idReporte: 12, ubicacionId: 4 });
+    http.expectOne(environment.base + '/api/locations/4').flush({
+      idUbicacion: 4,
+      campus: 'Campus de prueba',
+      edificio: 'A',
+      latitud: null,
+      longitud: null,
+    });
+    app.detectChanges();
+    expect(app.nativeElement.textContent).toContain('Campus de prueba');
+    expect(app.nativeElement.textContent).toContain('aún no tiene coordenadas registradas');
+    expect(app.nativeElement.querySelector('.mapa')).toBeNull();
+  });
+
+  it('registra, edita y elimina un comentario conservando su relación con el reporte', async () => {
+    const app = await abrir('/reportes/12/seguimiento', 'ADMIN');
+    const http = TestBed.inject(HttpTestingController);
+    http
+      .expectOne(environment.base + '/api/reports/12')
+      .flush({ idReporte: 12, titulo: 'Fuga de agua' });
+    http.expectOne(environment.base + '/api/comments/reporte/12').flush([]);
+    http
+      .expectOne(environment.base + '/api/recomendaciones/reporte/12')
+      .flush(null, { status: 204, statusText: 'Sin recomendación' });
+    app.detectChanges();
+    const escribir = (texto: string) => {
+      const campo = app.nativeElement.querySelector('textarea[formcontrolname="textoComentario"]');
+      campo.value = texto;
+      campo.dispatchEvent(new Event('input'));
+      app.detectChanges();
+    };
+    const boton = (texto: string) =>
+      Array.from(
+        app.nativeElement.querySelectorAll('button') as NodeListOf<HTMLButtonElement>,
+      ).find((b) => b.textContent?.trim() === texto)!;
+    escribir('Se revisó la tubería.');
+    boton('Publicar comentario').click();
+    const guardar = http.expectOne(environment.base + '/api/comments/reporte/12');
+    expect(guardar.request.body).toEqual({ textoComentario: 'Se revisó la tubería.' });
+    const comentario = {
+      idComentario: 3,
+      reporteId: 12,
+      usuarioId: 9,
+      textoComentario: 'Se revisó la tubería.',
+      fechaComentario: '2026-11-12T10:00:00',
+    };
+    guardar.flush(comentario);
+    app.detectChanges();
+    boton('Editar comentario').click();
+    app.detectChanges();
+    escribir('Se cambió la tubería.');
+    boton('Guardar comentario').click();
+    const actualizar = http.expectOne(environment.base + '/api/comments/3');
+    expect(actualizar.request.method).toBe('PUT');
+    expect(actualizar.request.body.reporteId).toBe(12);
+    actualizar.flush({ ...comentario, textoComentario: 'Se cambió la tubería.' });
+    app.detectChanges();
+    expect(app.nativeElement.querySelector('.seguimiento article').textContent).toContain(
+      'Se cambió la tubería.',
+    );
+    boton('Eliminar comentario').click();
+    app.detectChanges();
+    boton('Confirmar eliminación').click();
+    http
+      .expectOne(environment.base + '/api/comments/3')
+      .flush(null, { status: 204, statusText: 'Eliminado' });
+    app.detectChanges();
+    expect(app.nativeElement.querySelector('.seguimiento article')).toBeNull();
+    expect(app.nativeElement.textContent).toContain('aún no tiene comentarios');
   });
 
   it('pagina y busca usuarios y conserva la contraseña al editar una cuenta', async () => {

@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -22,7 +22,7 @@ import { Accesoservice } from '../../services/accesoservice';
   styleUrl: './registrocomponent.css',
 })
 export class Registrocomponent {
-  formulario;
+  formulario: FormGroup;
   cargando = false;
   correoRegistrado = '';
   mensaje = '';
@@ -32,7 +32,7 @@ export class Registrocomponent {
     private cdr: ChangeDetectorRef,
     fb: FormBuilder,
   ) {
-    this.formulario = fb.nonNullable.group({
+    this.formulario = fb.group({
       nombre: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(100)]],
       apellido: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(100)]],
       correo: ['', [Validators.required, Validators.email, Validators.maxLength(150)]],
@@ -56,7 +56,13 @@ export class Registrocomponent {
       .subscribe({
         next: () => {
           this.correoRegistrado = correo.trim();
-          this.formulario.reset();
+          this.formulario.reset({
+            nombre: '',
+            apellido: '',
+            correo: '',
+            password: '',
+            terminos: false,
+          });
           this.cargando = false;
           this.cdr.detectChanges();
         },
