@@ -57,6 +57,59 @@ a {
 .lado-formulario > p {
   color: #5f6b70;
 }
+.encabezado-foto {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 36%);
+  align-items: center;
+  column-gap: 32px;
+  row-gap: 16px;
+  background: var(--verde-claro);
+  border: 1px solid #bed8d3;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.encabezado-foto > div,
+.encabezado-foto > a {
+  grid-column: 1;
+}
+.encabezado-foto > a {
+  justify-self: start;
+}
+.encabezado-foto h1 {
+  color: #154d47;
+}
+.encabezado-foto figure {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  margin: 0;
+}
+.encabezado-foto img {
+  display: block;
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+.encabezado-foto figcaption {
+  color: #425c58;
+  font-size: 12px;
+  margin-top: 6px;
+}
+@media (max-width: 660px) {
+  .encabezado-foto {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 20px;
+    gap: 16px;
+  }
+  .encabezado-foto figure {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .encabezado-foto img {
+    height: 150px;
+  }
+}
 .tarjeta {
   background: white;
   border: 1px solid #d6dbde;
