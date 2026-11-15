@@ -8,7 +8,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
-import { CategoriaDTO, ReporteDTO, UbicacionDTO } from '../../models/ReporteDTO';
+import { CategoriaDTO } from '../../models/CategoriaDTO';
+import { ReporteDTO } from '../../models/ReporteDTO';
+import { UbicacionDTO } from '../../models/UbicacionDTO';
 import { Accesoservice } from '../../services/accesoservice';
 import { Reporteservice } from '../../services/reporteservice';
 
