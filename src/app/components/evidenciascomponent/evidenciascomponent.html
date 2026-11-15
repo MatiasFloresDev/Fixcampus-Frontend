@@ -1,10 +1,18 @@
 <section class="contenedor">
-  <div class="encabezado">
+  <div class="encabezado encabezado-foto">
     <div>
       <h1>{{ acceso.rol() === 'ADMIN' ? 'Evidencias de reportes' : 'Mis reportes' }}</h1>
       <p>Selecciona un reporte para consultar sus evidencias.</p>
     </div>
     <a mat-flat-button routerLink="/reportar">Nueva incidencia</a>
+    <figure>
+      <img
+        src="assets/aula-universitaria.jpg"
+        alt="Aula universitaria, fotografía ilustrativa"
+        width="960"
+        height="641"
+      />
+    </figure>
   </div>
   @if (acceso.rol() === 'ADMIN') {
     <label for="prioridadReporte">Filtrar por prioridad</label>
