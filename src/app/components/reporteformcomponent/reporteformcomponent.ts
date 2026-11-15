@@ -48,6 +48,9 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
   protected categoriasFiltradas: CategoriaDTO[] | null = null;
   protected buscandoCategorias = false;
   protected errorCategorias = '';
+  protected consultaCategorias = '';
+  protected mostrarResultados = false;
+  private busquedaCategorias: Subscription | null = null;
   protected categorias: CategoriaDTO[] = [];
   protected ubicaciones: UbicacionDTO[] = [];
   protected original: ReporteDTO | null = null;
@@ -113,31 +116,57 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
   }
 
   protected buscarCategorias(texto: string): void {
-    if (this.buscandoCategorias) return;
+    this.busquedaCategorias?.unsubscribe();
     const palabra = texto.trim();
     this.errorCategorias = '';
     if (!palabra) {
-      this.categoriasFiltradas = null;
+      this.mostrarTodasCategorias();
       return;
     }
+    this.consultaCategorias = palabra;
+    this.mostrarResultados = true;
     this.buscandoCategorias = true;
-    this.suscripciones.add(
-      this.servicio.buscarCategorias(palabra).subscribe({
-        next: (datos) => {
-          this.categoriasFiltradas = datos;
-          this.buscandoCategorias = false;
-          this.cdr.detectChanges();
-        },
-        error: (error: HttpErrorResponse) => {
-          this.acceso.revisarError(error);
-          this.errorCategorias =
-            'No se pudieron buscar categorías. Puedes usar el listado completo.';
-          this.categoriasFiltradas = null;
-          this.buscandoCategorias = false;
-          this.cdr.detectChanges();
-        },
-      }),
-    );
+    this.busquedaCategorias = this.servicio.buscarCategorias(palabra).subscribe({
+      next: (datos) => {
+        const porNombre = this.categorias.filter((categoria) =>
+          categoria.nombre.toLocaleLowerCase().includes(palabra.toLocaleLowerCase()),
+        );
+        this.categoriasFiltradas = [
+          ...porNombre,
+          ...datos.filter(
+            (categoria) => !porNombre.some((item) => item.idCategoria === categoria.idCategoria),
+          ),
+        ];
+        this.buscandoCategorias = false;
+        this.cdr.detectChanges();
+      },
+      error: (error: HttpErrorResponse) => {
+        this.acceso.revisarError(error);
+        this.errorCategorias = 'No se pudieron buscar categorías. Puedes usar el listado completo.';
+        this.categoriasFiltradas = null;
+        this.buscandoCategorias = false;
+        this.cdr.detectChanges();
+      },
+    });
+    this.suscripciones.add(this.busquedaCategorias);
+  }
+
+  protected mostrarTodasCategorias(): void {
+    this.busquedaCategorias?.unsubscribe();
+    this.buscandoCategorias = false;
+    this.errorCategorias = '';
+    this.consultaCategorias = '';
+    this.categoriasFiltradas = null;
+    this.mostrarResultados = true;
+  }
+
+  protected resultadosCategoria(): CategoriaDTO[] {
+    return this.categoriasFiltradas ?? this.categorias;
+  }
+
+  protected seleccionarCategoria(categoria: CategoriaDTO): void {
+    this.formulario.controls['categoriaId'].setValue(categoria.idCategoria);
+    this.formulario.controls['categoriaId'].markAsDirty();
   }
 
   protected descripcionIA(): string {
