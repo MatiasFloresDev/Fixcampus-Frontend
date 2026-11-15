@@ -14,7 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import type { Map as MapaLeaflet } from 'leaflet';
 import { Subscription } from 'rxjs';
-import { UbicacionDTO } from '../../models/ReporteDTO';
+import { UbicacionDTO } from '../../models/UbicacionDTO';
 import { Accesoservice } from '../../services/accesoservice';
 import { Reporteservice } from '../../services/reporteservice';
 

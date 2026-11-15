@@ -1,7 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { RolUsuarioDTO, UsuarioDTO, UsuarioFormularioDTO } from '../models/UsuarioDTO';
+import { RolDTO } from '../models/RolDTO';
+import { UsuarioDTO } from '../models/UsuarioDTO';
+import { UsuarioFormularioDTO } from '../models/UsuarioFormularioDTO';
 import { Accesoservice } from './accesoservice';
 
 @Injectable({ providedIn: 'root' })
@@ -13,27 +16,27 @@ export class Usuarioservice {
     private acceso: Accesoservice,
   ) {}
 
-  listar() {
+  listar(): Observable<UsuarioDTO[]> {
     return this.http.get<UsuarioDTO[]>(this.api, { headers: this.acceso.obtenerCabeceras() });
   }
 
-  roles() {
-    return this.http.get<RolUsuarioDTO[]>(environment.base + '/api/roles', {
+  roles(): Observable<RolDTO[]> {
+    return this.http.get<RolDTO[]>(environment.base + '/api/roles', {
       headers: this.acceso.obtenerCabeceras(),
     });
   }
 
-  registrar(datos: UsuarioFormularioDTO) {
+  registrar(datos: UsuarioFormularioDTO): Observable<UsuarioDTO> {
     return this.http.post<UsuarioDTO>(this.api, datos, { headers: this.acceso.obtenerCabeceras() });
   }
 
-  actualizar(id: number, datos: UsuarioFormularioDTO) {
+  actualizar(id: number, datos: UsuarioFormularioDTO): Observable<UsuarioDTO> {
     return this.http.put<UsuarioDTO>(this.api + '/' + id, datos, {
       headers: this.acceso.obtenerCabeceras(),
     });
   }
 
-  eliminar(id: number) {
+  eliminar(id: number): Observable<void> {
     return this.http.delete<void>(this.api + '/' + id, { headers: this.acceso.obtenerCabeceras() });
   }
 }

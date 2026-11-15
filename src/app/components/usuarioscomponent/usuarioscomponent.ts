@@ -9,7 +9,8 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
-import { RolUsuarioDTO, UsuarioDTO } from '../../models/UsuarioDTO';
+import { RolDTO } from '../../models/RolDTO';
+import { UsuarioDTO } from '../../models/UsuarioDTO';
 import { Accesoservice } from '../../services/accesoservice';
 import { Usuarioservice } from '../../services/usuarioservice';
 
@@ -29,7 +30,7 @@ import { Usuarioservice } from '../../services/usuarioservice';
 })
 export class Usuarioscomponent implements OnInit, OnDestroy {
   protected usuarios: UsuarioDTO[] = [];
-  protected roles: RolUsuarioDTO[] = [];
+  protected roles: RolDTO[] = [];
   protected cargando = false;
   protected ocupado = false;
   protected error = '';
@@ -53,7 +54,7 @@ export class Usuarioscomponent implements OnInit, OnDestroy {
       nombre: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(100)]],
       apellido: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(100)]],
       correo: ['', [Validators.required, Validators.email, Validators.maxLength(150)]],
-      rolId: [null as number | null, Validators.required],
+      rolId: [null, Validators.required],
       estado: ['ACTIVO', Validators.required],
       password: [''],
     });
