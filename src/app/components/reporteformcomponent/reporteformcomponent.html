@@ -71,42 +71,82 @@
           }
         </div>
       }
-      <div>
-        <mat-form-field appearance="outline">
-          <mat-label>Palabra clave de categoría</mat-label>
-          <input
-            matInput
-            #palabra
-            maxlength="100"
-            (keydown.enter)="$event.preventDefault(); buscarCategorias(palabra.value)"
-          />
-        </mat-form-field>
-        <button
-          mat-button
-          type="button"
-          [disabled]="buscandoCategorias"
-          (click)="buscarCategorias(palabra.value)"
-        >
-          Buscar categorías
-        </button>
-        <button
-          mat-button
-          type="button"
-          [disabled]="buscandoCategorias"
-          (click)="palabra.value = ''; buscarCategorias('')"
-        >
-          Mostrar todas
-        </button>
-        @if (buscandoCategorias) {
-          <p role="status">Buscando categorías…</p>
+      <section class="busqueda-categorias" aria-labelledby="titulo-busqueda">
+        <h2 id="titulo-busqueda">Encuentra una categoría</h2>
+        <p class="ayuda-busqueda">Busca por nombre o por una palabra de su descripción.</p>
+        <div class="controles-busqueda">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Buscar categoría</mat-label>
+            <input
+              matInput
+              #palabra
+              maxlength="100"
+              placeholder="Ej. electricidad o luminarias"
+              (keydown.enter)="$event.preventDefault(); buscarCategorias(palabra.value)"
+            />
+          </mat-form-field>
+          <button
+            mat-flat-button
+            type="button"
+            (click)="buscarCategorias(palabra.value)"
+            [disabled]="buscandoCategorias"
+          >
+            {{ buscandoCategorias ? 'Buscando…' : 'Buscar categorías' }}
+          </button>
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="palabra.value = ''; mostrarTodasCategorias()"
+          >
+            Mostrar todas
+          </button>
+        </div>
+        <div class="resultado-busqueda" role="status" aria-live="polite" aria-atomic="true">
+          @if (buscandoCategorias) {
+            <p>Buscando categorías…</p>
+          } @else if (errorCategorias) {
+            <p class="aviso error">{{ errorCategorias }}</p>
+          } @else if (mostrarResultados) {
+            @if (consultaCategorias) {
+              <p>
+                <strong>{{ resultadosCategoria().length }}</strong> categorías encontradas para «{{
+                  consultaCategorias
+                }}».
+              </p>
+            } @else {
+              <p>
+                Mostrando las <strong>{{ categorias.length }}</strong> categorías disponibles.
+              </p>
+            }
+          }
+        </div>
+        @if (mostrarResultados && !buscandoCategorias && !errorCategorias) {
+          @if (!resultadosCategoria().length) {
+            <p class="sin-resultados">
+              Prueba con otra palabra o pulsa Mostrar todas. Tu selección actual se conserva.
+            </p>
+          } @else {
+            <div class="resultados-categorias" aria-label="Categorías encontradas">
+              @for (categoria of resultadosCategoria(); track categoria.idCategoria) {
+                <button
+                  mat-stroked-button
+                  type="button"
+                  [class.categoria-elegida]="
+                    formulario.controls['categoriaId'].value === categoria.idCategoria
+                  "
+                  [attr.aria-pressed]="
+                    formulario.controls['categoriaId'].value === categoria.idCategoria
+                  "
+                  (click)="seleccionarCategoria(categoria)"
+                >
+                  {{ categoria.nombre }}
+                </button>
+              }
+            </div>
+            <p class="nota-seleccion">Pulsa una categoría para seleccionarla en el formulario.</p>
+          }
         }
-        @if (errorCategorias) {
-          <p class="aviso error" role="alert">{{ errorCategorias }}</p>
-        }
-        @if (categoriasFiltradas?.length === 0) {
-          <p role="status">No hay categorías para esa palabra.</p>
-        }
-      </div>
+      </section>
       <div class="campos">
         <mat-form-field appearance="outline">
           <mat-label>Categoría</mat-label>
