@@ -2,16 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import {
-  AdjuntoDTO,
-  AdjuntoFormularioDTO,
-  CategoriaDTO,
-  IncidenciasPorMesDTO,
-  ReporteDTO,
-  ReporteFormularioDTO,
-  SugerenciaCategoriaDTO,
-  UbicacionDTO,
-} from '../models/ReporteDTO';
+import { AdjuntoDTO } from '../models/AdjuntoDTO';
+import { AdjuntoFormularioDTO } from '../models/AdjuntoFormularioDTO';
+import { CategoriaDTO } from '../models/CategoriaDTO';
+import { IncidenciasPorMesDTO } from '../models/IncidenciasPorMesDTO';
+import { ReporteDTO } from '../models/ReporteDTO';
+import { ReporteFormularioDTO } from '../models/ReporteFormularioDTO';
+import { SugerenciaCategoriaDTO } from '../models/SugerenciaCategoriaDTO';
+import { UbicacionDTO } from '../models/UbicacionDTO';
 import { Accesoservice } from './accesoservice';
 
 @Injectable({ providedIn: 'root' })

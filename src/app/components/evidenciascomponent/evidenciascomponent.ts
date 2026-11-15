@@ -8,7 +8,8 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { AdjuntoDTO, ReporteDTO } from '../../models/ReporteDTO';
+import { AdjuntoDTO } from '../../models/AdjuntoDTO';
+import { ReporteDTO } from '../../models/ReporteDTO';
 import { Accesoservice } from '../../services/accesoservice';
 import { Reporteservice } from '../../services/reporteservice';
 @Component({

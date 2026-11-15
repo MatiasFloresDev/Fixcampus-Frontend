@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { RecomendacionFormularioDTO } from '../models/RecomendacionFormularioDTO';
 import { RecomendacionDTO } from '../models/RecomendacionDTO';
 import { Accesoservice } from './accesoservice';
 
@@ -13,31 +15,31 @@ export class Recomendacionservice {
     private acceso: Accesoservice,
   ) {}
 
-  porReporte(reporteId: number) {
+  porReporte(reporteId: number): Observable<RecomendacionDTO | null> {
     return this.http.get<RecomendacionDTO | null>(this.base + '/reporte/' + reporteId, {
       headers: this.acceso.obtenerCabeceras(),
     });
   }
 
-  registrar(datos: Omit<RecomendacionDTO, 'idRecomendacion' | 'fechaRecomendacion'>) {
+  registrar(datos: RecomendacionFormularioDTO): Observable<RecomendacionDTO> {
     return this.http.post<RecomendacionDTO>(this.base, datos, {
       headers: this.acceso.obtenerCabeceras(),
     });
   }
 
-  actualizar(id: number, datos: Omit<RecomendacionDTO, 'idRecomendacion' | 'fechaRecomendacion'>) {
+  actualizar(id: number, datos: RecomendacionFormularioDTO): Observable<RecomendacionDTO> {
     return this.http.put<RecomendacionDTO>(this.base + '/' + id, datos, {
       headers: this.acceso.obtenerCabeceras(),
     });
   }
 
-  eliminar(id: number) {
+  eliminar(id: number): Observable<void> {
     return this.http.delete<void>(this.base + '/' + id, {
       headers: this.acceso.obtenerCabeceras(),
     });
   }
 
-  listar(prioridad: string) {
+  listar(prioridad: string): Observable<RecomendacionDTO[]> {
     const headers = this.acceso.obtenerCabeceras();
     return prioridad
       ? this.http.get<RecomendacionDTO[]>(this.base + '/prioridad', {

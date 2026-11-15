@@ -2,7 +2,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { Subscription } from 'rxjs';
-import { TotalCategoriaDTO, TotalPrioridadDTO } from '../../models/EstadisticaDTO';
+import { TotalCategoriaDTO } from '../../models/TotalCategoriaDTO';
+import { TotalPrioridadDTO } from '../../models/TotalPrioridadDTO';
 import { Accesoservice } from '../../services/accesoservice';
 import { Estadisticaservice } from '../../services/estadisticaservice';
 

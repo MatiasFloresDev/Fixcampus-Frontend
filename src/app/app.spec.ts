@@ -659,6 +659,200 @@ describe('Acceso y reportes de FixCampus', () => {
     http.expectOne(environment.base + '/api/categories').flush([]);
   });
 
+  it('conserva detalle, edición y eliminación en categorias con su DTO concreto', async () => {
+    const app = await abrir('/administracion/categorias', 'ADMIN');
+    const http = TestBed.inject(HttpTestingController);
+    const datos = { nombre: 'Electricidad', descripcion: 'Fallas eléctricas' };
+    const registro = { idCategoria: 95, ...datos };
+    const base = environment.base + '/api/categories';
+    http.expectOne(base).flush([registro]);
+    app.detectChanges();
+    const pulsar = (texto: string) =>
+      Array.from(app.nativeElement.querySelectorAll('button') as NodeListOf<HTMLButtonElement>)
+        .find((b) => b.textContent?.trim() === texto)!
+        .click();
+    pulsar('Ver detalle');
+    http.expectOne(base + '/95').flush(registro);
+    app.detectChanges();
+    let formulario = app.debugElement
+      .query(By.directive(FormGroupDirective))
+      .injector.get(FormGroupDirective).form;
+    expect(formulario.disabled).toBe(true);
+    pulsar('Cerrar detalle');
+    app.detectChanges();
+    pulsar('Editar');
+    http.expectOne(base + '/95').flush(registro);
+    app.detectChanges();
+    formulario = app.debugElement
+      .query(By.directive(FormGroupDirective))
+      .injector.get(FormGroupDirective).form;
+    expect(formulario.enabled).toBe(true);
+    app.nativeElement.querySelector('form').dispatchEvent(new Event('submit'));
+    const editar = http.expectOne(base + '/95');
+    expect(editar.request.method).toBe('PUT');
+    expect(editar.request.body).not.toHaveProperty('idCategoria');
+    editar.flush(registro);
+    http.expectOne(base).flush([registro]);
+    app.detectChanges();
+    pulsar('Eliminar');
+    app.detectChanges();
+    pulsar('Confirmar eliminación');
+    const eliminar = http.expectOne(base + '/95');
+    expect(eliminar.request.method).toBe('DELETE');
+    eliminar.flush(null);
+    http.expectOne(base).flush([]);
+    app.detectChanges();
+    expect(app.nativeElement.textContent).toContain('Aún no hay registros');
+  });
+
+  it('conserva detalle, edición y eliminación en ubicaciones con su DTO concreto', async () => {
+    const app = await abrir('/administracion/ubicaciones', 'ADMIN');
+    const http = TestBed.inject(HttpTestingController);
+    const datos = {
+      campus: 'Prueba',
+      edificio: 'A',
+      piso: 0,
+      zona: '',
+      tipo: 'CAMPUS',
+      latitud: 0,
+      longitud: 0,
+    };
+    const registro = { idUbicacion: 95, ...datos };
+    const base = environment.base + '/api/locations';
+    http.expectOne(base).flush([registro]);
+    app.detectChanges();
+    const pulsar = (texto: string) =>
+      Array.from(app.nativeElement.querySelectorAll('button') as NodeListOf<HTMLButtonElement>)
+        .find((b) => b.textContent?.trim() === texto)!
+        .click();
+    pulsar('Ver detalle');
+    http.expectOne(base + '/95').flush(registro);
+    app.detectChanges();
+    let formulario = app.debugElement
+      .query(By.directive(FormGroupDirective))
+      .injector.get(FormGroupDirective).form;
+    expect(formulario.disabled).toBe(true);
+    pulsar('Cerrar detalle');
+    app.detectChanges();
+    pulsar('Editar');
+    http.expectOne(base + '/95').flush(registro);
+    app.detectChanges();
+    formulario = app.debugElement
+      .query(By.directive(FormGroupDirective))
+      .injector.get(FormGroupDirective).form;
+    expect(formulario.enabled).toBe(true);
+    app.nativeElement.querySelector('form').dispatchEvent(new Event('submit'));
+    const editar = http.expectOne(base + '/95');
+    expect(editar.request.method).toBe('PUT');
+    expect(editar.request.body).not.toHaveProperty('idUbicacion');
+    expect(editar.request.body.latitud).toBe(0);
+    expect(editar.request.body.longitud).toBe(0);
+    expect(editar.request.body.piso).toBe(0);
+    editar.flush(registro);
+    http.expectOne(base).flush([registro]);
+    app.detectChanges();
+    pulsar('Eliminar');
+    app.detectChanges();
+    pulsar('Confirmar eliminación');
+    const eliminar = http.expectOne(base + '/95');
+    expect(eliminar.request.method).toBe('DELETE');
+    eliminar.flush(null);
+    http.expectOne(base).flush([]);
+    app.detectChanges();
+    expect(app.nativeElement.textContent).toContain('Aún no hay registros');
+  });
+
+  it('conserva detalle, edición y eliminación en roles con su DTO concreto', async () => {
+    const app = await abrir('/administracion/roles', 'ADMIN');
+    const http = TestBed.inject(HttpTestingController);
+    const datos = { nombre: 'PRUEBA', nivelAcceso: 'LIMITADO', descripcion: '' };
+    const registro = { idRol: 95, ...datos };
+    const base = environment.base + '/api/roles';
+    http.expectOne(base).flush([registro]);
+    app.detectChanges();
+    const pulsar = (texto: string) =>
+      Array.from(app.nativeElement.querySelectorAll('button') as NodeListOf<HTMLButtonElement>)
+        .find((b) => b.textContent?.trim() === texto)!
+        .click();
+    pulsar('Ver detalle');
+    http.expectOne(base + '/95').flush(registro);
+    app.detectChanges();
+    let formulario = app.debugElement
+      .query(By.directive(FormGroupDirective))
+      .injector.get(FormGroupDirective).form;
+    expect(formulario.disabled).toBe(true);
+    pulsar('Cerrar detalle');
+    app.detectChanges();
+    pulsar('Editar');
+    http.expectOne(base + '/95').flush(registro);
+    app.detectChanges();
+    formulario = app.debugElement
+      .query(By.directive(FormGroupDirective))
+      .injector.get(FormGroupDirective).form;
+    expect(formulario.enabled).toBe(true);
+    app.nativeElement.querySelector('form').dispatchEvent(new Event('submit'));
+    const editar = http.expectOne(base + '/95');
+    expect(editar.request.method).toBe('PUT');
+    expect(editar.request.body).not.toHaveProperty('idRol');
+    editar.flush(registro);
+    http.expectOne(base).flush([registro]);
+    app.detectChanges();
+    pulsar('Eliminar');
+    app.detectChanges();
+    pulsar('Confirmar eliminación');
+    const eliminar = http.expectOne(base + '/95');
+    expect(eliminar.request.method).toBe('DELETE');
+    eliminar.flush(null);
+    http.expectOne(base).flush([]);
+    app.detectChanges();
+    expect(app.nativeElement.textContent).toContain('Aún no hay registros');
+  });
+
+  it('conserva la protección de nombre y eliminación de los roles base', async () => {
+    const app = await abrir('/administracion/roles', 'ADMIN');
+    const http = TestBed.inject(HttpTestingController);
+    const registro = { idRol: 1, nombre: 'ADMIN', nivelAcceso: 'TOTAL', descripcion: null };
+    http.expectOne(environment.base + '/api/roles').flush([registro]);
+    app.detectChanges();
+    const botones = Array.from(
+      app.nativeElement.querySelectorAll('button') as NodeListOf<HTMLButtonElement>,
+    );
+    expect(botones.some((b) => b.textContent?.trim() === 'Eliminar')).toBe(false);
+    botones.find((b) => b.textContent?.trim() === 'Editar')!.click();
+    http.expectOne(environment.base + '/api/roles/1').flush(registro);
+    app.detectChanges();
+    const form = app.debugElement
+      .query(By.directive(FormGroupDirective))
+      .injector.get(FormGroupDirective).form;
+    expect(form.controls['nombre'].disabled).toBe(true);
+    expect(form.controls['descripcion'].value).toBe('');
+  });
+
+  it('exige coordenadas juntas antes de enviar una ubicación', async () => {
+    const app = await abrir('/administracion/ubicaciones', 'ADMIN');
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne(environment.base + '/api/locations').flush([]);
+    app.detectChanges();
+    Array.from(app.nativeElement.querySelectorAll('button') as NodeListOf<HTMLButtonElement>)
+      .find((b) => b.textContent?.trim() === 'Nuevo registro')!
+      .click();
+    app.detectChanges();
+    const form = app.debugElement
+      .query(By.directive(FormGroupDirective))
+      .injector.get(FormGroupDirective).form;
+    form.patchValue({
+      campus: 'Prueba',
+      edificio: 'A',
+      tipo: 'CAMPUS',
+      latitud: 0,
+      longitud: null,
+    });
+    app.nativeElement.querySelector('form').dispatchEvent(new Event('submit'));
+    app.detectChanges();
+    http.expectNone((r) => r.method === 'POST');
+    expect(app.nativeElement.textContent).toContain('Ingresa latitud y longitud juntas.');
+  });
+
   it('avisa al volver a abrir una ruta con un token vencido', async () => {
     sessionStorage.setItem('fixcampus-token', tokenDePrueba('USUARIO', -1));
     const app = await abrir('/evidencias');
