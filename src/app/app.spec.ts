@@ -67,6 +67,73 @@ describe('Acceso y reportes de FixCampus', () => {
     return { app, http, pagina, escribir, boton };
   }
 
+  it('encuentra categorías por nombre y permite seleccionarlas sin enviar el reporte', async () => {
+    const { app, http, pagina, boton } = await abrirReporteNuevo();
+    const campo = pagina.querySelector<HTMLInputElement>(
+      'input[placeholder="Ej. electricidad o luminarias"]',
+    )!;
+    campo.value = 'electricidad';
+    boton('Buscar categorías')!.click();
+    http
+      .expectOne(environment.base + '/api/categories/buscar-descripcion?palabraClave=electricidad')
+      .flush([]);
+    app.detectChanges();
+    expect(pagina.textContent).toContain('1 categorías encontradas');
+    const resultado = pagina.querySelector<HTMLButtonElement>('.resultados-categorias button')!;
+    expect(resultado.textContent.trim()).toBe('Electricidad');
+    resultado.click();
+    app.detectChanges();
+    expect(resultado.getAttribute('aria-pressed')).toBe('true');
+    expect(
+      pagina.querySelector('mat-select[formcontrolname="categoriaId"]')!.textContent,
+    ).toContain('Electricidad');
+    http.expectNone(environment.base + '/api/reports');
+  });
+
+  it('mostrar todas cancela la búsqueda pendiente y conserva la categoría elegida', async () => {
+    const { app, http, pagina, boton } = await abrirReporteNuevo();
+    boton('Mostrar todas')!.click();
+    app.detectChanges();
+    pagina.querySelector<HTMLButtonElement>('.resultados-categorias button')!.click();
+    const campo = pagina.querySelector<HTMLInputElement>(
+      'input[placeholder="Ej. electricidad o luminarias"]',
+    )!;
+    campo.value = 'sin coincidencias';
+    boton('Buscar categorías')!.click();
+    const peticion = http.expectOne(
+      environment.base + '/api/categories/buscar-descripcion?palabraClave=sin%20coincidencias',
+    );
+    boton('Mostrar todas')!.click();
+    app.detectChanges();
+    expect(peticion.cancelled).toBe(true);
+    expect(campo.value).toBe('');
+    expect(pagina.textContent).toContain('Mostrando las 1 categorías disponibles');
+    expect(
+      pagina.querySelector('.resultados-categorias button')!.getAttribute('aria-pressed'),
+    ).toBe('true');
+    expect(boton('Buscar categorías')!.disabled).toBe(false);
+  });
+
+  it('informa cuando no hay coincidencias y permite restaurar el catálogo', async () => {
+    const { app, http, pagina, boton } = await abrirReporteNuevo();
+    const campo = pagina.querySelector<HTMLInputElement>(
+      'input[placeholder="Ej. electricidad o luminarias"]',
+    )!;
+    campo.value = 'sin coincidencias';
+    boton('Buscar categorías')!.click();
+    http
+      .expectOne(
+        environment.base + '/api/categories/buscar-descripcion?palabraClave=sin%20coincidencias',
+      )
+      .flush([]);
+    app.detectChanges();
+    expect(pagina.textContent).toContain('0 categorías encontradas');
+    expect(pagina.querySelector('.resultados-categorias')).toBeNull();
+    boton('Mostrar todas')!.click();
+    app.detectChanges();
+    expect(pagina.querySelectorAll('.resultados-categorias button').length).toBe(1);
+  });
+
   it('aplica una categoría de IA solo después de confirmarla', async () => {
     const { app, http, pagina, escribir, boton } = await abrirReporteNuevo();
     const endpoint = environment.base + '/api/reports/sugerir-categoria';
