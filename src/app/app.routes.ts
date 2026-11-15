@@ -4,7 +4,16 @@ import { Accesocomponent } from './components/accesocomponent/accesocomponent';
 import { Registrocomponent } from './components/registrocomponent/registrocomponent';
 import { Panelcomponent } from './components/panelcomponent/panelcomponent';
 import { Evidenciascomponent } from './components/evidenciascomponent/evidenciascomponent';
-import { catalogos } from './models/CatalogoDTO';
+import { Iniciocomponent } from './components/iniciocomponent/iniciocomponent';
+import { Reporteformcomponent } from './components/reporteformcomponent/reporteformcomponent';
+import { Mapacomponent } from './components/mapacomponent/mapacomponent';
+import { Seguimientocomponent } from './components/seguimientocomponent/seguimientocomponent';
+import { Usuarioscomponent } from './components/usuarioscomponent/usuarioscomponent';
+import { Estadisticascomponent } from './components/estadisticascomponent/estadisticascomponent';
+import { Recomendacionescomponent } from './components/recomendacionescomponent/recomendacionescomponent';
+import { Categoriacomponent } from './components/categoriacomponent/categoriacomponent';
+import { Ubicacioncomponent } from './components/ubicacioncomponent/ubicacioncomponent';
+import { Rolcomponent } from './components/rolcomponent/rolcomponent';
 import { Accesoservice } from './services/accesoservice';
 
 const revisarSesion: CanActivateFn = () => {
@@ -30,8 +39,7 @@ const revisarAdmin: CanActivateFn = () => {
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () =>
-      import('./components/iniciocomponent/iniciocomponent').then((m) => m.Iniciocomponent),
+    component: Iniciocomponent,
     title: 'Inicio | FixCampus',
   },
   {
@@ -61,69 +69,62 @@ export const routes: Routes = [
   {
     path: 'reportar',
     canActivate: [revisarSesion],
-    loadComponent: () =>
-      import('./components/reporteformcomponent/reporteformcomponent').then(
-        (m) => m.Reporteformcomponent,
-      ),
+    component: Reporteformcomponent,
     title: 'Nueva incidencia | FixCampus',
   },
   {
     path: 'reportes/:id/editar',
     canActivate: [revisarSesion],
-    loadComponent: () =>
-      import('./components/reporteformcomponent/reporteformcomponent').then(
-        (m) => m.Reporteformcomponent,
-      ),
+    component: Reporteformcomponent,
     title: 'Editar incidencia | FixCampus',
   },
   {
     path: 'reportes/:id/mapa',
     canActivate: [revisarSesion],
-    loadComponent: () =>
-      import('./components/mapacomponent/mapacomponent').then((m) => m.Mapacomponent),
+    component: Mapacomponent,
     title: 'Mapa del reporte | FixCampus',
   },
   {
     path: 'reportes/:id/seguimiento',
     canActivate: [revisarAdmin],
-    loadComponent: () =>
-      import('./components/seguimientocomponent/seguimientocomponent').then(
-        (m) => m.Seguimientocomponent,
-      ),
+    component: Seguimientocomponent,
     title: 'Seguimiento | FixCampus',
   },
   {
     path: 'administracion/usuarios',
     canActivate: [revisarAdmin],
-    loadComponent: () =>
-      import('./components/usuarioscomponent/usuarioscomponent').then((m) => m.Usuarioscomponent),
+    component: Usuarioscomponent,
     title: 'Usuarios | FixCampus',
   },
   {
     path: 'administracion/estadisticas',
     canActivate: [revisarAdmin],
-    loadComponent: () =>
-      import('./components/estadisticascomponent/estadisticascomponent').then(
-        (m) => m.Estadisticascomponent,
-      ),
+    component: Estadisticascomponent,
     title: 'Estadísticas | FixCampus',
   },
   {
     path: 'administracion/recomendaciones',
     canActivate: [revisarAdmin],
-    loadComponent: () =>
-      import('./components/recomendacionescomponent/recomendacionescomponent').then(
-        (m) => m.Recomendacionescomponent,
-      ),
+    component: Recomendacionescomponent,
     title: 'Recomendaciones | FixCampus',
   },
-  ...Object.entries(catalogos).map(([ruta, catalogo]) => ({
-    path: 'administracion/' + ruta,
+  {
+    path: 'administracion/categorias',
+    component: Categoriacomponent,
     canActivate: [revisarAdmin],
-    data: { catalogo },
-    loadComponent: () =>
-      import('./components/catalogocomponent/catalogocomponent').then((m) => m.Catalogocomponent),
-    title: catalogo.titulo + ' | FixCampus',
-  })),
+    title: 'Categorías | FixCampus',
+  },
+  {
+    path: 'administracion/ubicaciones',
+    component: Ubicacioncomponent,
+    canActivate: [revisarAdmin],
+    title: 'Ubicaciones | FixCampus',
+  },
+  {
+    path: 'administracion/roles',
+    component: Rolcomponent,
+    canActivate: [revisarAdmin],
+    title: 'Roles | FixCampus',
+  },
   { path: '**', redirectTo: '' },
 ];

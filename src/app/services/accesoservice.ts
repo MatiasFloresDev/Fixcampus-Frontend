@@ -4,7 +4,8 @@ import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { LoginDTO, RegistroDTO } from '../models/AccesoDTO';
+import { LoginDTO } from '../models/LoginDTO';
+import { RegistroDTO } from '../models/RegistroDTO';
 
 @Injectable({ providedIn: 'root' })
 export class Accesoservice {

@@ -3,7 +3,3 @@ export class TotalCategoriaDTO {
   nombre: string = '';
   totalReportes: number = 0;
 }
-export class TotalPrioridadDTO {
-  prioridad: string | null = null;
-  cantidad: number = 0;
-}

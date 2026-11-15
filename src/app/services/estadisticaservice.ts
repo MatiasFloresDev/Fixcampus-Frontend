@@ -2,7 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { TotalCategoriaDTO, TotalPrioridadDTO } from '../models/EstadisticaDTO';
+import { TotalCategoriaDTO } from '../models/TotalCategoriaDTO';
+import { TotalPrioridadDTO } from '../models/TotalPrioridadDTO';
 import { Accesoservice } from './accesoservice';
 
 @Injectable({ providedIn: 'root' })
