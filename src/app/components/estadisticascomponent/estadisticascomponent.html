@@ -2,7 +2,7 @@
   <div class="encabezado">
     <div>
       <h1>Estadísticas de mantenimiento</h1>
-      <p>Consulta la distribución de reportes y recomendaciones por categoría.</p>
+      <p>Consulta los reportes por categoría y las recomendaciones por prioridad del reporte.</p>
     </div>
   </div>
 
@@ -12,7 +12,6 @@
     <p role="alert" class="aviso error">No se pudieron consultar las estadísticas.</p>
     <button mat-stroked-button type="button" (click)="cargar()">Volver a intentar</button>
   } @else {
-    <!-- TARJETAS KPI SUPERIORES (FIGMA US78) -->
     <div class="kpi-grid">
       <div class="tarjeta kpi-card">
         <span class="kpi-label">Total de incidencias</span>
@@ -23,7 +22,7 @@
         <strong class="kpi-valor destacada">{{ categoriaMasFrecuente }}</strong>
       </div>
       <div class="tarjeta kpi-card">
-        <span class="kpi-label">Categorías activas</span>
+        <span class="kpi-label">Total de categorías</span>
         <strong class="kpi-valor">{{ totalCategorias }}</strong>
       </div>
       <div class="tarjeta kpi-card">
