@@ -81,7 +81,7 @@
     <p class="aviso">Aún no hay registros en este catálogo.</p>
   } @else {
     <div class="tabla">
-      <table mat-table [dataSource]="filas" aria-label="Roles">
+      <table mat-table [dataSource]="filas()" aria-label="Roles">
         <ng-container matColumnDef="idRol"
           ><th mat-header-cell *matHeaderCellDef>ID</th>
           <td mat-cell *matCellDef="let registro">{{ registro.idRol }}</td></ng-container

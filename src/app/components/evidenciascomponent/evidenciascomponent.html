@@ -44,7 +44,7 @@
     </p>
   } @else {
     <div class="lista-tarjetas" aria-label="Listado de reportes">
-      @for (item of filasReportes; track item.idReporte) {
+      @for (item of filasReportes(); track item.idReporte) {
         <article class="tarjeta" [class.seleccionado]="item.idReporte === reporte?.idReporte">
           <small>Reporte #{{ item.idReporte }}</small>
           <h2>{{ item.titulo }}</h2>
@@ -168,7 +168,7 @@
             <p>Este reporte no tiene evidencias adjuntas.</p>
           } @else {
             <ul>
-              @for (adjunto of filasAdjuntos; track adjunto.idAdjunto) {
+              @for (adjunto of filasAdjuntos(); track adjunto.idAdjunto) {
                 <li>
                   @if (enlaceArchivo(adjunto.urlArchivo); as enlace) {
                     <a [href]="enlace" target="_blank" rel="noopener noreferrer">

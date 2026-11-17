@@ -63,33 +63,49 @@ export class Estadisticascomponent implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
-  get totalReportes(): number {
-    return this.categorias.reduce((acc, c) => acc + (c.totalReportes || 0), 0);
+  totalReportes(): number {
+    let total = 0;
+    for (const categoria of this.categorias) {
+      total += categoria.totalReportes || 0;
+    }
+    return total;
   }
 
-  get categoriaMasFrecuente(): string {
-    if (!this.categorias.length) return 'Ninguna';
-    const ordenada = [...this.categorias].sort(
-      (a, b) => (b.totalReportes || 0) - (a.totalReportes || 0),
-    );
-    return ordenada[0].totalReportes > 0 ? ordenada[0].nombre : 'Ninguna';
+  categoriaMasFrecuente(): string {
+    let nombre = 'Ninguna';
+    let mayorCantidad = 0;
+    for (const categoria of this.categorias) {
+      if (categoria.totalReportes > mayorCantidad) {
+        mayorCantidad = categoria.totalReportes;
+        nombre = categoria.nombre;
+      }
+    }
+    return nombre;
   }
 
-  get totalCategorias(): number {
+  totalCategorias(): number {
     return this.categorias.length;
   }
 
-  get promedioPorCategoria(): string {
+  promedioPorCategoria(): string {
     if (!this.categorias.length) return '0';
-    return (this.totalReportes / this.categorias.length).toFixed(1);
+    return (this.totalReportes() / this.categorias.length).toFixed(1);
   }
 
-  get maxReportes(): number {
-    return Math.max(...this.categorias.map((c) => c.totalReportes || 0), 1);
+  maxReportes(): number {
+    let maximo = 1;
+    for (const categoria of this.categorias) {
+      if (categoria.totalReportes > maximo) maximo = categoria.totalReportes;
+    }
+    return maximo;
   }
 
-  get maxPrioridades(): number {
-    return Math.max(...this.prioridades.map((p) => p.cantidad || 0), 1);
+  maxPrioridades(): number {
+    let maximo = 1;
+    for (const prioridad of this.prioridades) {
+      if (prioridad.cantidad > maximo) maximo = prioridad.cantidad;
+    }
+    return maximo;
   }
 
   calcularPorcentaje(cantidad: number, max: number): number {

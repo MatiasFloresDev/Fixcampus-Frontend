@@ -31,7 +31,7 @@ export class Panelcomponent implements OnInit {
   mesReciente = 0;
   indicadores?: { reportes: number; abiertos: number; enAtencion: number; resueltos: number };
   usuarios?: number;
-  readonly esAdmin: boolean;
+  esAdmin: boolean;
 
   constructor(
     private reportes: Reporteservice,
@@ -45,18 +45,18 @@ export class Panelcomponent implements OnInit {
     this.actualizarPanel();
   }
 
-  get actualizando(): boolean {
+  actualizando(): boolean {
     return this.cargando || this.cargandoIndicadores || this.cargandoUsuarios;
   }
 
-  get nombrePeriodo(): string {
+  nombrePeriodo(): string {
     return (
       this.meses.find((mes) => mes.valor === this.mesSeleccionado)?.nombre ?? 'Todos los meses'
     );
   }
 
   actualizarPanel(): void {
-    if (this.actualizando) return;
+    if (this.actualizando()) return;
     this.cargarGrafico();
     if (!this.esAdmin) return;
 

@@ -29,18 +29,18 @@ import { Usuarioservice } from '../../services/usuarioservice';
   styleUrl: './usuarioscomponent.css',
 })
 export class Usuarioscomponent implements OnInit, OnDestroy {
-  protected usuarios: UsuarioDTO[] = [];
-  protected roles: RolDTO[] = [];
-  protected cargando = false;
-  protected ocupado = false;
-  protected error = '';
-  protected busqueda = '';
-  protected pagina = 0;
-  protected porPagina = 5;
-  protected modo: 'nuevo' | 'editar' | 'detalle' | null = null;
-  protected seleccionado: UsuarioDTO | null = null;
-  protected pendiente: UsuarioDTO | null = null;
-  protected readonly formulario: FormGroup;
+  usuarios: UsuarioDTO[] = [];
+  roles: RolDTO[] = [];
+  cargando = false;
+  ocupado = false;
+  error = '';
+  busqueda = '';
+  pagina = 0;
+  porPagina = 5;
+  modo: 'nuevo' | 'editar' | 'detalle' | null = null;
+  seleccionado: UsuarioDTO | null = null;
+  pendiente: UsuarioDTO | null = null;
+  formulario: FormGroup;
   private suscripciones = new Subscription();
 
   constructor(
@@ -64,25 +64,25 @@ export class Usuarioscomponent implements OnInit, OnDestroy {
     this.cargar();
   }
 
-  protected get filtrados() {
+  filtrados() {
     const texto = this.busqueda.trim().toLocaleLowerCase('es');
     return this.usuarios.filter((u) =>
       (u.nombre + ' ' + u.apellido + ' ' + u.correo).toLocaleLowerCase('es').includes(texto),
     );
   }
 
-  protected get filas() {
-    return this.filtrados.slice(this.pagina * this.porPagina, (this.pagina + 1) * this.porPagina);
+  filas() {
+    return this.filtrados().slice(this.pagina * this.porPagina, (this.pagina + 1) * this.porPagina);
   }
 
-  protected get totales() {
+  totales() {
     return this.roles.map((rol) => ({
       nombre: rol.nombre,
       cantidad: this.usuarios.filter((u) => u.rolId === rol.idRol).length,
     }));
   }
 
-  protected cargar(): void {
+  cargar(): void {
     this.cargando = true;
     this.error = '';
     this.suscripciones.add(
@@ -96,21 +96,21 @@ export class Usuarioscomponent implements OnInit, OnDestroy {
     );
   }
 
-  protected nombreRol(id: number): string {
+  nombreRol(id: number): string {
     return this.roles.find((rol) => rol.idRol === id)?.nombre ?? 'Rol no disponible';
   }
 
-  protected buscar(texto: string): void {
+  buscar(texto: string): void {
     this.busqueda = texto;
     this.pagina = 0;
   }
 
-  protected cambiarPagina(evento: PageEvent): void {
+  cambiarPagina(evento: PageEvent): void {
     this.pagina = evento.pageIndex;
     this.porPagina = evento.pageSize;
   }
 
-  protected abrir(usuario: UsuarioDTO | null, modo: 'nuevo' | 'editar' | 'detalle'): void {
+  abrir(usuario: UsuarioDTO | null, modo: 'nuevo' | 'editar' | 'detalle'): void {
     if (this.ocupado) return;
     this.cerrar();
     this.seleccionado = usuario;
@@ -125,14 +125,14 @@ export class Usuarioscomponent implements OnInit, OnDestroy {
     clave.updateValueAndValidity();
   }
 
-  protected cerrar(): void {
+  cerrar(): void {
     this.modo = null;
     this.seleccionado = null;
     this.pendiente = null;
     this.error = '';
   }
 
-  protected guardar(): void {
+  guardar(): void {
     if (this.ocupado || !this.modo || this.modo === 'detalle') return;
     this.formulario.markAllAsTouched();
     if (this.formulario.invalid) return;
@@ -164,7 +164,7 @@ export class Usuarioscomponent implements OnInit, OnDestroy {
     );
   }
 
-  protected eliminar(): void {
+  eliminar(): void {
     const usuario = this.pendiente;
     if (!usuario || this.ocupado) return;
     this.ocupado = true;
@@ -205,7 +205,7 @@ export class Usuarioscomponent implements OnInit, OnDestroy {
           this.roles = roles;
           this.pagina = Math.min(
             this.pagina,
-            Math.max(0, Math.ceil(this.filtrados.length / this.porPagina) - 1),
+            Math.max(0, Math.ceil(this.filtrados().length / this.porPagina) - 1),
           );
           this.cargando = false;
           this.cdr.detectChanges();

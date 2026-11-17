@@ -26,14 +26,14 @@ import { Recomendacionservice } from '../../services/recomendacionservice';
   styleUrl: './recomendacionescomponent.css',
 })
 export class Recomendacionescomponent implements OnInit, OnDestroy {
-  protected prioridad = '';
-  protected recomendaciones: RecomendacionDTO[] = [];
-  protected cargando = false;
-  protected error = '';
-  protected pagina = 0;
-  protected porPagina = 5;
-  protected reportes: ReporteDTO[] = [];
-  protected busqueda = '';
+  prioridad = '';
+  recomendaciones: RecomendacionDTO[] = [];
+  cargando = false;
+  error = '';
+  pagina = 0;
+  porPagina = 5;
+  reportes: ReporteDTO[] = [];
+  busqueda = '';
   private suscripciones = new Subscription();
 
   constructor(
@@ -47,28 +47,28 @@ export class Recomendacionescomponent implements OnInit, OnDestroy {
     this.cargar();
   }
 
-  protected buscar(texto: string): void {
+  buscar(texto: string): void {
     this.busqueda = texto;
     this.pagina = 0;
   }
 
-  protected cambiarPagina(evento: PageEvent): void {
+  cambiarPagina(evento: PageEvent): void {
     this.pagina = evento.pageIndex;
     this.porPagina = evento.pageSize;
   }
 
-  protected filas(): RecomendacionDTO[] {
+  filas(): RecomendacionDTO[] {
     return this.recomendacionesFiltradas().slice(
       this.pagina * this.porPagina,
       (this.pagina + 1) * this.porPagina,
     );
   }
 
-  protected tituloReporte(id: number): string {
+  tituloReporte(id: number): string {
     return this.reportes.find((r) => r.idReporte === id)?.titulo ?? `Reporte #${id}`;
   }
 
-  protected recomendacionesFiltradas(): RecomendacionDTO[] {
+  recomendacionesFiltradas(): RecomendacionDTO[] {
     const texto = this.busqueda.toLowerCase().trim();
     return this.recomendaciones.filter(
       (item) =>
@@ -78,7 +78,7 @@ export class Recomendacionescomponent implements OnInit, OnDestroy {
     );
   }
 
-  protected cargar(prioridad = this.prioridad): void {
+  cargar(prioridad = this.prioridad): void {
     this.pagina = 0;
     this.prioridad = prioridad;
     this.error = '';
@@ -94,7 +94,7 @@ export class Recomendacionescomponent implements OnInit, OnDestroy {
     );
   }
 
-  protected eliminarRecomendacion(item: RecomendacionDTO): void {
+  eliminarRecomendacion(item: RecomendacionDTO): void {
     const confirmar = window.confirm('¿Deseas eliminar esta recomendación?');
     if (!confirmar) return;
     this.cargando = true;

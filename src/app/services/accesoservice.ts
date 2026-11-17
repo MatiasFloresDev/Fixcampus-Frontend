@@ -11,7 +11,7 @@ import { RegistroDTO } from '../models/RegistroDTO';
 export class Accesoservice {
   private token = '';
   private vence = 0;
-  private temporizador?: ReturnType<typeof setTimeout>;
+  private temporizador?: number;
   private navegador: boolean;
   private clave = 'fixcampus-token';
   private rolActual = '';
@@ -63,7 +63,7 @@ export class Accesoservice {
       this.sesionVencida = false;
       if (this.navegador) {
         sessionStorage.setItem(this.clave, token);
-        this.temporizador = setTimeout(() => this.vencer(), tiempo);
+        this.temporizador = window.setTimeout(() => this.vencer(), tiempo);
       }
       return true;
     } catch {

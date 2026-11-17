@@ -64,7 +64,7 @@ export class Ubicacioncomponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.cargar();
   }
-  get filas() {
+  filas() {
     return this.registros.slice(this.pagina * this.porPagina, (this.pagina + 1) * this.porPagina);
   }
   cargar(): void {

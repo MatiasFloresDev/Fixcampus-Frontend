@@ -120,7 +120,7 @@
     </form>
   }
   <div class="resumen-roles" aria-label="Usuarios por rol">
-    @for (rol of totales; track rol.nombre) {
+    @for (rol of totales(); track rol.nombre) {
       <span class="estado">{{ rol.nombre }} · {{ rol.cantidad }}</span>
     }
   </div>
@@ -131,11 +131,11 @@
   @if (cargando) {
     <p role="status">Cargando usuarios…</p>
   } @else {
-    @if (!filtrados.length) {
+    @if (!filtrados().length) {
       <p class="aviso">No hay usuarios para mostrar con esta búsqueda.</p>
     }
     <div class="lista-tarjetas">
-      @for (usuario of filas; track usuario.idUsuario) {
+      @for (usuario of filas(); track usuario.idUsuario) {
         <article class="tarjeta">
           <h2>{{ usuario.nombre }} {{ usuario.apellido }}</h2>
           <p>{{ usuario.correo }}</p>
@@ -171,7 +171,7 @@
       }
     </div>
     <mat-paginator
-      [length]="filtrados.length"
+      [length]="filtrados().length"
       [pageIndex]="pagina"
       [pageSize]="porPagina"
       [pageSizeOptions]="[5, 10, 25]"
