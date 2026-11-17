@@ -8,7 +8,7 @@ import { Accesoservice } from './accesoservice';
 
 @Injectable({ providedIn: 'root' })
 export class Recomendacionservice {
-  private readonly base = environment.base + '/api/recomendaciones';
+  private base = environment.base + '/api/recomendaciones';
 
   constructor(
     private http: HttpClient,

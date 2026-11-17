@@ -31,26 +31,26 @@ import { Reporteservice } from '../../services/reporteservice';
   styleUrl: './seguimientocomponent.css',
 })
 export class Seguimientocomponent implements OnInit, OnDestroy {
-  protected readonly reporteId: number;
-  protected reporte: ReporteDTO | null = null;
-  protected comentarios: ComentarioDTO[] = [];
-  protected paginaComentarios = 0;
-  protected porPaginaComentarios = 5;
-  protected pestana: 'recomendaciones' | 'comentarios';
-  protected recomendacion: RecomendacionDTO | null = null;
-  protected editado: ComentarioDTO | null = null;
-  protected pendiente: {
+  reporteId: number;
+  reporte: ReporteDTO | null = null;
+  comentarios: ComentarioDTO[] = [];
+  paginaComentarios = 0;
+  porPaginaComentarios = 5;
+  pestana: 'recomendaciones' | 'comentarios';
+  recomendacion: RecomendacionDTO | null = null;
+  editado: ComentarioDTO | null = null;
+  pendiente: {
     tipo: 'comentario' | 'recomendacion';
     id: number;
   } | null = null;
-  protected cargando = false;
-  protected guardando = false;
-  protected error = '';
-  protected aviso = '';
-  protected readonly prioridades = ['MUY_BAJA', 'BAJA', 'MEDIA', 'ALTA', 'MUY_ALTA'];
-  private readonly texto = [Validators.required, Validators.pattern(/\S/)];
-  protected readonly comentarioForm: FormGroup;
-  protected readonly recomendacionForm: FormGroup;
+  cargando = false;
+  guardando = false;
+  error = '';
+  aviso = '';
+  prioridades = ['MUY_BAJA', 'BAJA', 'MEDIA', 'ALTA', 'MUY_ALTA'];
+  private texto = [Validators.required, Validators.pattern(/\S/)];
+  comentarioForm: FormGroup;
+  recomendacionForm: FormGroup;
   private suscripciones = new Subscription();
 
   constructor(
@@ -82,19 +82,19 @@ export class Seguimientocomponent implements OnInit, OnDestroy {
     this.cargar();
   }
 
-  protected comentariosVisibles(): ComentarioDTO[] {
+  comentariosVisibles(): ComentarioDTO[] {
     return this.comentarios.slice(
       this.paginaComentarios * this.porPaginaComentarios,
       (this.paginaComentarios + 1) * this.porPaginaComentarios,
     );
   }
 
-  protected cambiarPaginaComentarios(evento: PageEvent): void {
+  cambiarPaginaComentarios(evento: PageEvent): void {
     this.paginaComentarios = evento.pageIndex;
     this.porPaginaComentarios = evento.pageSize;
   }
 
-  protected cargar(): void {
+  cargar(): void {
     if (!Number.isSafeInteger(this.reporteId) || this.reporteId < 1) {
       this.error = 'El número de reporte no es válido.';
       return;
@@ -112,17 +112,17 @@ export class Seguimientocomponent implements OnInit, OnDestroy {
     );
   }
 
-  protected editarComentario(comentario: ComentarioDTO): void {
+  editarComentario(comentario: ComentarioDTO): void {
     this.editado = comentario;
     this.comentarioForm.setValue({ textoComentario: comentario.textoComentario });
   }
 
-  protected cancelarComentario(): void {
+  cancelarComentario(): void {
     this.editado = null;
     this.comentarioForm.reset({ textoComentario: '' });
   }
 
-  protected guardarComentario(): void {
+  guardarComentario(): void {
     if (this.guardarBloqueado() || this.comentarioForm.invalid) return;
     const texto = this.comentarioForm.getRawValue().textoComentario.trim();
     const anterior = this.editado;
@@ -151,7 +151,7 @@ export class Seguimientocomponent implements OnInit, OnDestroy {
     );
   }
 
-  protected guardarRecomendacion(): void {
+  guardarRecomendacion(): void {
     if (this.guardarBloqueado() || this.recomendacionForm.invalid) return;
     const valores = this.recomendacionForm.getRawValue();
     const datos = {
@@ -181,7 +181,7 @@ export class Seguimientocomponent implements OnInit, OnDestroy {
     );
   }
 
-  protected eliminar(): void {
+  eliminar(): void {
     const pendiente = this.pendiente;
     if (!pendiente || this.guardando) return;
     this.guardando = true;
@@ -229,7 +229,7 @@ export class Seguimientocomponent implements OnInit, OnDestroy {
     }
   }
 
-  protected guardarBloqueado(): boolean {
+  guardarBloqueado(): boolean {
     return this.guardando || this.cargando || !this.reporte || !!this.pendiente;
   }
 

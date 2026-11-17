@@ -7,7 +7,7 @@ import { Accesoservice } from './accesoservice';
 
 @Injectable({ providedIn: 'root' })
 export class Comentarioservice {
-  private readonly base = environment.base + '/api/comments';
+  private base = environment.base + '/api/comments';
 
   constructor(
     private http: HttpClient,

@@ -15,9 +15,9 @@
         mat-stroked-button
         type="button"
         (click)="actualizarPanel()"
-        [disabled]="actualizando"
+        [disabled]="actualizando()"
       >
-        {{ actualizando ? 'Actualizando…' : 'Actualizar' }}
+        {{ actualizando() ? 'Actualizando…' : 'Actualizar' }}
       </button>
       <a mat-flat-button routerLink="/evidencias">{{
         esAdmin ? 'Ver reportes' : 'Ver mis reportes'
@@ -43,7 +43,7 @@
       <mat-select
         [(value)]="mesSeleccionado"
         (selectionChange)="filtrarPorMes()"
-        [disabled]="actualizando || !!mensaje || !meses.length"
+        [disabled]="actualizando() || !!mensaje || !meses.length"
       >
         <mat-option value="">Todos los meses</mat-option>
         @for (mes of meses; track mes.valor) {
@@ -55,7 +55,7 @@
       mat-button
       type="button"
       (click)="limpiarFiltro()"
-      [disabled]="!mesSeleccionado || actualizando"
+      [disabled]="!mesSeleccionado || actualizando()"
     >
       Limpiar filtro
     </button>
@@ -90,7 +90,7 @@
       }
     </div>
     <p class="nota-periodo">
-      {{ nombrePeriodo }}. Los estados muestran el avance actual de los reportes.
+      {{ nombrePeriodo() }}. Los estados muestran el avance actual de los reportes.
       @if (esAdmin) {
         El total de usuarios corresponde a todo el sistema.
       }
@@ -120,7 +120,7 @@
         }}</small>
       </div>
     } @else {
-      <p class="periodo-grafico">{{ nombrePeriodo }}</p>
+      <p class="periodo-grafico">{{ nombrePeriodo() }}</p>
       <ul class="grafico">
         @for (fila of filasFiltradas; track fila.usuarioId + '-' + fila.anio + '-' + fila.mes) {
           <li>

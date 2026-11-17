@@ -15,19 +15,19 @@
     <div class="kpi-grid">
       <div class="tarjeta kpi-card">
         <span class="kpi-label">Total de incidencias</span>
-        <strong class="kpi-valor">{{ totalReportes }}</strong>
+        <strong class="kpi-valor">{{ totalReportes() }}</strong>
       </div>
       <div class="tarjeta kpi-card">
         <span class="kpi-label">Categoría más frecuente</span>
-        <strong class="kpi-valor destacada">{{ categoriaMasFrecuente }}</strong>
+        <strong class="kpi-valor destacada">{{ categoriaMasFrecuente() }}</strong>
       </div>
       <div class="tarjeta kpi-card">
         <span class="kpi-label">Total de categorías</span>
-        <strong class="kpi-valor">{{ totalCategorias }}</strong>
+        <strong class="kpi-valor">{{ totalCategorias() }}</strong>
       </div>
       <div class="tarjeta kpi-card">
         <span class="kpi-label">Promedio por categoría</span>
-        <strong class="kpi-valor">{{ promedioPorCategoria }}</strong>
+        <strong class="kpi-valor">{{ promedioPorCategoria() }}</strong>
       </div>
     </div>
 
@@ -45,7 +45,7 @@
               <div class="pista-barra">
                 <div
                   class="relleno-barra verde"
-                  [style.width.%]="calcularPorcentaje(item.totalReportes, maxReportes)"
+                  [style.width.%]="calcularPorcentaje(item.totalReportes, maxReportes())"
                 ></div>
               </div>
             </li>
@@ -70,7 +70,7 @@
               <div class="pista-barra">
                 <div
                   class="relleno-barra azul"
-                  [style.width.%]="calcularPorcentaje(item.cantidad, maxPrioridades)"
+                  [style.width.%]="calcularPorcentaje(item.cantidad, maxPrioridades())"
                 ></div>
               </div>
             </li>

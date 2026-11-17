@@ -28,10 +28,10 @@ import { Reporteservice } from '../../services/reporteservice';
   styleUrl: './reporteformcomponent.css',
 })
 export class Reporteformcomponent implements OnInit, OnDestroy {
-  protected readonly esAdmin: boolean;
-  protected readonly editando: boolean;
-  protected readonly prioridades = ['MUY_BAJA', 'BAJA', 'MEDIA', 'ALTA', 'MUY_ALTA'];
-  protected readonly estados = [
+  esAdmin: boolean;
+  editando: boolean;
+  prioridades = ['MUY_BAJA', 'BAJA', 'MEDIA', 'ALTA', 'MUY_ALTA'];
+  estados = [
     'ABIERTO',
     'EN_REVISION',
     'ASIGNADO',
@@ -39,24 +39,24 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
     'RESUELTO',
     'CERRADO',
   ];
-  protected cargando = true;
-  protected guardando = false;
-  protected listo = false;
-  protected mensaje = '';
-  protected readonly limiteDescripcionIA = 1000;
-  protected consultandoIA = false;
-  protected mensajeIA = '';
-  protected sugerencia: CategoriaDTO | null = null;
-  protected categoriasFiltradas: CategoriaDTO[] | null = null;
-  protected buscandoCategorias = false;
-  protected errorCategorias = '';
-  protected consultaCategorias = '';
-  protected mostrarResultados = false;
+  cargando = true;
+  guardando = false;
+  listo = false;
+  mensaje = '';
+  limiteDescripcionIA = 1000;
+  consultandoIA = false;
+  mensajeIA = '';
+  sugerencia: CategoriaDTO | null = null;
+  categoriasFiltradas: CategoriaDTO[] | null = null;
+  buscandoCategorias = false;
+  errorCategorias = '';
+  consultaCategorias = '';
+  mostrarResultados = false;
   private busquedaCategorias: Subscription | null = null;
-  protected categorias: CategoriaDTO[] = [];
-  protected ubicaciones: UbicacionDTO[] = [];
-  protected original: ReporteDTO | null = null;
-  protected readonly formulario: FormGroup;
+  categorias: CategoriaDTO[] = [];
+  ubicaciones: UbicacionDTO[] = [];
+  original: ReporteDTO | null = null;
+  formulario: FormGroup;
   private suscripciones = new Subscription();
 
   constructor(
@@ -106,7 +106,7 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
     );
   }
 
-  protected opcionesCategoria(): CategoriaDTO[] {
+  opcionesCategoria(): CategoriaDTO[] {
     const filtradas = this.categoriasFiltradas;
     if (!filtradas) return this.categorias;
     const seleccionada = this.categorias.find(
@@ -117,7 +117,7 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
       : filtradas;
   }
 
-  protected buscarCategorias(texto: string): void {
+  buscarCategorias(texto: string): void {
     this.busquedaCategorias?.unsubscribe();
     const palabra = texto.trim();
     this.errorCategorias = '';
@@ -153,7 +153,7 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
     this.suscripciones.add(this.busquedaCategorias);
   }
 
-  protected mostrarTodasCategorias(): void {
+  mostrarTodasCategorias(): void {
     this.busquedaCategorias?.unsubscribe();
     this.buscandoCategorias = false;
     this.errorCategorias = '';
@@ -162,20 +162,20 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
     this.mostrarResultados = true;
   }
 
-  protected resultadosCategoria(): CategoriaDTO[] {
+  resultadosCategoria(): CategoriaDTO[] {
     return this.categoriasFiltradas ?? this.categorias;
   }
 
-  protected seleccionarCategoria(categoria: CategoriaDTO): void {
+  seleccionarCategoria(categoria: CategoriaDTO): void {
     this.formulario.controls['categoriaId'].setValue(categoria.idCategoria);
     this.formulario.controls['categoriaId'].markAsDirty();
   }
 
-  protected descripcionIA(): string {
+  descripcionIA(): string {
     return this.formulario.controls['descripcion'].value.trim();
   }
 
-  protected sugerirCategoria(): void {
+  sugerirCategoria(): void {
     const descripcion = this.descripcionIA();
     if (
       this.editando ||
@@ -226,7 +226,7 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
     );
   }
 
-  protected usarSugerencia(): void {
+  usarSugerencia(): void {
     const categoria = this.sugerencia;
     if (!categoria || this.guardando) return;
     this.categoriasFiltradas = null;
@@ -236,7 +236,7 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
     this.mensajeIA = 'Categoría seleccionada. Puedes cambiarla antes de guardar.';
   }
 
-  protected guardar(): void {
+  guardar(): void {
     if (!this.listo || this.guardando || this.formulario.invalid) return;
     const valores = this.formulario.getRawValue();
     if (valores.categoriaId === null || valores.ubicacionId === null) return;

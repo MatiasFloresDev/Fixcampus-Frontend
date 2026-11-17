@@ -27,7 +27,7 @@ import { Reporteservice } from '../../services/reporteservice';
   styleUrl: './evidenciascomponent.css',
 })
 export class Evidenciascomponent implements OnInit, OnDestroy {
-  readonly prioridades = ['MUY_BAJA', 'BAJA', 'MEDIA', 'ALTA', 'MUY_ALTA'];
+  prioridades = ['MUY_BAJA', 'BAJA', 'MEDIA', 'ALTA', 'MUY_ALTA'];
   prioridad = '';
   pagina = 0;
   porPagina = 5;
@@ -47,7 +47,7 @@ export class Evidenciascomponent implements OnInit, OnDestroy {
   adjuntoEditado: AdjuntoDTO | null = null;
   adjuntoPendiente: AdjuntoDTO | null = null;
   avisoAdjunto = '';
-  readonly adjuntoForm: FormGroup;
+  adjuntoForm: FormGroup;
   private suscripciones = new Subscription();
 
   constructor(
@@ -203,7 +203,7 @@ export class Evidenciascomponent implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
-  get filasReportes(): ReporteDTO[] {
+  filasReportes(): ReporteDTO[] {
     return this.lista.slice(this.pagina * this.porPagina, (this.pagina + 1) * this.porPagina);
   }
 
@@ -212,7 +212,7 @@ export class Evidenciascomponent implements OnInit, OnDestroy {
     this.porPagina = evento.pageSize;
   }
 
-  get filasAdjuntos(): AdjuntoDTO[] {
+  filasAdjuntos(): AdjuntoDTO[] {
     return this.adjuntos.slice(
       this.paginaAdjuntos * this.porPaginaAdjuntos,
       (this.paginaAdjuntos + 1) * this.porPaginaAdjuntos,
