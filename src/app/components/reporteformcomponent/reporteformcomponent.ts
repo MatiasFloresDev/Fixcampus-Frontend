@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -7,13 +7,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { Subscription } from 'rxjs';
 import { CategoriaDTO } from '../../models/CategoriaDTO';
 import { ReporteDTO } from '../../models/ReporteDTO';
 import { ReporteFormularioDTO } from '../../models/ReporteFormularioDTO';
 import { UbicacionDTO } from '../../models/UbicacionDTO';
 import { Accesoservice } from '../../services/accesoservice';
 import { Reporteservice } from '../../services/reporteservice';
+import { Sugerenciacategoriacomponent } from '../sugerenciacategoriacomponent/sugerenciacategoriacomponent';
 
 @Component({
   imports: [
@@ -24,11 +24,12 @@ import { Reporteservice } from '../../services/reporteservice';
     MatInputModule,
     MatSelectModule,
     MatSnackBarModule,
+    Sugerenciacategoriacomponent,
   ],
   templateUrl: './reporteformcomponent.html',
   styleUrl: './reporteformcomponent.css',
 })
-export class Reporteformcomponent implements OnInit, OnDestroy {
+export class Reporteformcomponent implements OnInit {
   esAdmin: boolean;
   editando: boolean;
   prioridades = ['MUY_BAJA', 'BAJA', 'MEDIA', 'ALTA', 'MUY_ALTA'];
@@ -37,22 +38,16 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
   guardando = false;
   listo = false;
   mensaje = '';
-  limiteDescripcionIA = 1000;
-  consultandoIA = false;
-  mensajeIA = '';
-  sugerencia: CategoriaDTO | null = null;
   categoriasFiltradas: CategoriaDTO[] | null = null;
   buscandoCategorias = false;
   errorCategorias = '';
   consultaCategorias = '';
   mostrarResultados = false;
   private numeroBusqueda = 0;
-  private consultaIA?: Subscription;
   categorias: CategoriaDTO[] = [];
   ubicaciones: UbicacionDTO[] = [];
   original: ReporteDTO | null = null;
   formulario: FormGroup;
-  private activo = true;
 
   constructor(
     private fb: FormBuilder,
@@ -74,12 +69,6 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
       estado: ['ABIERTO', Validators.required],
       prioridad: [null],
     });
-    this.formulario.controls['descripcion'].valueChanges.subscribe(() => {
-      if (!this.activo) return;
-      this.sugerencia = null;
-      this.mensajeIA = '';
-      this.cdr.detectChanges();
-    });
   }
 
   ngOnInit(): void {
@@ -92,12 +81,10 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
     }
     this.servicio.categorias().subscribe({
       next: (categorias) => {
-        if (!this.activo) return;
         this.categorias = categorias;
         this.cargarUbicaciones(id);
       },
       error: (error: HttpErrorResponse) => {
-        if (!this.activo) return;
         this.falloCarga(error);
       },
     });
@@ -127,7 +114,6 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
     this.buscandoCategorias = true;
     this.servicio.buscarCategorias(palabra).subscribe({
       next: (datos) => {
-        if (!this.activo) return;
         if (numero !== this.numeroBusqueda) return;
         const porNombre = this.categorias.filter((categoria) =>
           categoria.nombre.toLocaleLowerCase().includes(palabra.toLocaleLowerCase()),
@@ -142,7 +128,6 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       },
       error: (error: HttpErrorResponse) => {
-        if (!this.activo) return;
         if (numero !== this.numeroBusqueda) return;
         this.acceso.revisarError(error);
         this.errorCategorias = 'No se pudieron buscar categorías. Puedes usar el listado completo.';
@@ -171,69 +156,9 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
     this.formulario.controls['categoriaId'].markAsDirty();
   }
 
-  descripcionIA(): string {
-    return this.formulario.controls['descripcion'].value.trim();
-  }
-
-  sugerirCategoria(): void {
-    const descripcion = this.descripcionIA();
-    if (
-      this.editando ||
-      !this.listo ||
-      !this.categorias.length ||
-      this.guardando ||
-      this.consultandoIA ||
-      !descripcion ||
-      descripcion.length > this.limiteDescripcionIA
-    ) {
-      return;
-    }
-    this.consultandoIA = true;
-    this.sugerencia = null;
-    this.mensajeIA = '';
-    this.consultaIA = this.servicio.sugerirCategoria(descripcion).subscribe({
-      next: ({ categoriaId }) => {
-        if (!this.activo) return;
-        this.consultandoIA = false;
-        if (descripcion !== this.descripcionIA()) {
-          this.cdr.detectChanges();
-          return;
-        }
-        const categoria = this.categorias.find((item) => item.idCategoria === categoriaId);
-        if (categoria) this.sugerencia = categoria;
-        else
-          this.mensajeIA =
-            'No se encontró una categoría para esa descripción. Describe el daño con más detalle o elige una categoría en el formulario.';
-        this.cdr.detectChanges();
-      },
-      error: (error: HttpErrorResponse) => {
-        if (!this.activo) return;
-        this.consultandoIA = false;
-        this.acceso.revisarError(error);
-        if (descripcion !== this.descripcionIA()) {
-          this.cdr.detectChanges();
-          return;
-        }
-        const mensaje =
-          error.status === 429
-            ? 'Se alcanzó el límite de consultas de IA.'
-            : error.status === 503
-              ? 'El servicio de IA no está disponible en este momento.'
-              : 'No se pudo consultar la sugerencia. Revisa la conexión y vuelve a intentarlo.';
-        this.mensajeIA = mensaje + ' Puedes elegir la categoría en el formulario.';
-        this.cdr.detectChanges();
-      },
-    });
-  }
-
-  usarSugerencia(): void {
-    const categoria = this.sugerencia;
-    if (!categoria || this.guardando) return;
+  aplicarSugerencia(categoria: CategoriaDTO): void {
     this.categoriasFiltradas = null;
-    this.formulario.controls['categoriaId'].setValue(categoria.idCategoria);
-    this.formulario.controls['categoriaId'].markAsDirty();
-    this.sugerencia = null;
-    this.mensajeIA = 'Categoría seleccionada. Puedes cambiarla antes de guardar.';
+    this.seleccionarCategoria(categoria);
   }
 
   guardar(): void {
@@ -256,7 +181,6 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
       : this.servicio.registrar(datos);
     peticion.subscribe({
       next: (resultado) => {
-        if (!this.activo) return;
         this.guardando = false;
         this.aviso.open(
           this.editando ? 'Se actualizó la incidencia.' : 'Se registró la incidencia.',
@@ -267,7 +191,6 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       },
       error: (error: HttpErrorResponse) => {
-        if (!this.activo) return;
         this.mostrarError(error, 'No se pudo guardar la incidencia.');
         this.guardando = false;
         this.cdr.detectChanges();
@@ -289,13 +212,11 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
   private cargarUbicaciones(id: number): void {
     this.servicio.ubicaciones().subscribe({
       next: (ubicaciones) => {
-        if (!this.activo) return;
         this.ubicaciones = ubicaciones;
         if (this.editando) this.cargarReporte(id);
         else this.prepararFormulario(null);
       },
       error: (error: HttpErrorResponse) => {
-        if (!this.activo) return;
         this.falloCarga(error);
       },
     });
@@ -304,11 +225,9 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
   private cargarReporte(id: number): void {
     this.servicio.obtener(id).subscribe({
       next: (reporte) => {
-        if (!this.activo) return;
         this.prepararFormulario(reporte);
       },
       error: (error: HttpErrorResponse) => {
-        if (!this.activo) return;
         this.falloCarga(error);
       },
     });
@@ -336,10 +255,5 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
     this.mostrarError(error, 'No se pudo cargar el formulario.');
     this.cargando = false;
     this.cdr.detectChanges();
-  }
-
-  ngOnDestroy(): void {
-    this.activo = false;
-    this.consultaIA?.unsubscribe();
   }
 }

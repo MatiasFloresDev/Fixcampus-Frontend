@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators, FormGroup } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -28,7 +28,7 @@ import { Usuarioservice } from '../../services/usuarioservice';
   templateUrl: './usuarioscomponent.html',
   styleUrl: './usuarioscomponent.css',
 })
-export class Usuarioscomponent implements OnInit, OnDestroy {
+export class Usuarioscomponent implements OnInit {
   usuarios: UsuarioDTO[] = [];
   roles: RolDTO[] = [];
   cargando = false;
@@ -41,7 +41,6 @@ export class Usuarioscomponent implements OnInit, OnDestroy {
   seleccionado: UsuarioDTO | null = null;
   pendiente: UsuarioDTO | null = null;
   formulario: FormGroup;
-  private activo = true;
 
   constructor(
     private servicio: Usuarioservice,
@@ -88,12 +87,10 @@ export class Usuarioscomponent implements OnInit, OnDestroy {
     this.error = '';
     this.servicio.listar().subscribe({
       next: (usuarios) => {
-        if (!this.activo) return;
         this.usuarios = usuarios;
         this.cargarRoles();
       },
       error: (error: HttpErrorResponse) => {
-        if (!this.activo) return;
         this.falloCarga(error);
       },
     });
@@ -152,13 +149,11 @@ export class Usuarioscomponent implements OnInit, OnDestroy {
     this.ocupado = true;
     peticion.subscribe({
       next: () => {
-        if (!this.activo) return;
         this.finalizar('Se guardó la cuenta.');
         this.ocupado = false;
         this.cdr.detectChanges();
       },
       error: (error) => {
-        if (!this.activo) return;
         this.mostrarError(error);
         this.ocupado = false;
         this.cdr.detectChanges();
@@ -172,13 +167,11 @@ export class Usuarioscomponent implements OnInit, OnDestroy {
     this.ocupado = true;
     this.servicio.eliminar(usuario.idUsuario).subscribe({
       next: () => {
-        if (!this.activo) return;
         this.finalizar('Se eliminó la cuenta.');
         this.ocupado = false;
         this.cdr.detectChanges();
       },
       error: (error) => {
-        if (!this.activo) return;
         this.mostrarError(error);
         this.ocupado = false;
         this.cdr.detectChanges();
@@ -203,7 +196,6 @@ export class Usuarioscomponent implements OnInit, OnDestroy {
   private cargarRoles(): void {
     this.servicio.roles().subscribe({
       next: (roles) => {
-        if (!this.activo) return;
         this.roles = roles;
         this.pagina = Math.min(
           this.pagina,
@@ -213,7 +205,6 @@ export class Usuarioscomponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       },
       error: (error: HttpErrorResponse) => {
-        if (!this.activo) return;
         this.falloCarga(error);
       },
     });
@@ -223,9 +214,5 @@ export class Usuarioscomponent implements OnInit, OnDestroy {
     this.mostrarError(error);
     this.cargando = false;
     this.cdr.detectChanges();
-  }
-
-  ngOnDestroy(): void {
-    this.activo = false;
   }
 }

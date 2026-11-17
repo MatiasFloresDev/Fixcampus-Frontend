@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -26,7 +26,7 @@ import { Reporteservice } from '../../services/reporteservice';
   templateUrl: './evidenciascomponent.html',
   styleUrl: './evidenciascomponent.css',
 })
-export class Evidenciascomponent implements OnInit, OnDestroy {
+export class Evidenciascomponent implements OnInit {
   prioridades = ['MUY_BAJA', 'BAJA', 'MEDIA', 'ALTA', 'MUY_ALTA'];
   prioridad = '';
   pagina = 0;
@@ -48,7 +48,6 @@ export class Evidenciascomponent implements OnInit, OnDestroy {
   adjuntoPendiente: AdjuntoDTO | null = null;
   avisoAdjunto = '';
   adjuntoForm: FormGroup;
-  private activo = true;
 
   constructor(
     public acceso: Accesoservice,
@@ -85,7 +84,6 @@ export class Evidenciascomponent implements OnInit, OnDestroy {
     this.cargandoLista = true;
     this.servicio.listar(this.prioridad).subscribe({
       next: (datos) => {
-        if (!this.activo) return;
         this.lista = datos;
         this.pagina = Math.min(
           this.pagina,
@@ -97,7 +95,6 @@ export class Evidenciascomponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       },
       error: (error: HttpErrorResponse) => {
-        if (!this.activo) return;
         this.acceso.revisarError(error);
         this.errorLista = 'No se pudo consultar tus reportes.';
         this.cargandoLista = false;
@@ -155,7 +152,6 @@ export class Evidenciascomponent implements OnInit, OnDestroy {
     this.errorAdjuntos = '';
     peticion.subscribe({
       next: () => {
-        if (!this.activo) return;
         this.guardandoAdjunto = false;
         this.cancelarAdjunto();
         this.avisoAdjunto = 'Se guardó la evidencia.';
@@ -163,7 +159,6 @@ export class Evidenciascomponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       },
       error: (error) => {
-        if (!this.activo) return;
         this.falloAdjunto(error);
         this.cdr.detectChanges();
       },
@@ -176,7 +171,6 @@ export class Evidenciascomponent implements OnInit, OnDestroy {
     this.guardandoAdjunto = true;
     this.servicio.eliminarAdjunto(adjunto.idAdjunto).subscribe({
       next: () => {
-        if (!this.activo) return;
         this.guardandoAdjunto = false;
         this.cancelarAdjunto();
         this.avisoAdjunto = 'Se eliminó la evidencia.';
@@ -184,7 +178,6 @@ export class Evidenciascomponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       },
       error: (error) => {
-        if (!this.activo) return;
         this.falloAdjunto(error);
         this.cdr.detectChanges();
       },
@@ -233,7 +226,6 @@ export class Evidenciascomponent implements OnInit, OnDestroy {
     this.cargandoAdjuntos = true;
     this.servicio.evidencias(reporte.idReporte).subscribe({
       next: (datos) => {
-        if (!this.activo) return;
         if (this.reporte?.idReporte !== reporte.idReporte) return;
         this.adjuntos = datos;
         this.paginaAdjuntos = Math.min(
@@ -244,7 +236,6 @@ export class Evidenciascomponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       },
       error: (error: HttpErrorResponse) => {
-        if (!this.activo) return;
         if (this.reporte?.idReporte !== reporte.idReporte) return;
         this.acceso.revisarError(error);
         this.errorAdjuntos =
@@ -264,7 +255,6 @@ export class Evidenciascomponent implements OnInit, OnDestroy {
     this.errorEliminar = '';
     this.servicio.eliminar(seleccionado.idReporte).subscribe({
       next: () => {
-        if (!this.activo) return;
         this.confirmacionEliminar = undefined;
         this.reporte = undefined;
         this.adjuntos = [];
@@ -273,7 +263,6 @@ export class Evidenciascomponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       },
       error: (error: HttpErrorResponse) => {
-        if (!this.activo) return;
         this.acceso.revisarError(error);
         this.errorEliminar =
           error.status === 409
@@ -293,9 +282,5 @@ export class Evidenciascomponent implements OnInit, OnDestroy {
       return null;
     }
     return null;
-  }
-
-  ngOnDestroy(): void {
-    this.activo = false;
   }
 }

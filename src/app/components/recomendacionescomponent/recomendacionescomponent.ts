@@ -3,7 +3,7 @@ import { ReporteDTO } from '../../models/ReporteDTO';
 import { Reporteservice } from '../../services/reporteservice';
 import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
@@ -24,7 +24,7 @@ import { Recomendacionservice } from '../../services/recomendacionservice';
   templateUrl: './recomendacionescomponent.html',
   styleUrl: './recomendacionescomponent.css',
 })
-export class Recomendacionescomponent implements OnInit, OnDestroy {
+export class Recomendacionescomponent implements OnInit {
   prioridad = '';
   recomendaciones: RecomendacionDTO[] = [];
   cargando = false;
@@ -33,7 +33,6 @@ export class Recomendacionescomponent implements OnInit, OnDestroy {
   porPagina = 5;
   reportes: ReporteDTO[] = [];
   busqueda = '';
-  private activo = true;
 
   constructor(
     private servicio: Recomendacionservice,
@@ -85,12 +84,10 @@ export class Recomendacionescomponent implements OnInit, OnDestroy {
     this.cargando = true;
     this.servicio.listar(prioridad).subscribe({
       next: (recomendaciones) => {
-        if (!this.activo) return;
         this.recomendaciones = recomendaciones;
         this.cargarTitulos();
       },
       error: (error: HttpErrorResponse) => {
-        if (!this.activo) return;
         this.falloCarga(error);
       },
     });
@@ -102,7 +99,6 @@ export class Recomendacionescomponent implements OnInit, OnDestroy {
     this.cargando = true;
     this.servicio.eliminar(item.idRecomendacion).subscribe({
       next: () => {
-        if (!this.activo) return;
         this.recomendaciones = this.recomendaciones.filter(
           (r) => r.idRecomendacion !== item.idRecomendacion,
         );
@@ -114,7 +110,6 @@ export class Recomendacionescomponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       },
       error: (error: HttpErrorResponse) => {
-        if (!this.activo) return;
         this.acceso.revisarError(error);
         this.error = 'No se pudo eliminar la recomendación.';
         this.cargando = false;
@@ -126,13 +121,11 @@ export class Recomendacionescomponent implements OnInit, OnDestroy {
   private cargarTitulos(): void {
     this.reportesApi.listar().subscribe({
       next: (reportes) => {
-        if (!this.activo) return;
         this.reportes = reportes;
         this.cargando = false;
         this.cdr.detectChanges();
       },
       error: (error: HttpErrorResponse) => {
-        if (!this.activo) return;
         this.falloCarga(error);
       },
     });
@@ -143,9 +136,5 @@ export class Recomendacionescomponent implements OnInit, OnDestroy {
     this.error = 'No se pudieron cargar las recomendaciones.';
     this.cargando = false;
     this.cdr.detectChanges();
-  }
-
-  ngOnDestroy(): void {
-    this.activo = false;
   }
 }
