@@ -8,9 +8,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { Subscription } from 'rxjs';
 import { RolDTO } from '../../models/RolDTO';
 import { UsuarioDTO } from '../../models/UsuarioDTO';
+import { UsuarioFormularioDTO } from '../../models/UsuarioFormularioDTO';
 import { Accesoservice } from '../../services/accesoservice';
 import { Usuarioservice } from '../../services/usuarioservice';
 
@@ -41,7 +41,7 @@ export class Usuarioscomponent implements OnInit, OnDestroy {
   seleccionado: UsuarioDTO | null = null;
   pendiente: UsuarioDTO | null = null;
   formulario: FormGroup;
-  private suscripciones = new Subscription();
+  private activo = true;
 
   constructor(
     private servicio: Usuarioservice,
@@ -61,6 +61,7 @@ export class Usuarioscomponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    if (!this.acceso.validarSesion(true)) return;
     this.cargar();
   }
 
@@ -85,15 +86,17 @@ export class Usuarioscomponent implements OnInit, OnDestroy {
   cargar(): void {
     this.cargando = true;
     this.error = '';
-    this.suscripciones.add(
-      this.servicio.listar().subscribe({
-        next: (usuarios) => {
-          this.usuarios = usuarios;
-          this.cargarRoles();
-        },
-        error: (error: HttpErrorResponse) => this.falloCarga(error),
-      }),
-    );
+    this.servicio.listar().subscribe({
+      next: (usuarios) => {
+        if (!this.activo) return;
+        this.usuarios = usuarios;
+        this.cargarRoles();
+      },
+      error: (error: HttpErrorResponse) => {
+        if (!this.activo) return;
+        this.falloCarga(error);
+      },
+    });
   }
 
   nombreRol(id: number): string {
@@ -137,51 +140,50 @@ export class Usuarioscomponent implements OnInit, OnDestroy {
     this.formulario.markAllAsTouched();
     if (this.formulario.invalid) return;
     const valores = this.formulario.getRawValue();
-    const datos = {
-      nombre: valores.nombre!.trim(),
-      apellido: valores.apellido!.trim(),
-      correo: valores.correo!.trim(),
-      rolId: valores.rolId!,
-      estado: valores.estado!,
-      password: valores.password || undefined,
-    };
+    const datos = new UsuarioFormularioDTO();
+    datos.nombre = valores.nombre.trim();
+    datos.apellido = valores.apellido.trim();
+    datos.correo = valores.correo.trim();
+    datos.rolId = valores.rolId;
+    datos.estado = valores.estado;
+    datos.password = valores.password || undefined;
     const id = this.seleccionado?.idUsuario;
     const peticion = id ? this.servicio.actualizar(id, datos) : this.servicio.registrar(datos);
     this.ocupado = true;
-    this.suscripciones.add(
-      peticion.subscribe({
-        next: () => {
-          this.finalizar('Se guardó la cuenta.');
-          this.ocupado = false;
-          this.cdr.detectChanges();
-        },
-        error: (error) => {
-          this.mostrarError(error);
-          this.ocupado = false;
-          this.cdr.detectChanges();
-        },
-      }),
-    );
+    peticion.subscribe({
+      next: () => {
+        if (!this.activo) return;
+        this.finalizar('Se guardó la cuenta.');
+        this.ocupado = false;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        if (!this.activo) return;
+        this.mostrarError(error);
+        this.ocupado = false;
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   eliminar(): void {
     const usuario = this.pendiente;
     if (!usuario || this.ocupado) return;
     this.ocupado = true;
-    this.suscripciones.add(
-      this.servicio.eliminar(usuario.idUsuario).subscribe({
-        next: () => {
-          this.finalizar('Se eliminó la cuenta.');
-          this.ocupado = false;
-          this.cdr.detectChanges();
-        },
-        error: (error) => {
-          this.mostrarError(error);
-          this.ocupado = false;
-          this.cdr.detectChanges();
-        },
-      }),
-    );
+    this.servicio.eliminar(usuario.idUsuario).subscribe({
+      next: () => {
+        if (!this.activo) return;
+        this.finalizar('Se eliminó la cuenta.');
+        this.ocupado = false;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        if (!this.activo) return;
+        this.mostrarError(error);
+        this.ocupado = false;
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   private finalizar(mensaje: string): void {
@@ -199,20 +201,22 @@ export class Usuarioscomponent implements OnInit, OnDestroy {
   }
 
   private cargarRoles(): void {
-    this.suscripciones.add(
-      this.servicio.roles().subscribe({
-        next: (roles) => {
-          this.roles = roles;
-          this.pagina = Math.min(
-            this.pagina,
-            Math.max(0, Math.ceil(this.filtrados().length / this.porPagina) - 1),
-          );
-          this.cargando = false;
-          this.cdr.detectChanges();
-        },
-        error: (error: HttpErrorResponse) => this.falloCarga(error),
-      }),
-    );
+    this.servicio.roles().subscribe({
+      next: (roles) => {
+        if (!this.activo) return;
+        this.roles = roles;
+        this.pagina = Math.min(
+          this.pagina,
+          Math.max(0, Math.ceil(this.filtrados().length / this.porPagina) - 1),
+        );
+        this.cargando = false;
+        this.cdr.detectChanges();
+      },
+      error: (error: HttpErrorResponse) => {
+        if (!this.activo) return;
+        this.falloCarga(error);
+      },
+    });
   }
 
   private falloCarga(error: HttpErrorResponse): void {
@@ -222,6 +226,6 @@ export class Usuarioscomponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.suscripciones.unsubscribe();
+    this.activo = false;
   }
 }

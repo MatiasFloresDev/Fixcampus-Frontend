@@ -42,6 +42,7 @@ export class Panelcomponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (!this.acceso.validarSesion()) return;
     this.actualizarPanel();
   }
 

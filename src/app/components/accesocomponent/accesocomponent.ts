@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -13,7 +13,7 @@ import { Accesoservice } from '../../services/accesoservice';
   templateUrl: './accesocomponent.html',
   styleUrl: './accesocomponent.css',
 })
-export class Accesocomponent {
+export class Accesocomponent implements OnInit {
   formulario: FormGroup;
   cargando = false;
   mensaje = '';
@@ -33,6 +33,10 @@ export class Accesocomponent {
       ],
       password: ['', Validators.required],
     });
+  }
+
+  ngOnInit(): void {
+    this.acceso.irAlPanelSiTieneSesion();
   }
 
   ingresar(): void {
