@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { TotalCategoriaDTO } from '../../models/TotalCategoriaDTO';
 import { TotalPrioridadDTO } from '../../models/TotalPrioridadDTO';
@@ -11,12 +11,11 @@ import { Estadisticaservice } from '../../services/estadisticaservice';
   templateUrl: './estadisticascomponent.html',
   styleUrl: './estadisticascomponent.css',
 })
-export class Estadisticascomponent implements OnInit, OnDestroy {
+export class Estadisticascomponent implements OnInit {
   categorias: TotalCategoriaDTO[] = [];
   prioridades: TotalPrioridadDTO[] = [];
   cargando = false;
   error = false;
-  private activo = true;
 
   constructor(
     private servicio: Estadisticaservice,
@@ -34,12 +33,10 @@ export class Estadisticascomponent implements OnInit, OnDestroy {
     this.error = false;
     this.servicio.reportesPorCategoria().subscribe({
       next: (categorias) => {
-        if (!this.activo) return;
         this.categorias = categorias;
         this.cargarPrioridades();
       },
       error: (error: HttpErrorResponse) => {
-        if (!this.activo) return;
         this.mostrarError(error);
       },
     });
@@ -48,13 +45,11 @@ export class Estadisticascomponent implements OnInit, OnDestroy {
   private cargarPrioridades(): void {
     this.servicio.recomendacionesPorPrioridad().subscribe({
       next: (prioridades) => {
-        if (!this.activo) return;
         this.prioridades = prioridades;
         this.cargando = false;
         this.cdr.detectChanges();
       },
       error: (error: HttpErrorResponse) => {
-        if (!this.activo) return;
         this.mostrarError(error);
       },
     });
@@ -115,9 +110,5 @@ export class Estadisticascomponent implements OnInit, OnDestroy {
   calcularPorcentaje(cantidad: number, max: number): number {
     if (!max || max <= 0 || !cantidad || cantidad <= 0) return 0;
     return Math.min(100, Math.round((cantidad / max) * 100));
-  }
-
-  ngOnDestroy(): void {
-    this.activo = false;
   }
 }

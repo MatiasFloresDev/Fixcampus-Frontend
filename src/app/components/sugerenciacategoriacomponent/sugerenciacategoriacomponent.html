@@ -1,0 +1,34 @@
+<p id="nota-ia">
+  Al solicitar la sugerencia, compartiremos la descripción con Gemini. Evita incluir datos
+  personales.
+</p>
+@if (descripcionIA().length > limiteDescripcionIA) {
+  <p>Para solicitar una sugerencia, usa hasta {{ limiteDescripcionIA }} caracteres.</p>
+}
+<button
+  mat-stroked-button
+  type="button"
+  aria-describedby="nota-ia"
+  (click)="sugerirCategoria()"
+  [disabled]="
+    consultandoIA || guardando || !descripcionIA() || descripcionIA().length > limiteDescripcionIA
+  "
+>
+  Sugerir categoría con IA
+</button>
+<div role="status">
+  @if (consultandoIA) {
+    <p>Buscando una categoría…</p>
+  } @else if (sugerencia; as categoria) {
+    <p>
+      Sugerencia: <strong>{{ categoria.nombre }}</strong>
+    </p>
+  } @else if (mensajeIA) {
+    <p>{{ mensajeIA }}</p>
+  }
+</div>
+@if (sugerencia) {
+  <button mat-button type="button" (click)="usarSugerencia()" [disabled]="guardando">
+    Usar categoría sugerida
+  </button>
+}

@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators, FormGroup } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -30,7 +30,7 @@ import { Reporteservice } from '../../services/reporteservice';
   templateUrl: './seguimientocomponent.html',
   styleUrl: './seguimientocomponent.css',
 })
-export class Seguimientocomponent implements OnInit, OnDestroy {
+export class Seguimientocomponent implements OnInit {
   reporteId: number;
   reporte: ReporteDTO | null = null;
   comentarios: ComentarioDTO[] = [];
@@ -51,7 +51,6 @@ export class Seguimientocomponent implements OnInit, OnDestroy {
   private texto = [Validators.required, Validators.pattern(/\S/)];
   comentarioForm: FormGroup;
   recomendacionForm: FormGroup;
-  private activo = true;
 
   constructor(
     private acceso: Accesoservice,
@@ -104,12 +103,10 @@ export class Seguimientocomponent implements OnInit, OnDestroy {
     this.error = '';
     this.reportesApi.obtener(this.reporteId).subscribe({
       next: (reporte) => {
-        if (!this.activo) return;
         this.reporte = reporte;
         this.cargarComentarios();
       },
       error: (error: HttpErrorResponse) => {
-        if (!this.activo) return;
         this.falloCarga(error);
       },
     });
@@ -137,7 +134,6 @@ export class Seguimientocomponent implements OnInit, OnDestroy {
     this.aviso = '';
     peticion.subscribe({
       next: (comentario) => {
-        if (!this.activo) return;
         this.comentarios = anterior
           ? this.comentarios.map((item) =>
               item.idComentario === comentario.idComentario ? comentario : item,
@@ -150,7 +146,6 @@ export class Seguimientocomponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       },
       error: (error: HttpErrorResponse) => {
-        if (!this.activo) return;
         this.falloOperacion(error);
       },
     });
@@ -174,14 +169,12 @@ export class Seguimientocomponent implements OnInit, OnDestroy {
     this.aviso = '';
     peticion.subscribe({
       next: (recomendacion) => {
-        if (!this.activo) return;
         this.recomendacion = recomendacion;
         this.aviso = 'Se guardó la recomendación.';
         this.guardando = false;
         this.cdr.detectChanges();
       },
       error: (error: HttpErrorResponse) => {
-        if (!this.activo) return;
         this.falloOperacion(error);
       },
     });
@@ -196,7 +189,6 @@ export class Seguimientocomponent implements OnInit, OnDestroy {
     if (pendiente.tipo === 'comentario') {
       this.comentariosApi.eliminar(pendiente.id).subscribe({
         next: () => {
-          if (!this.activo) return;
           this.comentarios = this.comentarios.filter((item) => item.idComentario !== pendiente.id);
           if (this.editado?.idComentario === pendiente.id) this.cancelarComentario();
           this.paginaComentarios = Math.min(
@@ -209,14 +201,12 @@ export class Seguimientocomponent implements OnInit, OnDestroy {
           this.cdr.detectChanges();
         },
         error: (error: HttpErrorResponse) => {
-          if (!this.activo) return;
           this.falloOperacion(error);
         },
       });
     } else {
       this.recomendacionesApi.eliminar(pendiente.id).subscribe({
         next: () => {
-          if (!this.activo) return;
           this.recomendacion = null;
           this.recomendacionForm.reset({
             tituloSugerido: '',
@@ -230,7 +220,6 @@ export class Seguimientocomponent implements OnInit, OnDestroy {
           this.cdr.detectChanges();
         },
         error: (error: HttpErrorResponse) => {
-          if (!this.activo) return;
           this.falloOperacion(error);
         },
       });
@@ -258,12 +247,10 @@ export class Seguimientocomponent implements OnInit, OnDestroy {
   private cargarComentarios(): void {
     this.comentariosApi.listar(this.reporteId).subscribe({
       next: (comentarios) => {
-        if (!this.activo) return;
         this.comentarios = comentarios;
         this.cargarRecomendacion();
       },
       error: (error: HttpErrorResponse) => {
-        if (!this.activo) return;
         this.falloCarga(error);
       },
     });
@@ -272,7 +259,6 @@ export class Seguimientocomponent implements OnInit, OnDestroy {
   private cargarRecomendacion(): void {
     this.recomendacionesApi.porReporte(this.reporteId).subscribe({
       next: (recomendacion) => {
-        if (!this.activo) return;
         this.recomendacion = recomendacion;
         this.recomendacionForm.reset(
           recomendacion ?? {
@@ -286,7 +272,6 @@ export class Seguimientocomponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       },
       error: (error: HttpErrorResponse) => {
-        if (!this.activo) return;
         this.falloCarga(error);
       },
     });
@@ -296,9 +281,5 @@ export class Seguimientocomponent implements OnInit, OnDestroy {
     this.mostrarError(error, 'No se pudo cargar el seguimiento.');
     this.cargando = false;
     this.cdr.detectChanges();
-  }
-
-  ngOnDestroy(): void {
-    this.activo = false;
   }
 }

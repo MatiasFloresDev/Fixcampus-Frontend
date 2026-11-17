@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -25,7 +25,7 @@ import { Ubicacionservice } from '../../services/ubicacionservice';
   templateUrl: './ubicacioncomponent.html',
   styleUrl: './ubicacioncomponent.css',
 })
-export class Ubicacioncomponent implements OnInit, OnDestroy {
+export class Ubicacioncomponent implements OnInit {
   columnas: string[] = ['idUbicacion', 'campus', 'edificio', 'piso', 'zona', 'tipo', 'acciones'];
   registros: UbicacionDTO[] = [];
   formulario: FormGroup;
@@ -38,7 +38,6 @@ export class Ubicacioncomponent implements OnInit, OnDestroy {
   pendiente = 0;
   pagina = 0;
   porPagina = 5;
-  private activo = true;
 
   constructor(
     private servicio: Ubicacionservice,
@@ -72,7 +71,6 @@ export class Ubicacioncomponent implements OnInit, OnDestroy {
     this.errorLista = '';
     this.servicio.listar().subscribe({
       next: (datos) => {
-        if (!this.activo) return;
         this.registros = datos;
         this.pagina = Math.min(
           this.pagina,
@@ -82,7 +80,6 @@ export class Ubicacioncomponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       },
       error: (error: HttpErrorResponse) => {
-        if (!this.activo) return;
         this.errorLista = this.mensajeError(error, 'No se pudo cargar el listado.');
         this.cargando = false;
         this.cdr.detectChanges();
@@ -104,7 +101,6 @@ export class Ubicacioncomponent implements OnInit, OnDestroy {
     this.ocupado = true;
     this.servicio.obtener(registro.idUbicacion).subscribe({
       next: (datos) => {
-        if (!this.activo) return;
         this.formulario.reset({
           campus: datos.campus,
           edificio: datos.edificio,
@@ -122,7 +118,6 @@ export class Ubicacioncomponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       },
       error: (error: HttpErrorResponse) => {
-        if (!this.activo) return;
         this.fallar(error, 'No se pudo abrir el registro.');
       },
     });
@@ -166,11 +161,9 @@ export class Ubicacioncomponent implements OnInit, OnDestroy {
       : this.servicio.registrar(datos);
     peticion.subscribe({
       next: () => {
-        if (!this.activo) return;
         this.finalizar('Se guardó el registro.');
       },
       error: (error: HttpErrorResponse) => {
-        if (!this.activo) return;
         this.fallar(error, 'No se pudo guardar el registro.');
       },
     });
@@ -185,11 +178,9 @@ export class Ubicacioncomponent implements OnInit, OnDestroy {
     this.errorAccion = '';
     this.servicio.eliminar(this.pendiente).subscribe({
       next: () => {
-        if (!this.activo) return;
         this.finalizar('Se eliminó el registro.');
       },
       error: (error: HttpErrorResponse) => {
-        if (!this.activo) return;
         this.fallar(error, 'No se pudo eliminar el registro.');
       },
     });
@@ -212,8 +203,5 @@ export class Ubicacioncomponent implements OnInit, OnDestroy {
     if ([400, 404, 409].includes(error.status) && typeof error.error?.message === 'string')
       return error.error.message;
     return respaldo;
-  }
-  ngOnDestroy(): void {
-    this.activo = false;
   }
 }
