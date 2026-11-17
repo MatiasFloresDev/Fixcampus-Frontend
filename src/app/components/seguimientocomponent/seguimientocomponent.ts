@@ -72,7 +72,10 @@ export class Seguimientocomponent implements OnInit {
     this.recomendacionForm = this.fb.group({
       tituloSugerido: ['', [...this.texto, Validators.maxLength(200)]],
       resumen: ['', this.texto],
-      prioridadSugerida: ['MEDIA', Validators.required],
+      prioridadSugerida: [
+        'MEDIA',
+        [Validators.required, Validators.pattern(/^(MUY_BAJA|BAJA|MEDIA|ALTA|MUY_ALTA)$/)],
+      ],
       justificacion: ['', this.texto],
     });
   }

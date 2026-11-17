@@ -158,6 +158,7 @@
                 <mat-option [value]="prioridad">{{ prioridad.replace('_', ' ') }}</mat-option>
               }
             </mat-select>
+            <mat-error>Selecciona una prioridad válida o Sin prioridad.</mat-error>
           </mat-form-field>
           @if (editando) {
             <mat-form-field appearance="outline">
@@ -170,6 +171,7 @@
                   <mat-option [value]="estado">{{ estado.replaceAll('_', ' ') }}</mat-option>
                 }
               </mat-select>
+              <mat-error>Selecciona un estado válido.</mat-error>
             </mat-form-field>
           }
         </div>

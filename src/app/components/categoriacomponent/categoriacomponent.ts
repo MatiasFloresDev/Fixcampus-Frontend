@@ -129,6 +129,7 @@ export class Categoriacomponent implements OnInit {
   }
   guardar(): void {
     if (this.ocupado || this.modo === 'detalle' || !this.modo) return;
+    this.normalizarNombre();
     this.formulario.markAllAsTouched();
     if (this.formulario.invalid) return;
     const valores = this.formulario.getRawValue();
@@ -148,6 +149,10 @@ export class Categoriacomponent implements OnInit {
         this.fallar(error, 'No se pudo guardar el registro.');
       },
     });
+  }
+  normalizarNombre(): void {
+    const nombre = this.formulario.controls['nombre'];
+    nombre.setValue((nombre.value || '').trim());
   }
   pedirEliminar(registro: CategoriaDTO): void {
     this.cerrar();

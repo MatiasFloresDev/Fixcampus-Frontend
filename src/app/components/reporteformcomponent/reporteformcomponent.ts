@@ -64,10 +64,16 @@ export class Reporteformcomponent implements OnInit {
       titulo: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(200)]],
       descripcion: ['', [Validators.required, Validators.pattern(/\S/)]],
       detalleUbicacion: ['', Validators.maxLength(255)],
-      categoriaId: [null, Validators.required],
-      ubicacionId: [null, Validators.required],
-      estado: ['ABIERTO', Validators.required],
-      prioridad: [null],
+      categoriaId: [null, [Validators.required, Validators.min(1)]],
+      ubicacionId: [null, [Validators.required, Validators.min(1)]],
+      estado: [
+        'ABIERTO',
+        [
+          Validators.required,
+          Validators.pattern(/^(ABIERTO|EN_REVISION|ASIGNADO|EN_ATENCION|RESUELTO|CERRADO)$/),
+        ],
+      ],
+      prioridad: [null, Validators.pattern(/^(MUY_BAJA|BAJA|MEDIA|ALTA|MUY_ALTA)$/)],
     });
   }
 

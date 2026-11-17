@@ -158,8 +158,8 @@
               }
               @for (prioridad of prioridades; track prioridad) {
                 <mat-option [value]="prioridad">{{ prioridad.replace('_', ' ') }}</mat-option>
-              }
-            </mat-select></mat-form-field
+              }</mat-select
+            ><mat-error>Selecciona una prioridad válida.</mat-error></mat-form-field
           >
           <mat-form-field appearance="outline"
             ><mat-label>Justificación</mat-label

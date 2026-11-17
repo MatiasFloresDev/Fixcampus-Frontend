@@ -28,7 +28,7 @@
       <div class="campos">
         <mat-form-field appearance="outline">
           <mat-label>Nombre</mat-label>
-          <input matInput formControlName="nombre" maxlength="100" />
+          <input matInput formControlName="nombre" maxlength="100" (blur)="normalizarNombre()" />
           <mat-error>
             @if (
               formulario.controls['nombre'].hasError('required') ||
