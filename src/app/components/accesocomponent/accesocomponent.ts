@@ -29,9 +29,9 @@ export class Accesocomponent implements OnInit {
     this.formulario = fb.group({
       correo: [
         ruta.snapshot.queryParamMap.get('correo') ?? '',
-        [Validators.required, Validators.email],
+        [Validators.required, Validators.email, Validators.maxLength(150)],
       ],
-      password: ['', Validators.required],
+      password: ['', [Validators.required, Validators.pattern(/\S/)]],
     });
   }
 

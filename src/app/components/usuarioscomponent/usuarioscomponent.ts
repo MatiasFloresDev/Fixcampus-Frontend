@@ -53,8 +53,8 @@ export class Usuarioscomponent implements OnInit {
       nombre: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(100)]],
       apellido: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(100)]],
       correo: ['', [Validators.required, Validators.email, Validators.maxLength(150)]],
-      rolId: [null, Validators.required],
-      estado: ['ACTIVO', Validators.required],
+      rolId: [null, [Validators.required, Validators.min(1)]],
+      estado: ['ACTIVO', [Validators.required, Validators.pattern(/^(ACTIVO|INACTIVO)$/)]],
       password: [''],
     });
   }

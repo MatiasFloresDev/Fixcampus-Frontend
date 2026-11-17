@@ -1,6 +1,11 @@
 <section class="acceso">
   <div class="lado-campus">
-    <img src="assets/campus-monterrico.jpg" alt="Campus Monterrico de la UPC" width="1280" height="960" />
+    <img
+      src="assets/campus-monterrico.jpg"
+      alt="Campus Monterrico de la UPC"
+      width="1280"
+      height="960"
+    />
     <h2>Cuida los espacios de tu campus.</h2>
     <p>Reporta incidencias y sigue su atención en un solo lugar.</p>
   </div>
@@ -13,8 +18,14 @@
     <form [formGroup]="formulario" (ngSubmit)="ingresar()">
       <mat-form-field appearance="outline">
         <mat-label>Correo electrónico</mat-label>
-        <input matInput type="email" formControlName="correo" autocomplete="username" />
-        <mat-error>Ingresa un correo válido.</mat-error>
+        <input
+          matInput
+          type="email"
+          formControlName="correo"
+          autocomplete="username"
+          maxlength="150"
+        />
+        <mat-error>Ingresa un correo válido de hasta 150 caracteres.</mat-error>
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>Contraseña</mat-label>
