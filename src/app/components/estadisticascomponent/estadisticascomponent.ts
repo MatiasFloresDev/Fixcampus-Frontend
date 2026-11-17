@@ -1,7 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { Subscription } from 'rxjs';
 import { TotalCategoriaDTO } from '../../models/TotalCategoriaDTO';
 import { TotalPrioridadDTO } from '../../models/TotalPrioridadDTO';
 import { Accesoservice } from '../../services/accesoservice';
@@ -17,7 +16,7 @@ export class Estadisticascomponent implements OnInit, OnDestroy {
   prioridades: TotalPrioridadDTO[] = [];
   cargando = false;
   error = false;
-  private suscripciones = new Subscription();
+  private activo = true;
 
   constructor(
     private servicio: Estadisticaservice,
@@ -26,34 +25,39 @@ export class Estadisticascomponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    if (!this.acceso.validarSesion(true)) return;
     this.cargar();
   }
 
   cargar(): void {
     this.cargando = true;
     this.error = false;
-    this.suscripciones.add(
-      this.servicio.reportesPorCategoria().subscribe({
-        next: (categorias) => {
-          this.categorias = categorias;
-          this.cargarPrioridades();
-        },
-        error: (error: HttpErrorResponse) => this.mostrarError(error),
-      }),
-    );
+    this.servicio.reportesPorCategoria().subscribe({
+      next: (categorias) => {
+        if (!this.activo) return;
+        this.categorias = categorias;
+        this.cargarPrioridades();
+      },
+      error: (error: HttpErrorResponse) => {
+        if (!this.activo) return;
+        this.mostrarError(error);
+      },
+    });
   }
 
   private cargarPrioridades(): void {
-    this.suscripciones.add(
-      this.servicio.recomendacionesPorPrioridad().subscribe({
-        next: (prioridades) => {
-          this.prioridades = prioridades;
-          this.cargando = false;
-          this.cdr.detectChanges();
-        },
-        error: (error: HttpErrorResponse) => this.mostrarError(error),
-      }),
-    );
+    this.servicio.recomendacionesPorPrioridad().subscribe({
+      next: (prioridades) => {
+        if (!this.activo) return;
+        this.prioridades = prioridades;
+        this.cargando = false;
+        this.cdr.detectChanges();
+      },
+      error: (error: HttpErrorResponse) => {
+        if (!this.activo) return;
+        this.mostrarError(error);
+      },
+    });
   }
 
   private mostrarError(error: HttpErrorResponse): void {
@@ -114,6 +118,6 @@ export class Estadisticascomponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.suscripciones.unsubscribe();
+    this.activo = false;
   }
 }

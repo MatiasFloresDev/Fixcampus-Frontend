@@ -8,9 +8,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Subscription } from 'rxjs';
 import { ComentarioDTO } from '../../models/ComentarioDTO';
 import { RecomendacionDTO } from '../../models/RecomendacionDTO';
+import { RecomendacionFormularioDTO } from '../../models/RecomendacionFormularioDTO';
 import { ReporteDTO } from '../../models/ReporteDTO';
 import { Accesoservice } from '../../services/accesoservice';
 import { Comentarioservice } from '../../services/comentarioservice';
@@ -51,7 +51,7 @@ export class Seguimientocomponent implements OnInit, OnDestroy {
   private texto = [Validators.required, Validators.pattern(/\S/)];
   comentarioForm: FormGroup;
   recomendacionForm: FormGroup;
-  private suscripciones = new Subscription();
+  private activo = true;
 
   constructor(
     private acceso: Accesoservice,
@@ -79,6 +79,7 @@ export class Seguimientocomponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    if (!this.acceso.validarSesion(true)) return;
     this.cargar();
   }
 
@@ -101,15 +102,17 @@ export class Seguimientocomponent implements OnInit, OnDestroy {
     }
     this.cargando = true;
     this.error = '';
-    this.suscripciones.add(
-      this.reportesApi.obtener(this.reporteId).subscribe({
-        next: (reporte) => {
-          this.reporte = reporte;
-          this.cargarComentarios();
-        },
-        error: (error: HttpErrorResponse) => this.falloCarga(error),
-      }),
-    );
+    this.reportesApi.obtener(this.reporteId).subscribe({
+      next: (reporte) => {
+        if (!this.activo) return;
+        this.reporte = reporte;
+        this.cargarComentarios();
+      },
+      error: (error: HttpErrorResponse) => {
+        if (!this.activo) return;
+        this.falloCarga(error);
+      },
+    });
   }
 
   editarComentario(comentario: ComentarioDTO): void {
@@ -132,35 +135,36 @@ export class Seguimientocomponent implements OnInit, OnDestroy {
     this.guardando = true;
     this.error = '';
     this.aviso = '';
-    this.suscripciones.add(
-      peticion.subscribe({
-        next: (comentario) => {
-          this.comentarios = anterior
-            ? this.comentarios.map((item) =>
-                item.idComentario === comentario.idComentario ? comentario : item,
-              )
-            : [comentario, ...this.comentarios];
-          this.cancelarComentario();
-          this.paginaComentarios = 0;
-          this.aviso = 'Se guardó el comentario.';
-          this.guardando = false;
-          this.cdr.detectChanges();
-        },
-        error: (error: HttpErrorResponse) => this.falloOperacion(error),
-      }),
-    );
+    peticion.subscribe({
+      next: (comentario) => {
+        if (!this.activo) return;
+        this.comentarios = anterior
+          ? this.comentarios.map((item) =>
+              item.idComentario === comentario.idComentario ? comentario : item,
+            )
+          : [comentario, ...this.comentarios];
+        this.cancelarComentario();
+        this.paginaComentarios = 0;
+        this.aviso = 'Se guardó el comentario.';
+        this.guardando = false;
+        this.cdr.detectChanges();
+      },
+      error: (error: HttpErrorResponse) => {
+        if (!this.activo) return;
+        this.falloOperacion(error);
+      },
+    });
   }
 
   guardarRecomendacion(): void {
     if (this.guardarBloqueado() || this.recomendacionForm.invalid) return;
     const valores = this.recomendacionForm.getRawValue();
-    const datos = {
-      reporteId: this.reporteId,
-      tituloSugerido: valores.tituloSugerido.trim(),
-      resumen: valores.resumen.trim(),
-      prioridadSugerida: valores.prioridadSugerida,
-      justificacion: valores.justificacion.trim(),
-    };
+    const datos = new RecomendacionFormularioDTO();
+    datos.reporteId = this.reporteId;
+    datos.tituloSugerido = valores.tituloSugerido.trim();
+    datos.resumen = valores.resumen.trim();
+    datos.prioridadSugerida = valores.prioridadSugerida;
+    datos.justificacion = valores.justificacion.trim();
     const id = this.recomendacion?.idRecomendacion;
     const peticion = id
       ? this.recomendacionesApi.actualizar(id, datos)
@@ -168,17 +172,19 @@ export class Seguimientocomponent implements OnInit, OnDestroy {
     this.guardando = true;
     this.error = '';
     this.aviso = '';
-    this.suscripciones.add(
-      peticion.subscribe({
-        next: (recomendacion) => {
-          this.recomendacion = recomendacion;
-          this.aviso = 'Se guardó la recomendación.';
-          this.guardando = false;
-          this.cdr.detectChanges();
-        },
-        error: (error: HttpErrorResponse) => this.falloOperacion(error),
-      }),
-    );
+    peticion.subscribe({
+      next: (recomendacion) => {
+        if (!this.activo) return;
+        this.recomendacion = recomendacion;
+        this.aviso = 'Se guardó la recomendación.';
+        this.guardando = false;
+        this.cdr.detectChanges();
+      },
+      error: (error: HttpErrorResponse) => {
+        if (!this.activo) return;
+        this.falloOperacion(error);
+      },
+    });
   }
 
   eliminar(): void {
@@ -188,44 +194,46 @@ export class Seguimientocomponent implements OnInit, OnDestroy {
     this.error = '';
     this.aviso = '';
     if (pendiente.tipo === 'comentario') {
-      this.suscripciones.add(
-        this.comentariosApi.eliminar(pendiente.id).subscribe({
-          next: () => {
-            this.comentarios = this.comentarios.filter(
-              (item) => item.idComentario !== pendiente.id,
-            );
-            if (this.editado?.idComentario === pendiente.id) this.cancelarComentario();
-            this.paginaComentarios = Math.min(
-              this.paginaComentarios,
-              Math.max(0, Math.ceil(this.comentarios.length / this.porPaginaComentarios) - 1),
-            );
-            this.pendiente = null;
-            this.aviso = 'Se eliminó el comentario.';
-            this.guardando = false;
-            this.cdr.detectChanges();
-          },
-          error: (error: HttpErrorResponse) => this.falloOperacion(error),
-        }),
-      );
+      this.comentariosApi.eliminar(pendiente.id).subscribe({
+        next: () => {
+          if (!this.activo) return;
+          this.comentarios = this.comentarios.filter((item) => item.idComentario !== pendiente.id);
+          if (this.editado?.idComentario === pendiente.id) this.cancelarComentario();
+          this.paginaComentarios = Math.min(
+            this.paginaComentarios,
+            Math.max(0, Math.ceil(this.comentarios.length / this.porPaginaComentarios) - 1),
+          );
+          this.pendiente = null;
+          this.aviso = 'Se eliminó el comentario.';
+          this.guardando = false;
+          this.cdr.detectChanges();
+        },
+        error: (error: HttpErrorResponse) => {
+          if (!this.activo) return;
+          this.falloOperacion(error);
+        },
+      });
     } else {
-      this.suscripciones.add(
-        this.recomendacionesApi.eliminar(pendiente.id).subscribe({
-          next: () => {
-            this.recomendacion = null;
-            this.recomendacionForm.reset({
-              tituloSugerido: '',
-              resumen: '',
-              prioridadSugerida: 'MEDIA',
-              justificacion: '',
-            });
-            this.pendiente = null;
-            this.aviso = 'Se eliminó la recomendación.';
-            this.guardando = false;
-            this.cdr.detectChanges();
-          },
-          error: (error: HttpErrorResponse) => this.falloOperacion(error),
-        }),
-      );
+      this.recomendacionesApi.eliminar(pendiente.id).subscribe({
+        next: () => {
+          if (!this.activo) return;
+          this.recomendacion = null;
+          this.recomendacionForm.reset({
+            tituloSugerido: '',
+            resumen: '',
+            prioridadSugerida: 'MEDIA',
+            justificacion: '',
+          });
+          this.pendiente = null;
+          this.aviso = 'Se eliminó la recomendación.';
+          this.guardando = false;
+          this.cdr.detectChanges();
+        },
+        error: (error: HttpErrorResponse) => {
+          if (!this.activo) return;
+          this.falloOperacion(error);
+        },
+      });
     }
   }
 
@@ -248,36 +256,40 @@ export class Seguimientocomponent implements OnInit, OnDestroy {
   }
 
   private cargarComentarios(): void {
-    this.suscripciones.add(
-      this.comentariosApi.listar(this.reporteId).subscribe({
-        next: (comentarios) => {
-          this.comentarios = comentarios;
-          this.cargarRecomendacion();
-        },
-        error: (error: HttpErrorResponse) => this.falloCarga(error),
-      }),
-    );
+    this.comentariosApi.listar(this.reporteId).subscribe({
+      next: (comentarios) => {
+        if (!this.activo) return;
+        this.comentarios = comentarios;
+        this.cargarRecomendacion();
+      },
+      error: (error: HttpErrorResponse) => {
+        if (!this.activo) return;
+        this.falloCarga(error);
+      },
+    });
   }
 
   private cargarRecomendacion(): void {
-    this.suscripciones.add(
-      this.recomendacionesApi.porReporte(this.reporteId).subscribe({
-        next: (recomendacion) => {
-          this.recomendacion = recomendacion;
-          this.recomendacionForm.reset(
-            recomendacion ?? {
-              tituloSugerido: '',
-              resumen: '',
-              prioridadSugerida: 'MEDIA',
-              justificacion: '',
-            },
-          );
-          this.cargando = false;
-          this.cdr.detectChanges();
-        },
-        error: (error: HttpErrorResponse) => this.falloCarga(error),
-      }),
-    );
+    this.recomendacionesApi.porReporte(this.reporteId).subscribe({
+      next: (recomendacion) => {
+        if (!this.activo) return;
+        this.recomendacion = recomendacion;
+        this.recomendacionForm.reset(
+          recomendacion ?? {
+            tituloSugerido: '',
+            resumen: '',
+            prioridadSugerida: 'MEDIA',
+            justificacion: '',
+          },
+        );
+        this.cargando = false;
+        this.cdr.detectChanges();
+      },
+      error: (error: HttpErrorResponse) => {
+        if (!this.activo) return;
+        this.falloCarga(error);
+      },
+    });
   }
 
   private falloCarga(error: HttpErrorResponse): void {
@@ -287,6 +299,6 @@ export class Seguimientocomponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.suscripciones.unsubscribe();
+    this.activo = false;
   }
 }

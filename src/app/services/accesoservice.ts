@@ -1,6 +1,5 @@
-import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -12,7 +11,7 @@ export class Accesoservice {
   private token = '';
   private vence = 0;
   private temporizador?: number;
-  private navegador: boolean;
+  private navegador = typeof window !== 'undefined';
   private clave = 'fixcampus-token';
   private rolActual = '';
   private sesionVencida = false;
@@ -28,9 +27,7 @@ export class Accesoservice {
   constructor(
     private http: HttpClient,
     private router: Router,
-    @Inject(PLATFORM_ID) plataforma: object,
   ) {
-    this.navegador = isPlatformBrowser(plataforma);
     if (this.navegador) {
       const guardado = sessionStorage.getItem(this.clave);
       if (guardado && !this.guardarToken(guardado)) {
@@ -52,8 +49,15 @@ export class Accesoservice {
     try {
       const parte = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
       const datos: { exp: number; roles: string } = JSON.parse(atob(parte));
-      const roles = datos.roles.split(',').map((rol) => rol.trim().replace(/^ROLE_/, ''));
-      const rol = roles.includes('ADMIN') ? 'ADMIN' : roles.includes('USUARIO') ? 'USUARIO' : '';
+      let rol = '';
+      for (const nombre of datos.roles.split(',')) {
+        const actual = nombre.trim().replace(/^ROLE_/, '');
+        if (actual === 'ADMIN') {
+          rol = 'ADMIN';
+          break;
+        }
+        if (actual === 'USUARIO') rol = 'USUARIO';
+      }
       const tiempo = datos.exp * 1000 - Date.now();
       if (!rol || !Number.isFinite(tiempo) || tiempo <= 0) return false;
       clearTimeout(this.temporizador);
@@ -73,6 +77,23 @@ export class Accesoservice {
 
   tieneSesion(): boolean {
     return this.token !== '' && this.vence > Date.now();
+  }
+
+  validarSesion(administrador = false): boolean {
+    if (!this.tieneSesion()) {
+      if (this.token) this.vencer();
+      else this.router.navigate(['/acceso']);
+      return false;
+    }
+    if (administrador && this.rolActual !== 'ADMIN') {
+      this.router.navigate(['/panel']);
+      return false;
+    }
+    return true;
+  }
+
+  irAlPanelSiTieneSesion(): void {
+    if (this.tieneSesion()) this.router.navigate(['/panel']);
   }
 
   obtenerCabeceras(): HttpHeaders {

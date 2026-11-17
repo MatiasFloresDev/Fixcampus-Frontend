@@ -1,4 +1,3 @@
-import { Subscription } from 'rxjs';
 import { ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
@@ -9,6 +8,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { AdjuntoDTO } from '../../models/AdjuntoDTO';
+import { AdjuntoFormularioDTO } from '../../models/AdjuntoFormularioDTO';
 import { ReporteDTO } from '../../models/ReporteDTO';
 import { Accesoservice } from '../../services/accesoservice';
 import { Reporteservice } from '../../services/reporteservice';
@@ -48,7 +48,7 @@ export class Evidenciascomponent implements OnInit, OnDestroy {
   adjuntoPendiente: AdjuntoDTO | null = null;
   avisoAdjunto = '';
   adjuntoForm: FormGroup;
-  private suscripciones = new Subscription();
+  private activo = true;
 
   constructor(
     public acceso: Accesoservice,
@@ -71,6 +71,7 @@ export class Evidenciascomponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    if (!this.acceso.validarSesion()) return;
     this.cargarReportes();
   }
 
@@ -82,29 +83,27 @@ export class Evidenciascomponent implements OnInit, OnDestroy {
     }
     this.errorLista = '';
     this.cargandoLista = true;
-    this.suscripciones.add(
-      this.servicio.listar(this.prioridad).subscribe({
-        next: (datos) => {
-          this.lista = datos;
-          this.pagina = Math.min(
-            this.pagina,
-            Math.max(0, Math.ceil(datos.length / this.porPagina) - 1),
-          );
-          this.cargandoLista = false;
-          const id = this.ruta.snapshot.queryParamMap.get('id');
-          if (id && !this.reporte) this.seleccionar(id);
-          this.cdr.detectChanges();
-          this.cdr.detectChanges();
-        },
-        error: (error: HttpErrorResponse) => {
-          this.acceso.revisarError(error);
-          this.errorLista = 'No se pudo consultar tus reportes.';
-          this.cargandoLista = false;
-          this.cdr.detectChanges();
-          this.cdr.detectChanges();
-        },
-      }),
-    );
+    this.servicio.listar(this.prioridad).subscribe({
+      next: (datos) => {
+        if (!this.activo) return;
+        this.lista = datos;
+        this.pagina = Math.min(
+          this.pagina,
+          Math.max(0, Math.ceil(datos.length / this.porPagina) - 1),
+        );
+        this.cargandoLista = false;
+        const id = this.ruta.snapshot.queryParamMap.get('id');
+        if (id && !this.reporte) this.seleccionar(id);
+        this.cdr.detectChanges();
+      },
+      error: (error: HttpErrorResponse) => {
+        if (!this.activo) return;
+        this.acceso.revisarError(error);
+        this.errorLista = 'No se pudo consultar tus reportes.';
+        this.cargandoLista = false;
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   seleccionar(id: string): void {
@@ -143,54 +142,53 @@ export class Evidenciascomponent implements OnInit, OnDestroy {
       this.adjuntoForm.controls['urlArchivo'].setErrors({ pattern: true });
       return;
     }
-    const datos = {
-      reporteId: this.reporte.idReporte,
-      nombreArchivo: valores.nombreArchivo.trim(),
-      urlArchivo: url,
-      tipoArchivo: valores.tipoArchivo.trim() || null,
-    };
+    const datos = new AdjuntoFormularioDTO();
+    datos.reporteId = this.reporte.idReporte;
+    datos.nombreArchivo = valores.nombreArchivo.trim();
+    datos.urlArchivo = url;
+    datos.tipoArchivo = valores.tipoArchivo.trim() || null;
     const id = this.adjuntoEditado?.idAdjunto;
     const peticion = id
       ? this.servicio.actualizarAdjunto(id, datos)
       : this.servicio.registrarAdjunto(datos);
     this.guardandoAdjunto = true;
     this.errorAdjuntos = '';
-    this.suscripciones.add(
-      peticion.subscribe({
-        next: () => {
-          this.guardandoAdjunto = false;
-          this.cancelarAdjunto();
-          this.avisoAdjunto = 'Se guardó la evidencia.';
-          this.cargarAdjuntos();
-          this.cdr.detectChanges();
-        },
-        error: (error) => {
-          this.falloAdjunto(error);
-          this.cdr.detectChanges();
-        },
-      }),
-    );
+    peticion.subscribe({
+      next: () => {
+        if (!this.activo) return;
+        this.guardandoAdjunto = false;
+        this.cancelarAdjunto();
+        this.avisoAdjunto = 'Se guardó la evidencia.';
+        this.cargarAdjuntos();
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        if (!this.activo) return;
+        this.falloAdjunto(error);
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   eliminarAdjunto(): void {
     const adjunto = this.adjuntoPendiente;
     if (!adjunto || this.guardandoAdjunto || this.acceso.rol() !== 'ADMIN') return;
     this.guardandoAdjunto = true;
-    this.suscripciones.add(
-      this.servicio.eliminarAdjunto(adjunto.idAdjunto).subscribe({
-        next: () => {
-          this.guardandoAdjunto = false;
-          this.cancelarAdjunto();
-          this.avisoAdjunto = 'Se eliminó la evidencia.';
-          this.cargarAdjuntos();
-          this.cdr.detectChanges();
-        },
-        error: (error) => {
-          this.falloAdjunto(error);
-          this.cdr.detectChanges();
-        },
-      }),
-    );
+    this.servicio.eliminarAdjunto(adjunto.idAdjunto).subscribe({
+      next: () => {
+        if (!this.activo) return;
+        this.guardandoAdjunto = false;
+        this.cancelarAdjunto();
+        this.avisoAdjunto = 'Se eliminó la evidencia.';
+        this.cargarAdjuntos();
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        if (!this.activo) return;
+        this.falloAdjunto(error);
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   private falloAdjunto(error: HttpErrorResponse): void {
@@ -233,32 +231,30 @@ export class Evidenciascomponent implements OnInit, OnDestroy {
       return;
     }
     this.cargandoAdjuntos = true;
-    this.suscripciones.add(
-      this.servicio.evidencias(reporte.idReporte).subscribe({
-        next: (datos) => {
-          if (this.reporte?.idReporte !== reporte.idReporte) return;
-          this.adjuntos = datos;
-          this.paginaAdjuntos = Math.min(
-            this.paginaAdjuntos,
-            Math.max(0, Math.ceil(datos.length / this.porPaginaAdjuntos) - 1),
-          );
-          this.cargandoAdjuntos = false;
-          this.cdr.detectChanges();
-          this.cdr.detectChanges();
-        },
-        error: (error: HttpErrorResponse) => {
-          if (this.reporte?.idReporte !== reporte.idReporte) return;
-          this.acceso.revisarError(error);
-          this.errorAdjuntos =
-            error.status === 403
-              ? 'No tienes permiso para ver estas evidencias.'
-              : 'No se pudieron cargar las evidencias.';
-          this.cargandoAdjuntos = false;
-          this.cdr.detectChanges();
-          this.cdr.detectChanges();
-        },
-      }),
-    );
+    this.servicio.evidencias(reporte.idReporte).subscribe({
+      next: (datos) => {
+        if (!this.activo) return;
+        if (this.reporte?.idReporte !== reporte.idReporte) return;
+        this.adjuntos = datos;
+        this.paginaAdjuntos = Math.min(
+          this.paginaAdjuntos,
+          Math.max(0, Math.ceil(datos.length / this.porPaginaAdjuntos) - 1),
+        );
+        this.cargandoAdjuntos = false;
+        this.cdr.detectChanges();
+      },
+      error: (error: HttpErrorResponse) => {
+        if (!this.activo) return;
+        if (this.reporte?.idReporte !== reporte.idReporte) return;
+        this.acceso.revisarError(error);
+        this.errorAdjuntos =
+          error.status === 403
+            ? 'No tienes permiso para ver estas evidencias.'
+            : 'No se pudieron cargar las evidencias.';
+        this.cargandoAdjuntos = false;
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   eliminarReporte(): void {
@@ -266,27 +262,27 @@ export class Evidenciascomponent implements OnInit, OnDestroy {
     if (!seleccionado || this.eliminando || this.acceso.rol() !== 'ADMIN') return;
     this.eliminando = true;
     this.errorEliminar = '';
-    this.suscripciones.add(
-      this.servicio.eliminar(seleccionado.idReporte).subscribe({
-        next: () => {
-          this.confirmacionEliminar = undefined;
-          this.reporte = undefined;
-          this.adjuntos = [];
-          this.eliminando = false;
-          this.cargarReportes();
-          this.cdr.detectChanges();
-        },
-        error: (error: HttpErrorResponse) => {
-          this.acceso.revisarError(error);
-          this.errorEliminar =
-            error.status === 409
-              ? 'El reporte tiene datos relacionados. Retíralos antes de eliminarlo.'
-              : 'No se pudo eliminar el reporte.';
-          this.eliminando = false;
-          this.cdr.detectChanges();
-        },
-      }),
-    );
+    this.servicio.eliminar(seleccionado.idReporte).subscribe({
+      next: () => {
+        if (!this.activo) return;
+        this.confirmacionEliminar = undefined;
+        this.reporte = undefined;
+        this.adjuntos = [];
+        this.eliminando = false;
+        this.cargarReportes();
+        this.cdr.detectChanges();
+      },
+      error: (error: HttpErrorResponse) => {
+        if (!this.activo) return;
+        this.acceso.revisarError(error);
+        this.errorEliminar =
+          error.status === 409
+            ? 'El reporte tiene datos relacionados. Retíralos antes de eliminarlo.'
+            : 'No se pudo eliminar el reporte.';
+        this.eliminando = false;
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   enlaceArchivo(url: string): string | null {
@@ -300,6 +296,6 @@ export class Evidenciascomponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.suscripciones.unsubscribe();
+    this.activo = false;
   }
 }

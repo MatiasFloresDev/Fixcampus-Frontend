@@ -47,6 +47,7 @@ export class Mapacomponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    if (!this.acceso.validarSesion()) return;
     this.cargar();
   }
 

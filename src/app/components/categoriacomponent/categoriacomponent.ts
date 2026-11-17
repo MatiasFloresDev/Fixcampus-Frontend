@@ -1,4 +1,3 @@
-import { Subscription } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -39,7 +38,7 @@ export class Categoriacomponent implements OnInit, OnDestroy {
   pendiente = 0;
   pagina = 0;
   porPagina = 5;
-  private suscripciones = new Subscription();
+  private activo = true;
 
   constructor(
     private servicio: Categoriaservice,
@@ -62,6 +61,7 @@ export class Categoriacomponent implements OnInit, OnDestroy {
     });
   }
   ngOnInit(): void {
+    if (!this.acceso.validarSesion(true)) return;
     this.cargar();
   }
   filas() {
@@ -70,24 +70,24 @@ export class Categoriacomponent implements OnInit, OnDestroy {
   cargar(): void {
     this.cargando = true;
     this.errorLista = '';
-    this.suscripciones.add(
-      this.servicio.listar().subscribe({
-        next: (datos) => {
-          this.registros = datos;
-          this.pagina = Math.min(
-            this.pagina,
-            Math.max(0, Math.ceil(datos.length / this.porPagina) - 1),
-          );
-          this.cargando = false;
-          this.cdr.detectChanges();
-        },
-        error: (error: HttpErrorResponse) => {
-          this.errorLista = this.mensajeError(error, 'No se pudo cargar el listado.');
-          this.cargando = false;
-          this.cdr.detectChanges();
-        },
-      }),
-    );
+    this.servicio.listar().subscribe({
+      next: (datos) => {
+        if (!this.activo) return;
+        this.registros = datos;
+        this.pagina = Math.min(
+          this.pagina,
+          Math.max(0, Math.ceil(datos.length / this.porPagina) - 1),
+        );
+        this.cargando = false;
+        this.cdr.detectChanges();
+      },
+      error: (error: HttpErrorResponse) => {
+        if (!this.activo) return;
+        this.errorLista = this.mensajeError(error, 'No se pudo cargar el listado.');
+        this.cargando = false;
+        this.cdr.detectChanges();
+      },
+    });
   }
   cambiarPagina(evento: PageEvent): void {
     this.pagina = evento.pageIndex;
@@ -102,23 +102,25 @@ export class Categoriacomponent implements OnInit, OnDestroy {
     if (this.ocupado) return;
     this.cerrar();
     this.ocupado = true;
-    this.suscripciones.add(
-      this.servicio.obtener(registro.idCategoria).subscribe({
-        next: (datos) => {
-          this.formulario.reset({
-            nombre: datos.nombre,
-            descripcion: datos.descripcion,
-          });
-          this.idEditado = datos.idCategoria;
-          this.formulario.enable();
-          if (modo === 'detalle') this.formulario.disable();
-          this.modo = modo;
-          this.ocupado = false;
-          this.cdr.detectChanges();
-        },
-        error: (error: HttpErrorResponse) => this.fallar(error, 'No se pudo abrir el registro.'),
-      }),
-    );
+    this.servicio.obtener(registro.idCategoria).subscribe({
+      next: (datos) => {
+        if (!this.activo) return;
+        this.formulario.reset({
+          nombre: datos.nombre,
+          descripcion: datos.descripcion,
+        });
+        this.idEditado = datos.idCategoria;
+        this.formulario.enable();
+        if (modo === 'detalle') this.formulario.disable();
+        this.modo = modo;
+        this.ocupado = false;
+        this.cdr.detectChanges();
+      },
+      error: (error: HttpErrorResponse) => {
+        if (!this.activo) return;
+        this.fallar(error, 'No se pudo abrir el registro.');
+      },
+    });
   }
   cerrar(): void {
     this.modo = '';
@@ -143,12 +145,16 @@ export class Categoriacomponent implements OnInit, OnDestroy {
     const peticion = this.idEditado
       ? this.servicio.actualizar(this.idEditado, datos)
       : this.servicio.registrar(datos);
-    this.suscripciones.add(
-      peticion.subscribe({
-        next: () => this.finalizar('Se guardó el registro.'),
-        error: (error: HttpErrorResponse) => this.fallar(error, 'No se pudo guardar el registro.'),
-      }),
-    );
+    peticion.subscribe({
+      next: () => {
+        if (!this.activo) return;
+        this.finalizar('Se guardó el registro.');
+      },
+      error: (error: HttpErrorResponse) => {
+        if (!this.activo) return;
+        this.fallar(error, 'No se pudo guardar el registro.');
+      },
+    });
   }
   pedirEliminar(registro: CategoriaDTO): void {
     this.cerrar();
@@ -158,12 +164,16 @@ export class Categoriacomponent implements OnInit, OnDestroy {
     if (!this.pendiente || this.ocupado) return;
     this.ocupado = true;
     this.errorAccion = '';
-    this.suscripciones.add(
-      this.servicio.eliminar(this.pendiente).subscribe({
-        next: () => this.finalizar('Se eliminó el registro.'),
-        error: (error: HttpErrorResponse) => this.fallar(error, 'No se pudo eliminar el registro.'),
-      }),
-    );
+    this.servicio.eliminar(this.pendiente).subscribe({
+      next: () => {
+        if (!this.activo) return;
+        this.finalizar('Se eliminó el registro.');
+      },
+      error: (error: HttpErrorResponse) => {
+        if (!this.activo) return;
+        this.fallar(error, 'No se pudo eliminar el registro.');
+      },
+    });
   }
   private finalizar(mensaje: string): void {
     this.cerrar();
@@ -185,6 +195,6 @@ export class Categoriacomponent implements OnInit, OnDestroy {
     return respaldo;
   }
   ngOnDestroy(): void {
-    this.suscripciones.unsubscribe();
+    this.activo = false;
   }
 }

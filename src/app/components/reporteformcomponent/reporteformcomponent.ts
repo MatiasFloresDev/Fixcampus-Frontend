@@ -10,6 +10,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
 import { CategoriaDTO } from '../../models/CategoriaDTO';
 import { ReporteDTO } from '../../models/ReporteDTO';
+import { ReporteFormularioDTO } from '../../models/ReporteFormularioDTO';
 import { UbicacionDTO } from '../../models/UbicacionDTO';
 import { Accesoservice } from '../../services/accesoservice';
 import { Reporteservice } from '../../services/reporteservice';
@@ -31,14 +32,7 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
   esAdmin: boolean;
   editando: boolean;
   prioridades = ['MUY_BAJA', 'BAJA', 'MEDIA', 'ALTA', 'MUY_ALTA'];
-  estados = [
-    'ABIERTO',
-    'EN_REVISION',
-    'ASIGNADO',
-    'EN_ATENCION',
-    'RESUELTO',
-    'CERRADO',
-  ];
+  estados = ['ABIERTO', 'EN_REVISION', 'ASIGNADO', 'EN_ATENCION', 'RESUELTO', 'CERRADO'];
   cargando = true;
   guardando = false;
   listo = false;
@@ -52,12 +46,13 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
   errorCategorias = '';
   consultaCategorias = '';
   mostrarResultados = false;
-  private busquedaCategorias: Subscription | null = null;
+  private numeroBusqueda = 0;
+  private consultaIA?: Subscription;
   categorias: CategoriaDTO[] = [];
   ubicaciones: UbicacionDTO[] = [];
   original: ReporteDTO | null = null;
   formulario: FormGroup;
-  private suscripciones = new Subscription();
+  private activo = true;
 
   constructor(
     private fb: FormBuilder,
@@ -79,31 +74,33 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
       estado: ['ABIERTO', Validators.required],
       prioridad: [null],
     });
-    this.suscripciones.add(
-      this.formulario.controls['descripcion'].valueChanges.subscribe(() => {
-        this.sugerencia = null;
-        this.mensajeIA = '';
-        this.cdr.detectChanges();
-      }),
-    );
+    this.formulario.controls['descripcion'].valueChanges.subscribe(() => {
+      if (!this.activo) return;
+      this.sugerencia = null;
+      this.mensajeIA = '';
+      this.cdr.detectChanges();
+    });
   }
 
   ngOnInit(): void {
+    if (!this.acceso.validarSesion()) return;
     const id = Number(this.ruta.snapshot.paramMap.get('id'));
     if (this.editando && (!Number.isSafeInteger(id) || id < 1)) {
       this.mensaje = 'El identificador del reporte no es válido.';
       this.cargando = false;
       return;
     }
-    this.suscripciones.add(
-      this.servicio.categorias().subscribe({
-        next: (categorias) => {
-          this.categorias = categorias;
-          this.cargarUbicaciones(id);
-        },
-        error: (error: HttpErrorResponse) => this.falloCarga(error),
-      }),
-    );
+    this.servicio.categorias().subscribe({
+      next: (categorias) => {
+        if (!this.activo) return;
+        this.categorias = categorias;
+        this.cargarUbicaciones(id);
+      },
+      error: (error: HttpErrorResponse) => {
+        if (!this.activo) return;
+        this.falloCarga(error);
+      },
+    });
   }
 
   opcionesCategoria(): CategoriaDTO[] {
@@ -118,7 +115,7 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
   }
 
   buscarCategorias(texto: string): void {
-    this.busquedaCategorias?.unsubscribe();
+    const numero = ++this.numeroBusqueda;
     const palabra = texto.trim();
     this.errorCategorias = '';
     if (!palabra) {
@@ -128,8 +125,10 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
     this.consultaCategorias = palabra;
     this.mostrarResultados = true;
     this.buscandoCategorias = true;
-    this.busquedaCategorias = this.servicio.buscarCategorias(palabra).subscribe({
+    this.servicio.buscarCategorias(palabra).subscribe({
       next: (datos) => {
+        if (!this.activo) return;
+        if (numero !== this.numeroBusqueda) return;
         const porNombre = this.categorias.filter((categoria) =>
           categoria.nombre.toLocaleLowerCase().includes(palabra.toLocaleLowerCase()),
         );
@@ -143,6 +142,8 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       },
       error: (error: HttpErrorResponse) => {
+        if (!this.activo) return;
+        if (numero !== this.numeroBusqueda) return;
         this.acceso.revisarError(error);
         this.errorCategorias = 'No se pudieron buscar categorías. Puedes usar el listado completo.';
         this.categoriasFiltradas = null;
@@ -150,11 +151,10 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       },
     });
-    this.suscripciones.add(this.busquedaCategorias);
   }
 
   mostrarTodasCategorias(): void {
-    this.busquedaCategorias?.unsubscribe();
+    this.numeroBusqueda += 1;
     this.buscandoCategorias = false;
     this.errorCategorias = '';
     this.consultaCategorias = '';
@@ -191,39 +191,39 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
     this.consultandoIA = true;
     this.sugerencia = null;
     this.mensajeIA = '';
-    this.suscripciones.add(
-      this.servicio.sugerirCategoria(descripcion).subscribe({
-        next: ({ categoriaId }) => {
-          this.consultandoIA = false;
-          if (descripcion !== this.descripcionIA()) {
-            this.cdr.detectChanges();
-            return;
-          }
-          const categoria = this.categorias.find((item) => item.idCategoria === categoriaId);
-          if (categoria) this.sugerencia = categoria;
-          else
-            this.mensajeIA =
-              'No se encontró una categoría para esa descripción. Describe el daño con más detalle o elige una categoría en el formulario.';
+    this.consultaIA = this.servicio.sugerirCategoria(descripcion).subscribe({
+      next: ({ categoriaId }) => {
+        if (!this.activo) return;
+        this.consultandoIA = false;
+        if (descripcion !== this.descripcionIA()) {
           this.cdr.detectChanges();
-        },
-        error: (error: HttpErrorResponse) => {
-          this.consultandoIA = false;
-          this.acceso.revisarError(error);
-          if (descripcion !== this.descripcionIA()) {
-            this.cdr.detectChanges();
-            return;
-          }
-          const mensaje =
-            error.status === 429
-              ? 'Se alcanzó el límite de consultas de IA.'
-              : error.status === 503
-                ? 'El servicio de IA no está disponible en este momento.'
-                : 'No se pudo consultar la sugerencia. Revisa la conexión y vuelve a intentarlo.';
-          this.mensajeIA = mensaje + ' Puedes elegir la categoría en el formulario.';
+          return;
+        }
+        const categoria = this.categorias.find((item) => item.idCategoria === categoriaId);
+        if (categoria) this.sugerencia = categoria;
+        else
+          this.mensajeIA =
+            'No se encontró una categoría para esa descripción. Describe el daño con más detalle o elige una categoría en el formulario.';
+        this.cdr.detectChanges();
+      },
+      error: (error: HttpErrorResponse) => {
+        if (!this.activo) return;
+        this.consultandoIA = false;
+        this.acceso.revisarError(error);
+        if (descripcion !== this.descripcionIA()) {
           this.cdr.detectChanges();
-        },
-      }),
-    );
+          return;
+        }
+        const mensaje =
+          error.status === 429
+            ? 'Se alcanzó el límite de consultas de IA.'
+            : error.status === 503
+              ? 'El servicio de IA no está disponible en este momento.'
+              : 'No se pudo consultar la sugerencia. Revisa la conexión y vuelve a intentarlo.';
+        this.mensajeIA = mensaje + ' Puedes elegir la categoría en el formulario.';
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   usarSugerencia(): void {
@@ -240,39 +240,39 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
     if (!this.listo || this.guardando || this.formulario.invalid) return;
     const valores = this.formulario.getRawValue();
     if (valores.categoriaId === null || valores.ubicacionId === null) return;
-    const datos = {
-      ...valores,
-      titulo: valores.titulo.trim(),
-      descripcion: valores.descripcion.trim(),
-      detalleUbicacion: valores.detalleUbicacion.trim() || null,
-      categoriaId: valores.categoriaId,
-      ubicacionId: valores.ubicacionId,
-      tecnicoAsignadoId: this.original?.tecnicoAsignadoId ?? null,
-    };
+    const datos = new ReporteFormularioDTO();
+    datos.titulo = valores.titulo.trim();
+    datos.descripcion = valores.descripcion.trim();
+    datos.detalleUbicacion = valores.detalleUbicacion.trim() || null;
+    datos.categoriaId = valores.categoriaId;
+    datos.ubicacionId = valores.ubicacionId;
+    datos.estado = valores.estado;
+    datos.prioridad = valores.prioridad;
+    datos.tecnicoAsignadoId = this.original?.tecnicoAsignadoId ?? null;
     this.guardando = true;
     this.mensaje = '';
     const peticion = this.original
       ? this.servicio.actualizar(this.original.idReporte, datos)
       : this.servicio.registrar(datos);
-    this.suscripciones.add(
-      peticion.subscribe({
-        next: (resultado) => {
-          this.guardando = false;
-          this.aviso.open(
-            this.editando ? 'Se actualizó la incidencia.' : 'Se registró la incidencia.',
-            'Cerrar',
-            { duration: 4000 },
-          );
-          void this.router.navigate(['/evidencias'], { queryParams: { id: resultado.idReporte } });
-          this.cdr.detectChanges();
-        },
-        error: (error: HttpErrorResponse) => {
-          this.mostrarError(error, 'No se pudo guardar la incidencia.');
-          this.guardando = false;
-          this.cdr.detectChanges();
-        },
-      }),
-    );
+    peticion.subscribe({
+      next: (resultado) => {
+        if (!this.activo) return;
+        this.guardando = false;
+        this.aviso.open(
+          this.editando ? 'Se actualizó la incidencia.' : 'Se registró la incidencia.',
+          'Cerrar',
+          { duration: 4000 },
+        );
+        void this.router.navigate(['/evidencias'], { queryParams: { id: resultado.idReporte } });
+        this.cdr.detectChanges();
+      },
+      error: (error: HttpErrorResponse) => {
+        if (!this.activo) return;
+        this.mostrarError(error, 'No se pudo guardar la incidencia.');
+        this.guardando = false;
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   private mostrarError(error: unknown, mensaje: string): void {
@@ -287,25 +287,31 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
   }
 
   private cargarUbicaciones(id: number): void {
-    this.suscripciones.add(
-      this.servicio.ubicaciones().subscribe({
-        next: (ubicaciones) => {
-          this.ubicaciones = ubicaciones;
-          if (this.editando) this.cargarReporte(id);
-          else this.prepararFormulario(null);
-        },
-        error: (error: HttpErrorResponse) => this.falloCarga(error),
-      }),
-    );
+    this.servicio.ubicaciones().subscribe({
+      next: (ubicaciones) => {
+        if (!this.activo) return;
+        this.ubicaciones = ubicaciones;
+        if (this.editando) this.cargarReporte(id);
+        else this.prepararFormulario(null);
+      },
+      error: (error: HttpErrorResponse) => {
+        if (!this.activo) return;
+        this.falloCarga(error);
+      },
+    });
   }
 
   private cargarReporte(id: number): void {
-    this.suscripciones.add(
-      this.servicio.obtener(id).subscribe({
-        next: (reporte) => this.prepararFormulario(reporte),
-        error: (error: HttpErrorResponse) => this.falloCarga(error),
-      }),
-    );
+    this.servicio.obtener(id).subscribe({
+      next: (reporte) => {
+        if (!this.activo) return;
+        this.prepararFormulario(reporte);
+      },
+      error: (error: HttpErrorResponse) => {
+        if (!this.activo) return;
+        this.falloCarga(error);
+      },
+    });
   }
 
   private prepararFormulario(reporte: ReporteDTO | null): void {
@@ -333,6 +339,7 @@ export class Reporteformcomponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.suscripciones.unsubscribe();
+    this.activo = false;
+    this.consultaIA?.unsubscribe();
   }
 }

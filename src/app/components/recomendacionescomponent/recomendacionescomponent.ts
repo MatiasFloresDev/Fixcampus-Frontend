@@ -1,4 +1,3 @@
-import { Subscription } from 'rxjs';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { ReporteDTO } from '../../models/ReporteDTO';
 import { Reporteservice } from '../../services/reporteservice';
@@ -34,7 +33,7 @@ export class Recomendacionescomponent implements OnInit, OnDestroy {
   porPagina = 5;
   reportes: ReporteDTO[] = [];
   busqueda = '';
-  private suscripciones = new Subscription();
+  private activo = true;
 
   constructor(
     private servicio: Recomendacionservice,
@@ -44,6 +43,7 @@ export class Recomendacionescomponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    if (!this.acceso.validarSesion(true)) return;
     this.cargar();
   }
 
@@ -83,55 +83,59 @@ export class Recomendacionescomponent implements OnInit, OnDestroy {
     this.prioridad = prioridad;
     this.error = '';
     this.cargando = true;
-    this.suscripciones.add(
-      this.servicio.listar(prioridad).subscribe({
-        next: (recomendaciones) => {
-          this.recomendaciones = recomendaciones;
-          this.cargarTitulos();
-        },
-        error: (error: HttpErrorResponse) => this.falloCarga(error),
-      }),
-    );
+    this.servicio.listar(prioridad).subscribe({
+      next: (recomendaciones) => {
+        if (!this.activo) return;
+        this.recomendaciones = recomendaciones;
+        this.cargarTitulos();
+      },
+      error: (error: HttpErrorResponse) => {
+        if (!this.activo) return;
+        this.falloCarga(error);
+      },
+    });
   }
 
   eliminarRecomendacion(item: RecomendacionDTO): void {
     const confirmar = window.confirm('¿Deseas eliminar esta recomendación?');
     if (!confirmar) return;
     this.cargando = true;
-    this.suscripciones.add(
-      this.servicio.eliminar(item.idRecomendacion).subscribe({
-        next: () => {
-          this.recomendaciones = this.recomendaciones.filter(
-            (r) => r.idRecomendacion !== item.idRecomendacion,
-          );
-          this.pagina = Math.min(
-            this.pagina,
-            Math.max(0, Math.ceil(this.recomendacionesFiltradas().length / this.porPagina) - 1),
-          );
-          this.cargando = false;
-          this.cdr.detectChanges();
-        },
-        error: (error: HttpErrorResponse) => {
-          this.acceso.revisarError(error);
-          this.error = 'No se pudo eliminar la recomendación.';
-          this.cargando = false;
-          this.cdr.detectChanges();
-        },
-      }),
-    );
+    this.servicio.eliminar(item.idRecomendacion).subscribe({
+      next: () => {
+        if (!this.activo) return;
+        this.recomendaciones = this.recomendaciones.filter(
+          (r) => r.idRecomendacion !== item.idRecomendacion,
+        );
+        this.pagina = Math.min(
+          this.pagina,
+          Math.max(0, Math.ceil(this.recomendacionesFiltradas().length / this.porPagina) - 1),
+        );
+        this.cargando = false;
+        this.cdr.detectChanges();
+      },
+      error: (error: HttpErrorResponse) => {
+        if (!this.activo) return;
+        this.acceso.revisarError(error);
+        this.error = 'No se pudo eliminar la recomendación.';
+        this.cargando = false;
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   private cargarTitulos(): void {
-    this.suscripciones.add(
-      this.reportesApi.listar().subscribe({
-        next: (reportes) => {
-          this.reportes = reportes;
-          this.cargando = false;
-          this.cdr.detectChanges();
-        },
-        error: (error: HttpErrorResponse) => this.falloCarga(error),
-      }),
-    );
+    this.reportesApi.listar().subscribe({
+      next: (reportes) => {
+        if (!this.activo) return;
+        this.reportes = reportes;
+        this.cargando = false;
+        this.cdr.detectChanges();
+      },
+      error: (error: HttpErrorResponse) => {
+        if (!this.activo) return;
+        this.falloCarga(error);
+      },
+    });
   }
 
   private falloCarga(error: HttpErrorResponse): void {
@@ -142,6 +146,6 @@ export class Recomendacionescomponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.suscripciones.unsubscribe();
+    this.activo = false;
   }
 }
