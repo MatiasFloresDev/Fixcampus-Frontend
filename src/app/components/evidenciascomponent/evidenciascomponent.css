@@ -1,45 +1,3 @@
-label {
-  display: block;
-  margin-bottom: 4px;
-  font-weight: 600;
-}
-select {
-  padding: 10px;
-  background: white;
-  border: 1px solid #aab8b6;
-  border-radius: 8px;
-  width: min(100%, 520px);
-}
-.titulo-reporte {
-  margin: 24px 0 16px;
-}
-.titulo-reporte h2 {
-  margin: 3px 0 8px;
-}
-.estado {
-  display: inline-block;
-  background: #e6f2f0;
-  color: #0d6a62;
-  padding: 3px 10px;
-  border-radius: 14px;
-  margin-right: 8px;
-  font-size: 13px;
-}
-.detalle {
-  display: grid;
-  grid-template-columns: 1.65fr 1fr;
-  gap: 18px;
-}
-.detalle .tarjeta {
-  margin-bottom: 16px;
-}
-dt {
-  font-weight: 600;
-  margin-top: 8px;
-}
-dd {
-  margin-left: 0;
-}
 .evidencias {
   border-color: #408f86;
 }
@@ -60,13 +18,6 @@ dd {
   justify-content: space-between;
   gap: 12px;
 }
-@media (max-width: 700px) {
-  .detalle {
-    grid-template-columns: 1fr;
-    gap: 0;
-  }
-}
-
 .editor-adjunto {
   display: grid;
   gap: 12px;

@@ -1,0 +1,84 @@
+<section class="contenedor">
+  <div class="encabezado">
+    <div>
+      <h1>Usuarios</h1>
+      <p>Consulta las cuentas y administra sus roles.</p>
+    </div>
+    <a mat-flat-button routerLink="../insertar">Crear cuenta</a>
+  </div>
+  @if (error) {
+    <p class="aviso error" role="alert">{{ error }}</p>
+  }
+  @if (pendiente; as usuario) {
+    <div class="aviso" role="group" aria-label="Confirmar eliminación">
+      <p>¿Eliminar la cuenta de {{ usuario.nombre }} {{ usuario.apellido }}?</p>
+      <button mat-flat-button type="button" (click)="eliminar()" [disabled]="ocupado">
+        Confirmar eliminación
+      </button>
+      <button mat-button type="button" (click)="cerrar()" [disabled]="ocupado">Cancelar</button>
+    </div>
+  }
+  <div class="resumen-roles" aria-label="Usuarios por rol">
+    @for (rol of totales(); track rol.nombre) {
+      <span class="estado">{{ rol.nombre }} · {{ rol.cantidad }}</span>
+    }
+  </div>
+  <mat-form-field appearance="outline" class="buscador"
+    ><mat-label>Buscar por nombre o correo</mat-label>
+    <input matInput #texto (input)="buscar(texto.value)" type="search" />
+  </mat-form-field>
+  @if (cargando) {
+    <p role="status">Cargando usuarios…</p>
+  } @else {
+    @if (!filtrados().length) {
+      <p class="aviso">No hay usuarios para mostrar con esta búsqueda.</p>
+    }
+    <div class="lista-tarjetas">
+      @for (usuario of filas(); track usuario.idUsuario) {
+        <article class="tarjeta">
+          <h2>{{ usuario.nombre }} {{ usuario.apellido }}</h2>
+          <p>{{ usuario.correo }}</p>
+          <span class="estado">{{ nombreRol(usuario.rolId) }}</span>
+          <div class="acciones">
+            <a
+              mat-button
+              type="button"
+              [routerLink]="['../detalle', usuario.idUsuario]"
+              [disabled]="ocupado"
+            >
+              Ver perfil
+            </a>
+            <a
+              mat-button
+              type="button"
+              [routerLink]="['../editar', usuario.idUsuario]"
+              [disabled]="ocupado"
+            >
+              Editar
+            </a>
+            <button
+              mat-button
+              type="button"
+              class="accion-eliminar"
+              (click)="cerrar(); pendiente = usuario"
+              [disabled]="ocupado"
+            >
+              Eliminar
+            </button>
+          </div>
+        </article>
+      }
+    </div>
+    <mat-paginator
+      [length]="filtrados().length"
+      [pageIndex]="pagina"
+      [pageSize]="porPagina"
+      [pageSizeOptions]="[5, 10, 25]"
+      (page)="cambiarPagina($event)"
+      aria-label="Páginas de usuarios"
+    />
+    @if (error) {
+      <button mat-stroked-button type="button" (click)="cargar()">Volver a intentar</button>
+    }
+  }
+</section>

@@ -88,30 +88,7 @@
           }
         </div>
         @if (mostrarResultados && !buscandoCategorias && !errorCategorias) {
-          @if (!resultadosCategoria().length) {
-            <p class="sin-resultados">
-              Prueba con otra palabra o pulsa Mostrar todas. Tu selección actual se conserva.
-            </p>
-          } @else {
-            <div class="resultados-categorias" aria-label="Categorías encontradas">
-              @for (categoria of resultadosCategoria(); track categoria.idCategoria) {
-                <button
-                  mat-stroked-button
-                  type="button"
-                  [class.categoria-elegida]="
-                    formulario.controls['categoriaId'].value === categoria.idCategoria
-                  "
-                  [attr.aria-pressed]="
-                    formulario.controls['categoriaId'].value === categoria.idCategoria
-                  "
-                  (click)="seleccionarCategoria(categoria)"
-                >
-                  {{ categoria.nombre }}
-                </button>
-              }
-            </div>
-            <p class="nota-seleccion">Pulsa una categoría para seleccionarla en el formulario.</p>
-          }
+          <p>Elige una opción en Categoría. Tu selección actual se conserva al buscar.</p>
         }
       </section>
       <div class="campos">
@@ -178,7 +155,7 @@
       }
       <div>
         <button mat-flat-button type="submit" [disabled]="guardando || formulario.invalid">
-          {{ guardando ? 'Guardando…' : 'Guardar incidencia' }}
+          {{ guardando ? 'Guardando…' : editando ? 'Guardar cambios' : 'Guardar incidencia' }}
         </button>
       </div>
     </form>

@@ -2,9 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { Accesoservice } from './accesoservice';
 import { CategoriaDTO } from '../models/CategoriaDTO';
 import { CategoriaFormularioDTO } from '../models/CategoriaFormularioDTO';
+import { Accesoservice } from './accesoservice';
 
 @Injectable({ providedIn: 'root' })
 export class Categoriaservice {
@@ -33,5 +33,11 @@ export class Categoriaservice {
   }
   eliminar(id: number): Observable<void> {
     return this.http.delete<void>(this.api + '/' + id, { headers: this.acceso.obtenerCabeceras() });
+  }
+  buscarDescripcion(palabraClave: string): Observable<CategoriaDTO[]> {
+    return this.http.get<CategoriaDTO[]>(this.api + '/buscar-descripcion', {
+      headers: this.acceso.obtenerCabeceras(),
+      params: { palabraClave },
+    });
   }
 }
