@@ -24,7 +24,6 @@ export class Comentarioformcomponent implements OnInit {
   guardando = false;
   error = '';
   aviso = '';
-  private texto = [Validators.required, Validators.pattern(/\S/)];
   comentarioForm: FormGroup;
 
   constructor(
@@ -38,7 +37,10 @@ export class Comentarioformcomponent implements OnInit {
   ) {
     this.reporteId = Number(this.ruta.parent?.snapshot.paramMap.get('id'));
     this.comentarioForm = this.fb.group({
-      textoComentario: ['', [...this.texto, Validators.maxLength(2000)]],
+      textoComentario: [
+        '',
+        [Validators.required, Validators.pattern(/\S/), Validators.maxLength(2000)],
+      ],
     });
   }
 

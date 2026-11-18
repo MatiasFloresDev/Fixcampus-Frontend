@@ -19,13 +19,12 @@ export class Categoriasgraficocomponent implements OnInit {
   cargando = true;
   mensaje = '';
   total = 0;
-  chartType: 'bar' | 'doughnut' = 'bar';
+  chartType: 'bar' | 'doughnut' = 'doughnut';
   chartData: ChartData<'bar' | 'doughnut'> = { labels: [], datasets: [] };
   chartOptions: ChartOptions<'bar' | 'doughnut'> = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-    scales: { y: { beginAtZero: true, ticks: { precision: 0 } } },
+    plugins: { legend: { display: true, position: 'bottom' } },
   };
   constructor(
     private servicio: Estadisticaservice,
