@@ -1,0 +1,35 @@
+.editor {
+  margin-bottom: 24px;
+}
+.campos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 12px 20px;
+  margin: 20px 0;
+}
+.resumen-roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0 12px;
+}
+.resumen-roles .estado {
+  padding: 6px 12px;
+  border-radius: 16px;
+  background: #e5f3f1;
+}
+.buscador {
+  width: min(100%, 420px);
+}
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+dt {
+  font-weight: 600;
+}
+dd {
+  margin: 0 0 12px;
+  overflow-wrap: anywhere;
+}

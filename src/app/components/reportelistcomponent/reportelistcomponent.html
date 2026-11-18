@@ -1,0 +1,67 @@
+<section class="contenedor">
+  <div class="encabezado encabezado-foto">
+    <div>
+      <h1>{{ acceso.rol() === 'ADMIN' ? 'Reportes' : 'Mis reportes' }}</h1>
+      <p>Consulta los reportes y revisa su estado.</p>
+    </div>
+    <a mat-flat-button routerLink="/reportar">Nueva incidencia</a>
+    <figure>
+      <img
+        src="assets/aula-universitaria.jpg"
+        alt="Aula universitaria, fotografía ilustrativa"
+        width="960"
+        height="641"
+      />
+    </figure>
+  </div>
+  @if (acceso.rol() === 'ADMIN') {
+    <mat-form-field appearance="outline"
+      ><mat-label>Filtrar por prioridad</mat-label>
+      <mat-select
+        [value]="prioridad"
+        [disabled]="cargandoLista"
+        (selectionChange)="cargarReportes($event.value)"
+      >
+        <mat-option value="">Todas</mat-option>
+        @for (item of prioridades; track item) {
+          <mat-option [value]="item">{{ item.replaceAll('_', ' ') }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  }
+  @if (cargandoLista) {
+    <p role="status">Cargando reportes…</p>
+  } @else if (errorLista) {
+    <p class="aviso error" role="alert">{{ errorLista }}</p>
+    <button mat-stroked-button (click)="cargarReportes()">Volver a intentar</button>
+  } @else if (lista.length === 0) {
+    <p class="aviso">
+      {{
+        prioridad
+          ? 'No hay reportes con esta prioridad.'
+          : 'Todavía no hay reportes para consultar.'
+      }}
+    </p>
+  } @else {
+    <div class="lista-tarjetas" aria-label="Listado de reportes">
+      @for (item of filasReportes(); track item.idReporte) {
+        <article class="tarjeta">
+          <small>Reporte #{{ item.idReporte }}</small>
+          <h2>{{ item.titulo }}</h2>
+          <p>{{ item.categoriaNombre }} · {{ item.ubicacionNombre }}</p>
+          <p>{{ item.fechaCreacion | date: 'dd/MM/yyyy' }}</p>
+          <span class="estado">{{ item.estado.replaceAll('_', ' ') }}</span>
+          <a mat-button [routerLink]="['/reportes', item.idReporte]">Ver detalle</a>
+        </article>
+      }
+    </div>
+    <mat-paginator
+      [length]="lista.length"
+      [pageIndex]="pagina"
+      [pageSize]="porPagina"
+      [pageSizeOptions]="[5, 10, 25]"
+      (page)="cambiarPagina($event)"
+      aria-label="Páginas de reportes"
+    />
+  }
+</section>

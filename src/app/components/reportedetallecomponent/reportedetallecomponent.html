@@ -1,0 +1,103 @@
+<section class="contenedor">
+  <a mat-stroked-button routerLink="/evidencias">Volver a reportes</a>
+  @if (cargando) {
+    <p role="status">Cargando reporte…</p>
+  }
+  @if (error) {
+    <p class="aviso error" role="alert">{{ error }}</p>
+    <button mat-button (click)="cargar()">Volver a intentar</button>
+  }
+  @if (reporte; as datos) {
+    <div class="titulo-reporte">
+      <small>Reporte #{{ datos.idReporte }}</small>
+      <h2>{{ datos.titulo }}</h2>
+      <span class="estado">{{ datos.estado }}</span
+      ><span class="estado">{{ datos.prioridad || 'Sin prioridad' }}</span>
+      <a mat-button [routerLink]="['/reportes', datos.idReporte, 'editar']">Editar</a>
+      @if (acceso.rol() === 'ADMIN') {
+        <a mat-button [routerLink]="['/reportes', datos.idReporte, 'seguimiento']"
+          >Comentarios y recomendación</a
+        >
+        <button
+          mat-button
+          type="button"
+          (click)="confirmacionEliminar = datos"
+          [disabled]="eliminando"
+        >
+          Eliminar
+        </button>
+      }
+    </div>
+    @if (confirmacionEliminar; as candidato) {
+      <div class="aviso" role="group" aria-label="Confirmar eliminación">
+        <p>¿Eliminar el reporte #{{ candidato.idReporte }}?</p>
+        @if (errorEliminar) {
+          <p role="alert">{{ errorEliminar }}</p>
+        }
+        <button mat-flat-button type="button" (click)="eliminarReporte()" [disabled]="eliminando">
+          Confirmar eliminación
+        </button>
+        <button
+          mat-button
+          type="button"
+          (click)="confirmacionEliminar = undefined; errorEliminar = ''"
+          [disabled]="eliminando"
+        >
+          Cancelar
+        </button>
+      </div>
+    }
+    <div class="detalle">
+      <div>
+        <section class="tarjeta">
+          <h2>Descripción</h2>
+          <p>{{ datos.descripcion }}</p>
+        </section>
+        <section class="tarjeta">
+          <h2>Seguimiento</h2>
+          <dl>
+            <dt>Registrado</dt>
+            <dd>{{ datos.fechaCreacion | date: 'dd/MM/yyyy HH:mm' }}</dd>
+            <dt>Técnico asignado</dt>
+            <dd>{{ datos.tecnicoAsignadoNombre || 'Sin asignar' }}</dd>
+            <dt>Fecha de asignación</dt>
+            <dd>
+              {{
+                datos.fechaAsignacion
+                  ? (datos.fechaAsignacion | date: 'dd/MM/yyyy HH:mm')
+                  : 'Pendiente'
+              }}
+            </dd>
+            <dt>Resuelto</dt>
+            <dd>
+              {{
+                datos.fechaResolucion
+                  ? (datos.fechaResolucion | date: 'dd/MM/yyyy HH:mm')
+                  : 'Pendiente'
+              }}
+            </dd>
+          </dl>
+        </section>
+      </div>
+      <div>
+        <section class="tarjeta">
+          <h2>Datos del reporte</h2>
+          <dl>
+            <dt>Registrado por</dt>
+            <dd>{{ datos.usuarioReportanteNombre }}</dd>
+            <dt>Categoría</dt>
+            <dd>{{ datos.categoriaNombre }}</dd>
+            <dt>Ubicación</dt>
+            <dd>{{ datos.ubicacionNombre }}</dd>
+            <dt>Detalle del lugar</dt>
+            <dd>{{ datos.detalleUbicacion || 'Sin detalle adicional' }}</dd>
+          </dl>
+          <a mat-stroked-button [routerLink]="['/reportes', datos.idReporte, 'mapa']"
+            >Ver ubicación en mapa</a
+          >
+        </section>
+        <app-evidenciascomponent [reporteId]="datos.idReporte" />
+      </div>
+    </div>
+  }
+</section>

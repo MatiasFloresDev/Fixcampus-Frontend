@@ -1,0 +1,32 @@
+@if (error) {
+  <p class="aviso error" role="alert">{{ error }}</p>
+}
+@if (aviso) {
+  <p class="aviso exito" role="status">{{ aviso }}</p>
+}
+@if (cargando) {
+  <p role="status">Cargando…</p>
+} @else {
+  <section class="tarjeta">
+    <h2>{{ editado ? 'Editar comentario' : 'Nuevo comentario' }}</h2>
+    <a mat-button [routerLink]="['/reportes', reporteId, 'seguimiento', 'comentarios']"
+      >Volver a comentarios</a
+    >
+    <form [formGroup]="comentarioForm" (ngSubmit)="guardarComentario()">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ editado ? 'Editar comentario' : 'Nuevo comentario' }}</mat-label>
+        <textarea matInput formControlName="textoComentario" maxlength="2000" rows="3"></textarea>
+        <mat-error>Escribe un comentario de hasta 2000 caracteres.</mat-error>
+      </mat-form-field>
+      <div class="acciones">
+        <button
+          mat-flat-button
+          type="submit"
+          [disabled]="guardarBloqueado() || comentarioForm.invalid"
+        >
+          {{ editado ? 'Guardar comentario' : 'Publicar comentario' }}
+        </button>
+      </div>
+    </form>
+  </section>
+}

@@ -1,0 +1,61 @@
+<section class="contenedor">
+  <div class="encabezado">
+    <h1>Categorías</h1>
+    <a mat-stroked-button routerLink="/administracion/categorias/listar">Volver al listado</a>
+  </div>
+  @if (cargando) {
+    <p role="status">Cargando registro…</p>
+  }
+  @if (errorAccion) {
+    <p class="aviso error" role="alert">{{ errorAccion }}</p>
+  }
+  @if (modo && !cargando) {
+    <form class="tarjeta editor" [formGroup]="formulario" (ngSubmit)="guardar()">
+      <h2>
+        {{ modo === 'nuevo' ? 'Registrar' : modo === 'editar' ? 'Editar' : 'Detalle de' }} categoría
+      </h2>
+      <div class="campos">
+        <mat-form-field appearance="outline">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="nombre" maxlength="100" (blur)="normalizarNombre()" />
+          <mat-error>
+            @if (
+              formulario.controls['nombre'].hasError('required') ||
+              formulario.controls['nombre'].hasError('pattern')
+            ) {
+              El campo Nombre es obligatorio.
+            } @else if (formulario.controls['nombre'].hasError('minlength')) {
+              Nombre debe tener al menos 3 caracteres.
+            } @else {
+              Nombre admite hasta 100 caracteres.
+            }
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Descripción</mat-label>
+          <input matInput formControlName="descripcion" maxlength="255" />
+          <mat-error>
+            @if (
+              formulario.controls['descripcion'].hasError('required') ||
+              formulario.controls['descripcion'].hasError('pattern')
+            ) {
+              El campo Descripción es obligatorio.
+            } @else {
+              Descripción admite hasta 255 caracteres.
+            }
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="acciones-formulario">
+        @if (modo !== 'detalle') {
+          <button mat-flat-button type="submit" [disabled]="ocupado || formulario.invalid">
+            {{ ocupado ? 'Guardando…' : 'Guardar' }}
+          </button>
+        }
+        <button mat-button type="button" (click)="cerrar()" [disabled]="ocupado">
+          {{ modo === 'detalle' ? 'Cerrar detalle' : 'Cancelar' }}
+        </button>
+      </div>
+    </form>
+  }
+</section>

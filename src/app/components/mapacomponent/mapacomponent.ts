@@ -17,6 +17,7 @@ import { Subscription } from 'rxjs';
 import { UbicacionDTO } from '../../models/UbicacionDTO';
 import { Accesoservice } from '../../services/accesoservice';
 import { Reporteservice } from '../../services/reporteservice';
+import { Ubicacionservice } from '../../services/ubicacionservice';
 
 @Component({
   imports: [MatButtonModule, RouterLink],
@@ -37,6 +38,7 @@ export class Mapacomponent implements OnInit, OnDestroy {
 
   constructor(
     private reportes: Reporteservice,
+    private ubicaciones: Ubicacionservice,
     private acceso: Accesoservice,
     private ruta: ActivatedRoute,
     private cdr: ChangeDetectorRef,
@@ -69,7 +71,7 @@ export class Mapacomponent implements OnInit, OnDestroy {
 
   private cargarUbicacion(id: number): void {
     this.suscripciones.add(
-      this.reportes.ubicacion(id).subscribe({
+      this.ubicaciones.obtener(id).subscribe({
         next: (datos) => {
           this.ubicacion = datos;
           this.cargando = false;

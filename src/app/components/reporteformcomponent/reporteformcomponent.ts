@@ -1,21 +1,24 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { FormBuilder, ReactiveFormsModule, Validators, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CategoriaDTO } from '../../models/CategoriaDTO';
 import { ReporteDTO } from '../../models/ReporteDTO';
 import { ReporteFormularioDTO } from '../../models/ReporteFormularioDTO';
 import { UbicacionDTO } from '../../models/UbicacionDTO';
 import { Accesoservice } from '../../services/accesoservice';
+import { Categoriaservice } from '../../services/categoriaservice';
 import { Reporteservice } from '../../services/reporteservice';
+import { Ubicacionservice } from '../../services/ubicacionservice';
 import { Sugerenciacategoriacomponent } from '../sugerenciacategoriacomponent/sugerenciacategoriacomponent';
 
 @Component({
+  selector: 'app-reporteformcomponent',
   imports: [
     ReactiveFormsModule,
     RouterLink,
@@ -54,6 +57,8 @@ export class Reporteformcomponent implements OnInit {
     private ruta: ActivatedRoute,
     private router: Router,
     private servicio: Reporteservice,
+    private categoriasApi: Categoriaservice,
+    private ubicacionesApi: Ubicacionservice,
     private acceso: Accesoservice,
     private aviso: MatSnackBar,
     private cdr: ChangeDetectorRef,
@@ -85,7 +90,7 @@ export class Reporteformcomponent implements OnInit {
       this.cargando = false;
       return;
     }
-    this.servicio.categorias().subscribe({
+    this.categoriasApi.listar().subscribe({
       next: (categorias) => {
         this.categorias = categorias;
         this.cargarUbicaciones(id);
@@ -118,7 +123,7 @@ export class Reporteformcomponent implements OnInit {
     this.consultaCategorias = palabra;
     this.mostrarResultados = true;
     this.buscandoCategorias = true;
-    this.servicio.buscarCategorias(palabra).subscribe({
+    this.categoriasApi.buscarDescripcion(palabra).subscribe({
       next: (datos) => {
         if (numero !== this.numeroBusqueda) return;
         const porNombre = this.categorias.filter((categoria) =>
@@ -193,7 +198,7 @@ export class Reporteformcomponent implements OnInit {
           'Cerrar',
           { duration: 4000 },
         );
-        void this.router.navigate(['/evidencias'], { queryParams: { id: resultado.idReporte } });
+        void this.router.navigate(['/reportes', resultado.idReporte]);
         this.cdr.detectChanges();
       },
       error: (error: HttpErrorResponse) => {
@@ -216,7 +221,7 @@ export class Reporteformcomponent implements OnInit {
   }
 
   private cargarUbicaciones(id: number): void {
-    this.servicio.ubicaciones().subscribe({
+    this.ubicacionesApi.listar().subscribe({
       next: (ubicaciones) => {
         this.ubicaciones = ubicaciones;
         if (this.editando) this.cargarReporte(id);

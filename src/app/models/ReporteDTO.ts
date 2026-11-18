@@ -1,5 +1,9 @@
 export class ReporteDTO {
   idReporte: number = 0;
+  usuarioReportanteId: number = 0;
+  usuarioReportanteNombre: string = '';
+  tecnicoAsignadoNombre: string | null = null;
+  ubicacionNombre: string = '';
   titulo: string = '';
   descripcion: string = '';
   estado: string = '';

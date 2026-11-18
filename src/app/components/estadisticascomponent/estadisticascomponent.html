@@ -2,83 +2,8 @@
   <div class="encabezado">
     <div>
       <h1>Estadísticas de mantenimiento</h1>
-      <p>Consulta los reportes por categoría y las recomendaciones por prioridad del reporte.</p>
+      <p>Reportes por categoría y recomendaciones por prioridad del reporte.</p>
     </div>
   </div>
-
-  @if (cargando) {
-    <p role="status">Cargando estadísticas…</p>
-  } @else if (error) {
-    <p role="alert" class="aviso error">No se pudieron consultar las estadísticas.</p>
-    <button mat-stroked-button type="button" (click)="cargar()">Volver a intentar</button>
-  } @else {
-    <div class="kpi-grid">
-      <div class="tarjeta kpi-card">
-        <span class="kpi-label">Total de incidencias</span>
-        <strong class="kpi-valor">{{ totalReportes() }}</strong>
-      </div>
-      <div class="tarjeta kpi-card">
-        <span class="kpi-label">Categoría más frecuente</span>
-        <strong class="kpi-valor destacada">{{ categoriaMasFrecuente() }}</strong>
-      </div>
-      <div class="tarjeta kpi-card">
-        <span class="kpi-label">Total de categorías</span>
-        <strong class="kpi-valor">{{ totalCategorias() }}</strong>
-      </div>
-      <div class="tarjeta kpi-card">
-        <span class="kpi-label">Promedio por categoría</span>
-        <strong class="kpi-valor">{{ promedioPorCategoria() }}</strong>
-      </div>
-    </div>
-
-    <div class="grupos">
-      <section class="tarjeta">
-        <h2>Reportes por categoría</h2>
-        <p class="subtitulo-seccion">Cantidad acumulada de reportes por cada tipo de problema.</p>
-        <ul class="lista-barras">
-          @for (item of categorias; track item.idCategoria) {
-            <li class="fila-barra">
-              <div class="info-barra">
-                <span class="etiqueta-barra">{{ item.nombre }}</span>
-                <strong>{{ item.totalReportes }}</strong>
-              </div>
-              <div class="pista-barra">
-                <div
-                  class="relleno-barra verde"
-                  [style.width.%]="calcularPorcentaje(item.totalReportes, maxReportes())"
-                ></div>
-              </div>
-            </li>
-          } @empty {
-            <li>Todavía no hay categorías.</li>
-          }
-        </ul>
-      </section>
-
-      <section class="tarjeta">
-        <h2>Recomendaciones por prioridad del reporte</h2>
-        <p class="subtitulo-seccion">Distribución de recomendaciones técnicas registradas.</p>
-        <ul class="lista-barras">
-          @for (item of prioridades; track item.prioridad) {
-            <li class="fila-barra">
-              <div class="info-barra">
-                <span class="etiqueta-barra">{{
-                  item.prioridad?.replace('_', ' ') || 'Sin prioridad'
-                }}</span>
-                <strong>{{ item.cantidad }}</strong>
-              </div>
-              <div class="pista-barra">
-                <div
-                  class="relleno-barra azul"
-                  [style.width.%]="calcularPorcentaje(item.cantidad, maxPrioridades())"
-                ></div>
-              </div>
-            </li>
-          } @empty {
-            <li>Todavía no hay recomendaciones.</li>
-          }
-        </ul>
-      </section>
-    </div>
-  }
+  <div class="grupos"><app-categoriasgraficocomponent /><app-prioridadesgraficocomponent /></div>
 </section>

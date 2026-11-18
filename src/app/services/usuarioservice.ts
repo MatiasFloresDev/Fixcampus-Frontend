@@ -20,6 +20,12 @@ export class Usuarioservice {
     return this.http.get<UsuarioDTO[]>(this.api, { headers: this.acceso.obtenerCabeceras() });
   }
 
+  obtener(id: number): Observable<UsuarioDTO> {
+    return this.http.get<UsuarioDTO>(this.api + '/' + id, {
+      headers: this.acceso.obtenerCabeceras(),
+    });
+  }
+
   roles(): Observable<RolDTO[]> {
     return this.http.get<RolDTO[]>(environment.base + '/api/roles', {
       headers: this.acceso.obtenerCabeceras(),
@@ -38,5 +44,10 @@ export class Usuarioservice {
 
   eliminar(id: number): Observable<void> {
     return this.http.delete<void>(this.api + '/' + id, { headers: this.acceso.obtenerCabeceras() });
+  }
+  contar(): Observable<number> {
+    return this.http.get<number>(this.api + '/count', {
+      headers: this.acceso.obtenerCabeceras(),
+    });
   }
 }
