@@ -39,7 +39,6 @@ export class Resumencomponent implements OnInit {
     scales: { x: { beginAtZero: true, ticks: { precision: 0 } } },
     plugins: { legend: { display: false } },
   };
-  mesReciente = 0;
   indicadores?: { reportes: number; abiertos: number; enAtencion: number; resueltos: number };
   usuarios?: number;
   esAdmin: boolean;
@@ -163,7 +162,9 @@ export class Resumencomponent implements OnInit {
 
   cambiarTipo(): void {
     this.chartOptions = {
-      ...this.chartOptions,
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
       indexAxis: this.chartType === 'bar' ? 'y' : 'x',
       scales:
         this.chartType === 'bar'
@@ -210,7 +211,7 @@ export class Resumencomponent implements OnInit {
 
   private mostrarGrafico(datos: IncidenciasPorMesDTO[]): void {
     this.filas = datos.sort((a, b) => b.anio - a.anio || b.mes - a.mes || b.cantidad - a.cantidad);
-    this.mesReciente = Math.max(0, ...datos.map((dato) => dato.anio * 100 + dato.mes));
+
     const nombres = [
       'Enero',
       'Febrero',

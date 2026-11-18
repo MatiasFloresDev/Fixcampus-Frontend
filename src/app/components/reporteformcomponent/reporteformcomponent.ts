@@ -107,9 +107,15 @@ export class Reporteformcomponent implements OnInit {
     const seleccionada = this.categorias.find(
       (c) => c.idCategoria === this.formulario.controls['categoriaId'].value,
     );
-    return seleccionada && !filtradas.some((c) => c.idCategoria === seleccionada.idCategoria)
-      ? [seleccionada, ...filtradas]
-      : filtradas;
+    const opciones: CategoriaDTO[] = [];
+    if (
+      seleccionada &&
+      !filtradas.some((categoria) => categoria.idCategoria === seleccionada.idCategoria)
+    ) {
+      opciones.push(seleccionada);
+    }
+    for (const categoria of filtradas) opciones.push(categoria);
+    return opciones;
   }
 
   buscarCategorias(texto: string): void {
@@ -129,12 +135,14 @@ export class Reporteformcomponent implements OnInit {
         const porNombre = this.categorias.filter((categoria) =>
           categoria.nombre.toLocaleLowerCase().includes(palabra.toLocaleLowerCase()),
         );
-        this.categoriasFiltradas = [
-          ...porNombre,
-          ...datos.filter(
-            (categoria) => !porNombre.some((item) => item.idCategoria === categoria.idCategoria),
-          ),
-        ];
+        this.categoriasFiltradas = porNombre;
+        for (const categoria of datos) {
+          if (
+            !this.categoriasFiltradas.some((item) => item.idCategoria === categoria.idCategoria)
+          ) {
+            this.categoriasFiltradas.push(categoria);
+          }
+        }
         this.buscandoCategorias = false;
         this.cdr.detectChanges();
       },

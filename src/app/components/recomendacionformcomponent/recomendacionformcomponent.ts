@@ -50,7 +50,10 @@ export class Recomendacionformcomponent implements OnInit {
   ) {
     this.reporteId = Number(this.ruta.parent?.snapshot.paramMap.get('id'));
     this.recomendacionForm = this.fb.group({
-      tituloSugerido: ['', [...this.texto, Validators.maxLength(200)]],
+      tituloSugerido: [
+        '',
+        [Validators.required, Validators.pattern(/\S/), Validators.maxLength(200)],
+      ],
       resumen: ['', this.texto],
       prioridadSugerida: [
         'MEDIA',
