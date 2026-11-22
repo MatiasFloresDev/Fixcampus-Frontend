@@ -3,9 +3,15 @@ import { Accesoservice } from '../../services/accesoservice';
 import { Categoriasgraficocomponent } from '../categoriasgraficocomponent/categoriasgraficocomponent';
 import { Prioridadesgraficocomponent } from '../prioridadesgraficocomponent/prioridadesgraficocomponent';
 import { Resumencomponent } from '../resumencomponent/resumencomponent';
+import { Usuariosgraficocomponent } from '../usuariosgraficocomponent/usuariosgraficocomponent';
 @Component({
   selector: 'app-panelcomponent',
-  imports: [Resumencomponent, Categoriasgraficocomponent, Prioridadesgraficocomponent],
+  imports: [
+    Resumencomponent,
+    Categoriasgraficocomponent,
+    Prioridadesgraficocomponent,
+    Usuariosgraficocomponent,
+  ],
   templateUrl: './panelcomponent.html',
   styleUrl: './panelcomponent.css',
 })

@@ -1,0 +1,48 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+h2 {
+  margin-top: 0;
+}
+fieldset {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+mat-form-field {
+  flex: 1 1 240px;
+  min-width: 0;
+}
+.acciones {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 6px;
+}
+.solo-lectores {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.tabla-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+table {
+  width: 100%;
+  min-width: 850px;
+}
+td,
+th {
+  padding: 12px;
+}
