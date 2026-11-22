@@ -2,8 +2,12 @@
   <div class="encabezado">
     <div>
       <h1>Estadísticas de mantenimiento</h1>
-      <p>Reportes por categoría y recomendaciones por prioridad del reporte.</p>
+      <p>Revisa los gráficos y consulta los reportes registrados.</p>
     </div>
   </div>
-  <div class="grupos"><app-categoriasgraficocomponent /><app-prioridadesgraficocomponent /></div>
+  <div class="grupos">
+    <app-categoriasgraficocomponent /><app-prioridadesgraficocomponent />
+    <app-usuariosgraficocomponent class="grafico-usuarios" />
+  </div>
+  <app-reporteconsultacomponent />
 </section>

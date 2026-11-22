@@ -34,6 +34,27 @@ export class Reporteservice {
     });
   }
 
+  buscarPorEstado(estado: string): Observable<ReporteDTO[]> {
+    return this.http.get<ReporteDTO[]>(this.api + '/reports', {
+      headers: this.acceso.obtenerCabeceras(),
+      params: { estado },
+    });
+  }
+
+  buscarPorCategoria(categoriaId: number): Observable<ReporteDTO[]> {
+    return this.http.get<ReporteDTO[]>(this.api + '/reports/por-categoria', {
+      headers: this.acceso.obtenerCabeceras(),
+      params: { categoriaId },
+    });
+  }
+
+  buscarPorCorreo(correo: string): Observable<ReporteDTO[]> {
+    return this.http.get<ReporteDTO[]>(this.api + '/reports/por-correo', {
+      headers: this.acceso.obtenerCabeceras(),
+      params: { correo },
+    });
+  }
+
   registrar(datos: ReporteFormularioDTO): Observable<ReporteDTO> {
     return this.http.post<ReporteDTO>(this.api + '/reports', datos, {
       headers: this.acceso.obtenerCabeceras(),

@@ -4,6 +4,9 @@
   gap: 24px;
   padding-top: 0;
 }
+.grafico-usuarios {
+  grid-column: 1 / -1;
+}
 @media (max-width: 900px) {
   .graficos-panel {
     grid-template-columns: 1fr;

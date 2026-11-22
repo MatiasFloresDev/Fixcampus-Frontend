@@ -1,0 +1,54 @@
+<section class="tarjeta">
+  <div class="acciones-grafico">
+    <h2>Usuarios por rol</h2>
+    <button mat-button type="button" [disabled]="cargando" (click)="cargar()">Actualizar</button>
+  </div>
+  @if (cargando) {
+    <p role="status">Cargando gráfico…</p>
+  } @else if (mensaje) {
+    <p class="aviso error" role="alert">{{ mensaje }}</p>
+    <button mat-stroked-button type="button" (click)="cargar()">Volver a intentar</button>
+  } @else if (!total) {
+    <p role="status">Todavía no hay usuarios para mostrar en este gráfico.</p>
+  } @else {
+    <p>Total: {{ total }} usuarios registrados</p>
+    <mat-form-field appearance="outline">
+      <mat-label>Tipo de gráfico</mat-label>
+      <mat-select [(value)]="chartType" (selectionChange)="cambiarTipo()">
+        <mat-option value="doughnut">Dona</mat-option>
+        <mat-option value="bar">Barras</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <div class="grafico-chart">
+      <canvas
+        baseChart
+        [type]="chartType"
+        [data]="chartData"
+        [options]="chartOptions"
+        role="img"
+        aria-label="Cantidad de usuarios registrados por rol"
+      ></canvas>
+    </div>
+    <details>
+      <summary>Ver datos del gráfico</summary>
+      <div class="tabla-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Rol</th>
+              <th>Usuarios</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of lista; track item.nombreRol) {
+              <tr>
+                <td>{{ item.nombreRol }}</td>
+                <td>{{ item.cantidadUsuarios }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </details>
+  }
+</section>
