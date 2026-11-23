@@ -1,0 +1,59 @@
+<header class="menu">
+  <mat-toolbar class="menu__barra">
+    <a class="menu__marca" routerLink="/" aria-label="FixCampus, inicio">
+      <mat-icon>school</mat-icon>FixCampus
+    </a>
+
+    @if (isAuthenticated) {
+      <nav class="menu__navegacion" aria-label="Navegación principal">
+        <a mat-button routerLink="/">Inicio</a>
+        <a mat-button routerLink="/reportes/listar">Reportes</a>
+        @if (esAdmin) {<button mat-button type="button" [matMenuTriggerFor]="relacionados">Relacionados</button>}
+        <button mat-button type="button" [matMenuTriggerFor]="estadisticas">Estadísticas</button>
+        @if (esAdmin) {
+          <button mat-button type="button" [matMenuTriggerFor]="administracion">
+            Administración
+          </button>
+        }
+        <span class="menu__usuario">{{ username }} ({{ roles }})</span>
+        <button mat-stroked-button type="button" (click)="cerrarSesion()">Cerrar sesión</button>
+      </nav>
+    } @else {
+      <nav class="menu__navegacion" aria-label="Navegación principal">
+        <a mat-flat-button routerLink="/login">Iniciar sesión</a><a mat-button routerLink="/crear-cuenta">Crear cuenta</a>
+      </nav>
+    }
+  </mat-toolbar>
+
+  <mat-menu #relacionados="matMenu">
+    <a mat-menu-item routerLink="/comentarios/listar">Comentarios</a>
+    <a mat-menu-item routerLink="/adjuntos/listar">Adjuntos</a>
+    @if (esAdmin) {
+      <a mat-menu-item routerLink="/recomendaciones/listar">Recomendaciones</a>
+    }
+  </mat-menu>
+
+  <mat-menu #estadisticas="matMenu">
+    @if (esAdmin) {
+      <a mat-menu-item routerLink="/estadisticas/reporte01">1. Incidencias por categoría</a>
+      <a mat-menu-item routerLink="/estadisticas/reporte02">2. Incidencias por usuario y mes</a>
+      <a mat-menu-item routerLink="/estadisticas/reporte03">3. Recomendaciones por prioridad</a>
+      <a mat-menu-item routerLink="/estadisticas/reporte04">4. Usuarios por rol</a>
+    }
+    <a mat-menu-item routerLink="/estadisticas/reporte05">5. Reportes por estado</a>
+    <a mat-menu-item routerLink="/estadisticas/reporte06">6. Reportes por categoría</a>
+    @if (esAdmin) {<a mat-menu-item routerLink="/estadisticas/reporte07">7. Reportes por prioridad</a>}
+    <a mat-menu-item routerLink="/estadisticas/reporte08">8. Reportes por correo / Míos</a>
+    @if (esAdmin) {
+      <a mat-menu-item routerLink="/estadisticas/reporte09">9. Recomendaciones (filtro)</a>
+      <a mat-menu-item routerLink="/estadisticas/reporte10">10. Usuarios por nombre</a>
+    }
+  </mat-menu>
+
+  <mat-menu #administracion="matMenu">
+    <a mat-menu-item routerLink="/categorias/listar">Categorías</a>
+    <a mat-menu-item routerLink="/ubicaciones/listar">Ubicaciones</a>
+    <a mat-menu-item routerLink="/usuarios/listar">Usuarios</a>
+    <a mat-menu-item routerLink="/roles/listar">Roles</a>
+  </mat-menu>
+</header>

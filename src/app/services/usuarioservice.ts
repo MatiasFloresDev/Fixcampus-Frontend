@@ -1,53 +1,49 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { RolDTO } from '../models/RolDTO';
-import { UsuarioDTO } from '../models/UsuarioDTO';
-import { UsuarioFormularioDTO } from '../models/UsuarioFormularioDTO';
-import { Accesoservice } from './accesoservice';
+import { UsuarioDTOList } from '../models/UsuarioDTOList';
+import { UsuarioDTOInsert } from '../models/UsuarioDTOInsert';
+import { UsuarioDTOUpdate } from '../models/UsuarioDTOUpdate';
+import { UsuariosPorRolDTO } from '../models/UsuariosPorRolDTO';
 
 @Injectable({ providedIn: 'root' })
 export class Usuarioservice {
-  private api = environment.base + '/api/users';
+  private apiURL = environment.base + '/api/users';
 
-  constructor(
-    private http: HttpClient,
-    private acceso: Accesoservice,
-  ) {}
+  constructor(private http: HttpClient) {}
 
-  listar(): Observable<UsuarioDTO[]> {
-    return this.http.get<UsuarioDTO[]>(this.api, { headers: this.acceso.obtenerCabeceras() });
+  listar(): Observable<UsuarioDTOList[]> {
+    return this.http.get<UsuarioDTOList[]>(this.apiURL);
   }
 
-  obtener(id: number): Observable<UsuarioDTO> {
-    return this.http.get<UsuarioDTO>(this.api + '/' + id, {
-      headers: this.acceso.obtenerCabeceras(),
-    });
+  buscarPorId(id: number): Observable<UsuarioDTOList> {
+    return this.http.get<UsuarioDTOList>(this.apiURL + '/' + id);
   }
 
-  roles(): Observable<RolDTO[]> {
-    return this.http.get<RolDTO[]>(environment.base + '/api/roles', {
-      headers: this.acceso.obtenerCabeceras(),
-    });
+  registrar(dto: UsuarioDTOInsert): Observable<UsuarioDTOList> {
+    return this.http.post<UsuarioDTOList>(this.apiURL, dto);
   }
 
-  registrar(datos: UsuarioFormularioDTO): Observable<UsuarioDTO> {
-    return this.http.post<UsuarioDTO>(this.api, datos, { headers: this.acceso.obtenerCabeceras() });
+  registrarPublico(dto: UsuarioDTOInsert): Observable<UsuarioDTOList> {
+    return this.http.post<UsuarioDTOList>(environment.base + '/registro', dto);
   }
 
-  actualizar(id: number, datos: UsuarioFormularioDTO): Observable<UsuarioDTO> {
-    return this.http.put<UsuarioDTO>(this.api + '/' + id, datos, {
-      headers: this.acceso.obtenerCabeceras(),
-    });
+  actualizar(id: number, dto: UsuarioDTOUpdate): Observable<UsuarioDTOList> {
+    return this.http.put<UsuarioDTOList>(this.apiURL + '/' + id, dto);
   }
 
   eliminar(id: number): Observable<void> {
-    return this.http.delete<void>(this.api + '/' + id, { headers: this.acceso.obtenerCabeceras() });
+    return this.http.delete<void>(this.apiURL + '/' + id);
   }
-  contar(): Observable<number> {
-    return this.http.get<number>(this.api + '/count', {
-      headers: this.acceso.obtenerCabeceras(),
+
+  usuariosPorRol(): Observable<UsuariosPorRolDTO[]> {
+    return this.http.get<UsuariosPorRolDTO[]>(this.apiURL + '/estadisticas/por-rol');
+  }
+
+  buscarPorNombre(nombre: string): Observable<UsuarioDTOList[]> {
+    return this.http.get<UsuarioDTOList[]>(this.apiURL + '/buscar-nombre', {
+      params: { nombre },
     });
   }
 }

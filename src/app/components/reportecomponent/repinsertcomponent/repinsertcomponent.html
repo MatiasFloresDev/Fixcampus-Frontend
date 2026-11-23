@@ -1,0 +1,107 @@
+<section class="reporte-formulario">
+  <h1>Registrar reporte</h1>
+  @if (mensaje) {
+    <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensaje }}</p>
+  }
+  @if (mensajeOpciones) {
+    <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensajeOpciones }}</p>
+  }
+  @if ((!categoriasCargadas || !ubicacionesCargadas) && !mensajeOpciones) {
+    <p role="status">Cargando opciones…</p>
+  }
+  @if (reporteCreadoId !== null) {
+    @if (guardando) {
+      <p role="status">Registrando evidencia…</p>
+    } @else {
+      <div class="reporte-formulario__acciones">
+        <a mat-stroked-button [routerLink]="['/reportes/detalle', reporteCreadoId]">
+          Ver reporte creado
+        </a>
+        <a mat-stroked-button routerLink="/reportes/listar">Volver al listado</a>
+      </div>
+    }
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="guardar()" class="reporte-formulario__campos">
+      <mat-form-field appearance="outline">
+        <mat-label>Título</mat-label>
+        <input matInput formControlName="titulo" maxlength="200" required />
+        <mat-error>Ingrese un título de hasta 200 caracteres, sin dejar solo espacios.</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Descripción</mat-label>
+        <textarea matInput formControlName="descripcion" rows="4" required></textarea>
+        <mat-error>Ingrese una descripción sin dejar solo espacios.</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Categoría</mat-label>
+        <mat-select formControlName="categoriaId" required>
+          @for (categoria of categorias; track categoria.idCategoria) {
+            <mat-option [value]="categoria.idCategoria">{{ categoria.nombre }}</mat-option>
+          }
+        </mat-select>
+        <mat-error>Seleccione una categoría.</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Ubicación</mat-label>
+        <mat-select formControlName="ubicacionId" required>
+          @for (ubicacion of ubicaciones; track ubicacion.idUbicacion) {
+            <mat-option [value]="ubicacion.idUbicacion">
+              {{ descripcionUbicacion(ubicacion) }}
+            </mat-option>
+          }
+        </mat-select>
+        <mat-error>Seleccione una ubicación.</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Detalle de ubicación (opcional)</mat-label>
+        <input matInput formControlName="detalleUbicacion" maxlength="255" placeholder="Aula 305" />
+        <mat-error>Máximo 255 caracteres.</mat-error>
+      </mat-form-field>
+      <section class="reporte-formulario__evidencia">
+        <h2>Adjuntar evidencia (opcional)</h2>
+        <p>Registra un archivo disponible mediante su URL.</p>
+        <mat-checkbox
+          [checked]="incluirAdjunto"
+          [disabled]="guardando"
+          (change)="incluirAdjunto = $event.checked"
+        >
+          Incluir evidencia
+        </mat-checkbox>
+        @if (incluirAdjunto) {
+          <div [formGroup]="formAdjunto" class="reporte-formulario__campos">
+            <mat-form-field appearance="outline">
+              <mat-label>Nombre del archivo</mat-label>
+              <input matInput formControlName="nombreArchivo" maxlength="255" required />
+              <mat-error>
+                Ingrese un nombre de hasta 255 caracteres, sin dejar solo espacios.
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>URL del archivo</mat-label>
+              <input matInput formControlName="urlArchivo" type="url" maxlength="500" required />
+              <mat-error>Ingrese la URL del archivo (máximo 500 caracteres).</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Tipo del archivo (opcional)</mat-label>
+              <input matInput formControlName="tipoArchivo" maxlength="100" placeholder="image/jpeg" />
+              <mat-error>Máximo 100 caracteres.</mat-error>
+            </mat-form-field>
+          </div>
+        }
+      </section>
+      <div class="reporte-formulario__acciones">
+        <button
+          mat-flat-button
+          type="submit"
+          [disabled]="
+            guardando || form.invalid || !categoriasCargadas ||
+            !ubicacionesCargadas || (incluirAdjunto && formAdjunto.invalid)
+          "
+        >
+          {{ guardando ? 'Guardando…' : 'Guardar' }}
+        </button>
+        <a mat-stroked-button routerLink="/reportes/listar">Volver</a>
+      </div>
+    </form>
+  }
+</section>

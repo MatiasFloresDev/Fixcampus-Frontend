@@ -1,33 +1,28 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { Accesoservice } from './accesoservice';
-import { RolDTO } from '../models/RolDTO';
-import { RolFormularioDTO } from '../models/RolFormularioDTO';
+import { RolDTOInsert } from '../models/RolDTOInsert';
+import { RolDTOList } from '../models/RolDTOList';
 
 @Injectable({ providedIn: 'root' })
 export class Rolservice {
-  private api = environment.base + '/api/roles';
-  constructor(
-    private http: HttpClient,
-    private acceso: Accesoservice,
-  ) {}
-  listar(): Observable<RolDTO[]> {
-    return this.http.get<RolDTO[]>(this.api, { headers: this.acceso.obtenerCabeceras() });
+  private apiURL = environment.base + '/api/roles';
+  constructor(private http: HttpClient) {}
+
+  listar(): Observable<RolDTOList[]> {
+    return this.http.get<RolDTOList[]>(this.apiURL);
   }
-  obtener(id: number): Observable<RolDTO> {
-    return this.http.get<RolDTO>(this.api + '/' + id, { headers: this.acceso.obtenerCabeceras() });
+  buscarPorId(id: number): Observable<RolDTOList> {
+    return this.http.get<RolDTOList>(this.apiURL + '/' + id);
   }
-  registrar(datos: RolFormularioDTO): Observable<RolDTO> {
-    return this.http.post<RolDTO>(this.api, datos, { headers: this.acceso.obtenerCabeceras() });
+  registrar(dto: RolDTOInsert): Observable<RolDTOList> {
+    return this.http.post<RolDTOList>(this.apiURL, dto);
   }
-  actualizar(id: number, datos: RolFormularioDTO): Observable<RolDTO> {
-    return this.http.put<RolDTO>(this.api + '/' + id, datos, {
-      headers: this.acceso.obtenerCabeceras(),
-    });
+  actualizar(id: number, dto: RolDTOInsert): Observable<RolDTOList> {
+    return this.http.put<RolDTOList>(this.apiURL + '/' + id, dto);
   }
   eliminar(id: number): Observable<void> {
-    return this.http.delete<void>(this.api + '/' + id, { headers: this.acceso.obtenerCabeceras() });
+    return this.http.delete<void>(this.apiURL + '/' + id);
   }
 }

@@ -1,0 +1,210 @@
+<div class="landing">
+
+  <section class="hero">
+    <div class="hero__contenido">
+      <span class="hero__etiqueta">FixCampus · Gestión de Incidencias</span>
+      <h1>Un campus más seguro y funcional empieza aquí</h1>
+      <p class="hero__descripcion">
+        Reporta fallas de infraestructura, adjunta evidencia mediante URL y haz seguimiento en
+        tiempo real desde cualquier ambiente de la universidad UPC.
+      </p>
+
+      <div class="hero__acciones">
+        @if (!isAuthenticated) {
+          <a mat-flat-button routerLink="/login" class="btn-primario">
+            <mat-icon>login</mat-icon> Iniciar sesión
+          </a>
+        } @else {
+          <a mat-flat-button routerLink="/reportes/listar" class="btn-primario">
+            <mat-icon>assignment</mat-icon> Ver reportes
+          </a>
+          <a mat-stroked-button routerLink="/reportes/insertar">
+            <mat-icon>add_circle_outline</mat-icon> Nuevo reporte
+          </a>
+        }
+      </div>
+    </div>
+
+    <div class="hero__visual">
+      <img
+        src="landing-hero.jpg"
+        alt="Laboratorio de ingeniería moderno con estudiantes en campus UPC"
+        class="hero__imagen"
+      />
+    </div>
+  </section>
+
+
+  <section class="seccion">
+    <div class="seccion__cabecera">
+      <h2>Capacidades principales de FixCampus</h2>
+    </div>
+
+    <div class="grid-tres">
+      <article class="beneficio-card">
+        <mat-icon>bolt</mat-icon>
+        <div>
+          <strong>Registro rápido y preciso</strong>
+          <p>Categoriza incidencias y especifica campus, edificio, piso y aula exacta en segundos.</p>
+        </div>
+      </article>
+
+      <article class="beneficio-card">
+        <mat-icon>photo_camera</mat-icon>
+        <div>
+          <strong>Evidencia y comentarios</strong>
+          <p>Adjunta hasta 3 enlaces de respaldo por reporte y coordina avances en cada incidencia.</p>
+        </div>
+      </article>
+
+      <article class="beneficio-card">
+        <mat-icon>engineering</mat-icon>
+        <div>
+          <strong>Asignación priorizada</strong>
+          <p>El administrador clasifica la prioridad (ALTA, MEDIA, BAJA) y asigna al técnico especialista.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+
+  <section class="seccion">
+    <div class="seccion__cabecera">
+      <span class="seccion__etiqueta">Áreas de atención</span>
+      <h2>¿Qué puedes gestionar en FixCampus?</h2>
+      <p>
+        Organiza el ciclo completo de incidencias desde la detección en el campus hasta su cierre.
+      </p>
+    </div>
+
+    <div class="grid-tres">
+      <article class="escenario-card">
+        <img
+          src="landing-aula.jpg"
+          alt="Primer plano de un proyector de techo en un aula vacía"
+          class="escenario-card__img"
+        />
+        <div class="escenario-card__cuerpo">
+          <span class="escenario-card__tag">Equipamiento</span>
+          <h3>Aulas y laboratorios</h3>
+          <p>
+            Reporta proyectores, tomacorrientes, luminarias o equipos de cómputo con el aula y piso
+            exactos.
+          </p>
+        </div>
+      </article>
+
+      <article class="escenario-card">
+        <img
+          src="landing-infraestructura.jpg"
+          alt="Pasillo universitario con personal de mantenimiento trabajando"
+          class="escenario-card__img"
+        />
+        <div class="escenario-card__cuerpo">
+          <span class="escenario-card__tag">Mantenimiento</span>
+          <h3>Infraestructura y servicios</h3>
+          <p>
+            Atención rápida a filtraciones, puertas, mobiliario o servicios generales por campus y
+            edificio.
+          </p>
+        </div>
+      </article>
+
+      <article class="escenario-card">
+        <img
+          src="landing-analitica.jpg"
+          alt="Laptop mostrando gráficos de analítica de reportes"
+          class="escenario-card__img"
+        />
+        <div class="escenario-card__cuerpo">
+          <span class="escenario-card__tag">Gestión</span>
+          <h3>Seguimiento y analítica</h3>
+          <p>
+            Filtra reportes por estado o prioridad, revisa comentarios técnicos y analiza métricas por
+            categoría y mes.
+          </p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+
+  <section class="seccion">
+    <div class="seccion__cabecera">
+      <h2>¿Cómo funciona el flujo de atención?</h2>
+      <p>Trazabilidad clara en cada etapa del reporte.</p>
+    </div>
+
+    <div class="grid-tres">
+      <article class="paso">
+        <span class="paso__num">01</span>
+        <h3>Reporta</h3>
+        <p>
+          El usuario crea el reporte con título, descripción, categoría, ubicación y evidencia opcional.
+          El estado inicial es <strong>PENDIENTE</strong>.
+        </p>
+      </article>
+
+      <article class="paso">
+        <span class="paso__num">02</span>
+        <h3>Asigna y prioriza</h3>
+        <p>
+          Administración define la prioridad (<strong>ALTA</strong>, <strong>MEDIA</strong> o
+          <strong>BAJA</strong>) y asigna un técnico responsable.
+        </p>
+      </article>
+
+      <article class="paso">
+        <span class="paso__num">03</span>
+        <h3>Comenta y resuelve</h3>
+        <p>
+          Se registran comentarios de seguimiento, recomendaciones técnicas y el cambio de estado a
+          <strong>RESUELTO</strong>.
+        </p>
+      </article>
+    </div>
+  </section>
+
+
+  <section class="seccion roles-box">
+    <div class="seccion__cabecera">
+      <h2>Roles dentro de la plataforma</h2>
+      <p>Cada perfil cuenta con permisos alineados a sus responsabilidades.</p>
+    </div>
+
+    <div class="grid-tres">
+      <article class="rol-card">
+        <mat-icon class="rol-card__icono">person</mat-icon>
+        <h3>Usuario (USUARIO)</h3>
+        <p>
+          Registra reportes, consulta listados y detalles, comenta incidencias y adjunta evidencias en
+          sus propios reportes.
+        </p>
+      </article>
+
+      <article class="rol-card">
+        <mat-icon class="rol-card__icono">engineering</mat-icon>
+        <h3>Técnico (TECNICO)</h3>
+        <p>
+          Consulta reportes, ubicaciones y categorías, participa en comentarios y revisa reportes
+          filtrados.
+        </p>
+      </article>
+
+      <article class="rol-card">
+        <mat-icon class="rol-card__icono">admin_panel_settings</mat-icon>
+        <h3>Administrador (ADMIN)</h3>
+        <p>
+          Gestiona reportes, usuarios, roles, categorías, ubicaciones, recomendaciones y los 10
+          reportes estadísticos.
+        </p>
+      </article>
+    </div>
+  </section>
+
+
+  <footer class="landing-footer">
+    <span><strong>FixCampus</strong> · Sistema de Gestión de Incidencias del Campus</span>
+    <span>Arquitectura de Aplicaciones Web · UPC</span>
+  </footer>
+</div>

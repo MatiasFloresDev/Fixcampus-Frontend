@@ -1,0 +1,98 @@
+<section class="reporte-formulario">
+  <h1>Editar reporte #{{ id }}</h1>
+  @if (mensaje) {
+    <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensaje }}</p>
+  }
+  @if (mensajeOpciones) {
+    <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensajeOpciones }}</p>
+  }
+  @if (encontrado && (!categoriasCargadas || !ubicacionesCargadas || !tecnicosCargados) && !mensajeOpciones) {
+    <p role="status">Cargando opciones…</p>
+  }
+  @if (cargando) {
+    <p role="status">Cargando reporte…</p>
+  }
+  @if (encontrado) {
+    <form [formGroup]="form" (ngSubmit)="guardar()" class="reporte-formulario__campos">
+      <mat-form-field appearance="outline">
+        <mat-label>Título</mat-label>
+        <input matInput formControlName="titulo" maxlength="200" required />
+        <mat-error>Ingrese un título de hasta 200 caracteres, sin dejar solo espacios.</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Descripción</mat-label>
+        <textarea matInput formControlName="descripcion" rows="4" required></textarea>
+        <mat-error>Ingrese una descripción sin dejar solo espacios.</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Categoría</mat-label>
+        <mat-select formControlName="categoriaId" required>
+          @for (categoria of categorias; track categoria.idCategoria) {
+            <mat-option [value]="categoria.idCategoria">{{ categoria.nombre }}</mat-option>
+          }
+        </mat-select>
+        <mat-error>Seleccione una categoría.</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Ubicación</mat-label>
+        <mat-select formControlName="ubicacionId" required>
+          @for (ubicacion of ubicaciones; track ubicacion.idUbicacion) {
+            <mat-option [value]="ubicacion.idUbicacion">
+              {{ descripcionUbicacion(ubicacion) }}
+            </mat-option>
+          }
+        </mat-select>
+        <mat-error>Seleccione una ubicación.</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Detalle de ubicación (opcional)</mat-label>
+        <input matInput formControlName="detalleUbicacion" maxlength="255" placeholder="Aula 305" />
+        <mat-error>Máximo 255 caracteres.</mat-error>
+      </mat-form-field>
+      @if (esAdmin) {<mat-form-field appearance="outline">
+        <mat-label>Técnico asignado (opcional)</mat-label>
+        <mat-select formControlName="tecnicoAsignadoId" canSelectNullableOptions>
+          <mat-option [value]="null">Sin asignar</mat-option>
+          @for (tecnico of tecnicos; track tecnico.idUsuario) {
+            <mat-option [value]="tecnico.idUsuario">
+              {{ tecnico.nombre }} {{ tecnico.apellido }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Prioridad (opcional)</mat-label>
+        <mat-select formControlName="prioridad" canSelectNullableOptions>
+          <mat-option [value]="null">Sin asignar</mat-option>
+          <mat-option value="MUY_ALTA">Muy alta</mat-option><mat-option value="MUY_BAJA">Muy baja</mat-option><mat-option value="ALTA">Alta</mat-option>
+          <mat-option value="MEDIA">Media</mat-option>
+          <mat-option value="BAJA">Baja</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Estado</mat-label>
+        <mat-select formControlName="estado" required>
+          <mat-option value="PENDIENTE">PENDIENTE</mat-option><mat-option value="ABIERTO">ABIERTO</mat-option><mat-option value="EN_REVISION">EN REVISION</mat-option><mat-option value="ASIGNADO">ASIGNADO</mat-option><mat-option value="EN_ATENCION">EN ATENCION</mat-option><mat-option value="CERRADO">CERRADO</mat-option>
+          <mat-option value="RESUELTO">Resuelto</mat-option>
+        </mat-select>
+        <mat-error>Seleccione un estado.</mat-error>
+      </mat-form-field>
+      }<div class="reporte-formulario__acciones">
+        <button
+          mat-flat-button
+          type="submit"
+          [disabled]="
+            guardando || form.invalid || !categoriasCargadas ||
+            !ubicacionesCargadas || !tecnicosCargados
+          "
+        >
+          {{ guardando ? 'Guardando…' : 'Guardar' }}
+        </button>
+        <a mat-stroked-button routerLink="/reportes/listar">Volver</a>
+      </div>
+    </form>
+  }
+  @if (!cargando && !encontrado) {
+    <a mat-stroked-button routerLink="/reportes/listar">Volver</a>
+  }
+</section>

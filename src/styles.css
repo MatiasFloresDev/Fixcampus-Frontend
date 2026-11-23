@@ -1,215 +1,82 @@
 :root {
-  --verde-principal: #0d6a62;
-  --verde-marca: #408f86;
-  --verde-claro: #e6f2f0;
-  --azul-apoyo: #5c8faa;
-  --azul-claro: #e8f0f5;
+  --fc-verde-oscuro: #0D6A62;
+  --fc-verde-marca: #408F86;
+  --fc-verde-claro: #E6F2F0;
+  --fc-azul: #5C8FAA;
+  --fc-azul-claro: #E8F0F5;
+  --fc-texto: #212529;
+  --fc-texto-suave: #5F6B70;
+  --fc-fondo: #F8F9FA;
+  --fc-borde: #D6DBDE;
+  --fc-blanco: #FFFFFF;
+  --fc-error: #C0392B;
+  --fc-ambar: #9A5B00;
+  --fc-exito: #1E7E4A;
+  --fc-deshabilitado: #CED4DA;
+  --mat-sys-primary: var(--fc-verde-oscuro);
+  --mat-sys-on-primary: var(--fc-blanco);
+  --mat-sys-primary-container: var(--fc-verde-claro);
+  --mat-sys-on-primary-container: var(--fc-verde-oscuro);
+  --mat-sys-secondary: var(--fc-verde-marca);
+  --mat-sys-secondary-container: var(--fc-verde-claro);
+  --mat-sys-on-secondary-container: var(--fc-verde-oscuro);
+  --mat-sys-tertiary: var(--fc-azul);
+  --mat-sys-tertiary-container: var(--fc-azul-claro);
+  --mat-sys-surface: var(--fc-blanco);
+  --mat-sys-on-surface: var(--fc-texto);
+  --mat-sys-on-surface-variant: var(--fc-texto-suave);
+  --mat-sys-outline: var(--fc-borde);
+  --mat-sys-error: var(--fc-error);
+  --mat-sys-on-error: var(--fc-blanco);
+  --mat-sys-body-large: 400 15px / 1.5 Roboto, sans-serif;
+  --mat-sys-body-large-size: 15px;
+  --mat-sys-body-medium: 400 15px / 1.5 Roboto, sans-serif;
+  --mat-sys-body-medium-size: 15px;
+  --mat-sys-body-small: 400 13px / 1.5 Roboto, sans-serif;
+  --mat-sys-body-small-size: 13px;
+  --mat-sys-label-large-size: 15px;
+  --mat-sys-label-medium-size: 13px;
+  --mat-table-header-headline-size: 15px;
+  --mat-table-row-item-label-text-size: 15px;
+  --mat-button-filled-disabled-container-color: var(--fc-deshabilitado);
+  --mat-button-outlined-label-text-color: var(--fc-verde-oscuro);
+  --mat-button-outlined-outline-color: var(--fc-verde-oscuro);
+  --mat-button-outlined-container-shape: 10px;
+  --mat-button-filled-container-shape: 10px;
 }
+
 * {
   box-sizing: border-box;
 }
+
 body {
   margin: 0;
-  background: #f8f9fa;
-  color: #212529;
-  font:
-    400 15px/1.6 'Open Sans',
-    sans-serif;
-}
-h1,
-h2 {
-  font-family: Poppins, sans-serif;
-  line-height: 1.25;
-  margin: 0 0 8px;
-}
-h1 {
-  font-size: 28px;
-  font-weight: 700;
-}
-h2 {
-  font-size: 19px;
-  font-weight: 600;
-}
-p {
-  margin: 0 0 12px;
-}
-a {
-  color: var(--verde-principal);
-}
-:focus-visible {
-  outline: 3px solid #0d6a62;
-  outline-offset: 3px;
-}
-.contenedor {
-  width: min(1100px, calc(100% - 32px));
-  margin: 28px auto;
-}
-.encabezado {
-  display: flex;
-  justify-content: space-between;
-  align-items: start;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-.encabezado p,
-.tarjeta > p,
-.lado-formulario > p {
-  color: #5f6b70;
-}
-.encabezado-foto {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(240px, 36%);
-  align-items: center;
-  column-gap: 32px;
-  row-gap: 16px;
-  background: var(--verde-claro);
-  border: 1px solid #bed8d3;
-  border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 24px;
-}
-.encabezado-foto > div,
-.encabezado-foto > a {
-  grid-column: 1;
-}
-.encabezado-foto > a {
-  justify-self: start;
-}
-.encabezado-foto h1 {
-  color: #154d47;
-}
-.encabezado-foto figure {
-  grid-column: 2;
-  grid-row: 1 / span 2;
-  margin: 0;
-}
-.encabezado-foto img {
-  display: block;
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-  border-radius: 10px;
-}
-.encabezado-foto figcaption {
-  color: #425c58;
-  font-size: 12px;
-  margin-top: 6px;
-}
-@media (max-width: 660px) {
-  .encabezado-foto {
-    grid-template-columns: minmax(0, 1fr);
-    padding: 20px;
-    gap: 16px;
-  }
-  .encabezado-foto figure {
-    grid-column: 1;
-    grid-row: auto;
-  }
-  .encabezado-foto img {
-    height: 150px;
-  }
-}
-.tarjeta {
-  background: white;
-  border: 1px solid #d6dbde;
-  border-radius: 14px;
-  padding: 20px;
-}
-.aviso {
-  padding: 12px 14px;
-  border-radius: 8px;
-  background: #fef3e2;
-  color: #714800;
-}
-.error {
-  background: #fdecea;
-  color: #9d2b21;
-}
-.exito {
-  background: #e5f6ec;
-  color: #17633b;
-}
-.acceso {
-  width: min(970px, calc(100% - 32px));
-  margin: 54px auto;
-  display: grid;
-  grid-template-columns: 1fr 1.06fr;
-  border: 1px solid #d6dbde;
-  background: white;
-  border-radius: 16px;
-  overflow: hidden;
-}
-.lado-campus {
-  background: #0d6a62;
-  color: white;
-  padding: 36px;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-}
-.lado-campus img {
-  width: 100%;
-  height: auto;
-  margin-bottom: 18px;
-  border-radius: 12px;
-  background: #e6f2f0;
-}
-.lado-campus h2 {
-  font-size: 24px;
-}
-.lado-formulario {
-  padding: 34px 40px;
-  align-self: center;
-  min-width: 0;
-}
-.lado-formulario form {
-  display: grid;
-  gap: 8px;
-  margin-top: 20px;
-}
-.lado-formulario mat-form-field {
-  width: 100%;
-}
-.lado-formulario .pie-formulario {
-  margin: 16px 0 0;
-}
-@media (max-width: 760px) {
-  .acceso {
-    grid-template-columns: 1fr;
-    margin: 24px auto;
-    max-width: 520px;
-  }
-  .lado-campus {
-    padding: 24px;
-  }
-  .lado-campus img {
-    display: none;
-  }
-  .lado-formulario {
-    padding: 26px 24px;
-  }
+  background: var(--fc-fondo);
+  color: var(--fc-texto);
+  font: 400 15px / 1.5 Roboto, sans-serif;
 }
 
-.lista-tarjetas {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
-  gap: 16px;
-  margin-bottom: 16px;
+h1 {
+  margin: 0;
+  font: 700 26px / 1.3 Poppins, sans-serif;
+  color: var(--fc-verde-oscuro);
 }
-.lista-tarjetas .tarjeta {
-  overflow-wrap: anywhere;
+
+h2 {
+  font: 600 18px / 1.4 Poppins, sans-serif;
 }
-.tarjeta.seleccionado {
-  border-color: #0d6a62;
-  box-shadow: 0 0 0 1px #0d6a62;
+
+.fc-contenido {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 36px 20px;
 }
-.accion-eliminar {
-  color: #9d2b21 !important;
+
+.fc-mensaje {
+  margin: 16px 0;
+  font-size: 13px;
 }
-mat-paginator {
-  background: white;
-  border: 1px solid #d6dbde;
-  border-radius: 8px;
-  margin: 12px 0 24px;
+
+.fc-mensaje--error {
+  color: var(--fc-error);
 }

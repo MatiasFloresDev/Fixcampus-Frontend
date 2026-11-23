@@ -1,0 +1,54 @@
+<section class="adjunto-formulario">
+  <h1>Registrar adjunto</h1>
+  @if (mensaje) {
+    <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensaje }}</p>
+  }
+  <p>Máximo tres evidencias por reporte. El archivo se registra mediante su URL.</p>
+  @if (mensajeReportes) {
+    <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensajeReportes }}</p>
+  }
+  @if (!reportesCargados && !mensajeReportes) {
+    <p role="status">Cargando reportes…</p>
+  }
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="adjunto-formulario__campos">
+    <mat-form-field appearance="outline">
+      <mat-label>Reporte</mat-label>
+      <mat-select formControlName="reporteId" required>
+        @for (reporte of reportes; track reporte.idReporte) {
+          <mat-option [value]="reporte.idReporte">
+            #{{ reporte.idReporte }} · {{ reporte.titulo }}
+          </mat-option>
+        }
+      </mat-select>
+      <mat-error>Seleccione un reporte.</mat-error>
+      @if (reportesCargados && reportes.length === 0) {
+        <mat-hint>No hay reportes disponibles.</mat-hint>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Nombre del archivo</mat-label>
+      <input matInput formControlName="nombreArchivo" maxlength="255" required />
+      <mat-error>Complete este campo sin dejar solo espacios. Máximo 255 caracteres.</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>URL del archivo</mat-label>
+      <input matInput formControlName="urlArchivo" maxlength="500" required type="url" />
+      <mat-error>Complete este campo sin dejar solo espacios. Máximo 500 caracteres.</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Tipo del archivo (opcional)</mat-label>
+      <input matInput formControlName="tipoArchivo" maxlength="100" />
+      <mat-error> Máximo 100 caracteres.</mat-error>
+    </mat-form-field>
+    <div class="adjunto-formulario__acciones">
+      <button
+        mat-flat-button
+        type="submit"
+        [disabled]="guardando || form.invalid || !reportesCargados"
+      >
+        {{ guardando ? 'Guardando…' : 'Guardar' }}
+      </button>
+      <a mat-stroked-button routerLink="/adjuntos/listar">Cancelar</a>
+    </div>
+  </form>
+</section>

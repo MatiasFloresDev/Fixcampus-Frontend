@@ -1,0 +1,39 @@
+.reporte-detalle__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 24px 0;
+}
+
+.reporte-detalle__eliminar {
+  color: var(--fc-error);
+}
+
+.reporte-detalle__datos {
+  padding: 24px;
+  border: 1px solid var(--fc-borde);
+  border-radius: 14px;
+  background: var(--fc-blanco);
+  margin-top: 24px;
+}
+
+.reporte-detalle__campo + .reporte-detalle__campo {
+  margin-top: 20px;
+}
+
+.reporte-detalle__etiqueta {
+  display: block;
+  color: var(--fc-texto-suave);
+  font-size: 13px;
+  font-weight: 400;
+  margin-bottom: 4px;
+}
+
+.reporte-detalle__campo p {
+  margin: 4px 0;
+}
+
+.reporte-detalle__texto {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

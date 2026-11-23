@@ -1,0 +1,57 @@
+.reporte-lista__cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.reporte-lista__tabla {
+  overflow-x: auto;
+  border: 1px solid var(--fc-borde);
+  border-radius: 14px;
+  background: var(--fc-blanco);
+}
+
+.reporte-lista__tabla table {
+  width: 100%;
+}
+
+.reporte-lista__acciones {
+  display: flex;
+  align-items: center;
+}
+
+.reporte-lista__eliminar {
+  color: var(--fc-error);
+}
+
+.reporte-lista__etiqueta {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 6px;
+  color: var(--fc-texto-suave);
+  background: var(--fc-fondo);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.reporte-lista__etiqueta--alta {
+  color: var(--fc-error);
+}
+
+.reporte-lista__etiqueta--media,
+.reporte-lista__etiqueta--pendiente {
+  color: var(--fc-ambar);
+}
+
+.reporte-lista__etiqueta--baja {
+  color: var(--fc-azul);
+  background: var(--fc-azul-claro);
+}
+
+.reporte-lista__etiqueta--resuelto {
+  color: var(--fc-exito);
+  background: var(--fc-verde-claro);
+}

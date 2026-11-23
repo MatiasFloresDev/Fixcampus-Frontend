@@ -1,0 +1,110 @@
+<section class="reporte-detalle">
+  <h1>Detalle de reporte</h1>
+  <div class="reporte-detalle__acciones">
+    @if (registro) {
+      <a mat-flat-button [routerLink]="['/reportes/editar', registro.idReporte]">Editar</a>
+      @if (esAdmin) {<button
+        mat-stroked-button
+        type="button"
+        class="reporte-detalle__eliminar"
+        (click)="eliminar()"
+        [disabled]="eliminando || comentarioEnProceso"
+      >
+        {{ eliminando ? 'Eliminando…' : 'Eliminar' }}
+      </button>}
+    }
+    <a mat-stroked-button routerLink="/reportes/listar">Volver</a>
+  </div>
+  @if (mensaje) {
+    <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensaje }}</p>
+  }
+  @if (cargando) {
+    <p role="status">Cargando reporte…</p>
+  }
+  @if (registro) {
+    @if (mensajeRelaciones) {
+      <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensajeRelaciones }}</p>
+    }
+    <div class="reporte-detalle__datos">
+      <div class="reporte-detalle__campo">
+        <strong class="reporte-detalle__etiqueta">ID</strong>
+        <span>{{ registro.idReporte }}</span>
+      </div>
+      <div class="reporte-detalle__campo">
+        <strong class="reporte-detalle__etiqueta">Título</strong>
+        <span>{{ registro.titulo }}</span>
+      </div>
+      <div class="reporte-detalle__campo">
+        <strong class="reporte-detalle__etiqueta">Descripción</strong>
+        <span class="reporte-detalle__texto">{{ registro.descripcion }}</span>
+      </div>
+      <div class="reporte-detalle__campo">
+        <strong class="reporte-detalle__etiqueta">Categoría</strong>
+        <span>{{ categoria?.nombre || 'Categoría no disponible' }} (#{{ registro.categoriaId }})</span>
+      </div>
+      <div class="reporte-detalle__campo">
+        <strong class="reporte-detalle__etiqueta">Ubicación (#{{ registro.ubicacionId }})</strong>
+        @if (ubicacion) {
+          <p>Campus: {{ ubicacion.campus }} · Edificio: {{ ubicacion.edificio }}</p>
+          <p>Piso: {{ ubicacion.piso ?? 'Sin especificar' }}</p>
+          <p>Zona: {{ ubicacion.zona || 'Sin especificar' }} · Tipo: {{ ubicacion.tipo }}</p>
+        } @else {
+          <span>Descripción de ubicación no disponible.</span>
+        }
+      </div>
+      <div class="reporte-detalle__campo">
+        <strong class="reporte-detalle__etiqueta">Detalle de ubicación</strong>
+        <span>{{ registro.detalleUbicacion || 'Sin especificar' }}</span>
+      </div>
+      <div class="reporte-detalle__campo">
+        <strong class="reporte-detalle__etiqueta">Autor</strong>
+        <span>
+          {{ nombreUsuario(registro.usuarioReportanteId) }} (#{{ registro.usuarioReportanteId }})
+        </span>
+      </div>
+      <div class="reporte-detalle__campo">
+        <strong class="reporte-detalle__etiqueta">Técnico asignado</strong>
+        @if (registro.tecnicoAsignadoId !== null) {
+          <span>
+            {{ nombreUsuario(registro.tecnicoAsignadoId) }} (#{{ registro.tecnicoAsignadoId }})
+          </span>
+        } @else {
+          <span>Sin asignar</span>
+        }
+      </div>
+      <div class="reporte-detalle__campo">
+        <strong class="reporte-detalle__etiqueta">Prioridad</strong>
+        <span>{{ registro.prioridad || 'Sin asignar' }}</span>
+      </div>
+      <div class="reporte-detalle__campo">
+        <strong class="reporte-detalle__etiqueta">Estado</strong>
+        <span>{{ registro.estado }}</span>
+      </div>
+      <div class="reporte-detalle__campo">
+        <strong class="reporte-detalle__etiqueta">Fecha de creación</strong>
+        <span>{{ registro.fechaCreacion | date: 'dd/MM/yyyy HH:mm' }}</span>
+      </div>
+      <div class="reporte-detalle__campo">
+        <strong class="reporte-detalle__etiqueta">Fecha de asignación</strong>
+        <span>
+          {{ registro.fechaAsignacion ? (registro.fechaAsignacion | date: 'dd/MM/yyyy HH:mm') : 'Sin asignar' }}
+        </span>
+      </div>
+      <div class="reporte-detalle__campo">
+        <strong class="reporte-detalle__etiqueta">Fecha de resolución</strong>
+        <span>
+          {{ registro.fechaResolucion ? (registro.fechaResolucion | date: 'dd/MM/yyyy HH:mm') : 'Sin resolver' }}
+        </span>
+      </div>
+    </div>
+
+    @if (esAdmin) {<app-comentarios-reporte
+      [reporteId]="registro.idReporte"
+      [usuarios]="usuarios"
+      [eliminando]="eliminando"
+      (guardandoChange)="comentarioEnProceso = $event"
+    ></app-comentarios-reporte>}
+
+    <app-adjuntos-reporte [reporteId]="registro.idReporte"></app-adjuntos-reporte>
+  }
+</section>

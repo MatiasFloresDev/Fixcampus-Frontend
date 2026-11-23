@@ -1,0 +1,64 @@
+<section class="rol-lista">
+  <div class="rol-lista__cabecera">
+    <h1>Listado de roles</h1>
+    <a mat-flat-button routerLink="/roles/insertar">Registrar rol</a>
+  </div>
+  @if (mensaje) {
+    <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensaje }}</p>
+  }
+  @if (cargando) {
+    <p role="status">Cargando registros…</p>
+  } @else if (dataSource.length > 0) {
+    <div class="rol-lista__tabla">
+      <table mat-table [dataSource]="dataSource">
+        <ng-container matColumnDef="idRol">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let registro">{{ registro.idRol }}</td>
+        </ng-container>
+        <ng-container matColumnDef="nombre">
+          <th mat-header-cell *matHeaderCellDef>Nombre</th>
+          <td mat-cell *matCellDef="let registro">{{ registro.nombre }}</td>
+        </ng-container>
+        <ng-container matColumnDef="nivelAcceso">
+          <th mat-header-cell *matHeaderCellDef>Nivel de acceso</th>
+          <td mat-cell *matCellDef="let registro">{{ registro.nivelAcceso }}</td>
+        </ng-container>
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let registro">
+            <div class="rol-lista__acciones">
+              <a
+                mat-icon-button
+                [routerLink]="['/roles/detalle', registro.idRol]"
+                [attr.aria-label]="'Ver detalle del registro ' + registro.idRol"
+              >
+                <mat-icon>visibility</mat-icon>
+              </a>
+              <a
+                mat-icon-button
+                [routerLink]="['/roles/editar', registro.idRol]"
+                [attr.aria-label]="'Editar registro ' + registro.idRol"
+              >
+                <mat-icon>edit</mat-icon>
+              </a>
+              <button
+                mat-icon-button
+                type="button"
+                (click)="eliminar(registro)"
+                [disabled]="eliminando"
+                [attr.aria-label]="'Eliminar registro ' + registro.idRol"
+                class="rol-lista__eliminar"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+  } @else if (!mensaje) {
+    <p>No hay registros de roles disponibles.</p>
+  }
+</section>

@@ -1,0 +1,22 @@
+<section class="adjuntos-reporte">
+  <h2>Adjuntos</h2>
+  @if (cargandoAdjuntos) {
+    <p role="status">Cargando adjuntos…</p>
+  } @else if (mensajeAdjuntos) {
+    <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensajeAdjuntos }}</p>
+  } @else {
+    @for (adjunto of adjuntos; track adjunto.idAdjunto) {
+      <article class="adjuntos-reporte__elemento">
+        <a [href]="adjunto.urlArchivo" target="_blank" rel="noopener noreferrer">
+          {{ adjunto.nombreArchivo }}
+        </a>
+        <p class="adjuntos-reporte__auxiliar">
+          Adjunto #{{ adjunto.idAdjunto }} · {{ adjunto.tipoArchivo || 'Tipo no especificado' }}
+        </p>
+        <p class="adjuntos-reporte__auxiliar">{{ adjunto.fechaSubida | date: 'dd/MM/yyyy HH:mm' }}</p>
+      </article>
+    } @empty {
+      <p>No hay adjuntos para este reporte.</p>
+    }
+  }
+</section>

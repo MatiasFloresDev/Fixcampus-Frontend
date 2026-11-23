@@ -1,0 +1,39 @@
+<section class="ubicacion-formulario">
+  <h1>Registrar ubicación</h1>
+  @if (mensaje) {
+    <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensaje }}</p>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="ubicacion-formulario__campos">
+    <mat-form-field appearance="outline">
+      <mat-label>Campus</mat-label>
+      <input matInput formControlName="campus" maxlength="100" required />
+      <mat-error>Ingrese campus sin dejar solo espacios (máximo 100 caracteres).</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Edificio</mat-label>
+      <input matInput formControlName="edificio" maxlength="100" required />
+      <mat-error>Ingrese edificio sin dejar solo espacios (máximo 100 caracteres).</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Piso (opcional)</mat-label>
+      <input matInput formControlName="piso" type="number" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Zona (opcional)</mat-label>
+      <input matInput formControlName="zona" maxlength="150" />
+      <mat-error>Máximo 150 caracteres.</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Tipo</mat-label>
+      <input matInput formControlName="tipo" maxlength="50" required />
+      <mat-error>Ingrese tipo sin dejar solo espacios (máximo 50 caracteres).</mat-error>
+    </mat-form-field>
+    <div class="ubicacion-formulario__acciones">
+      <button mat-flat-button type="submit" [disabled]="guardando || form.invalid">
+        {{ guardando ? 'Guardando…' : 'Guardar' }}
+      </button>
+      <a mat-stroked-button routerLink="/ubicaciones/listar">Volver</a>
+    </div>
+  </form>
+</section>

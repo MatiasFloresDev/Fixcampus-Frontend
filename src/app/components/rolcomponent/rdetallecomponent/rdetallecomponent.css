@@ -1,0 +1,37 @@
+.rol-detalle__acciones {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 24px 0;
+}
+
+.rol-detalle__eliminar {
+  color: var(--fc-error);
+}
+
+.rol-detalle__datos {
+  margin: 1em 0;
+  background: var(--fc-blanco);
+  border: 1px solid var(--fc-borde);
+  border-radius: 14px;
+  padding: 24px;
+}
+
+.rol-detalle__campo + .rol-detalle__campo {
+  margin-top: 20px;
+}
+
+.rol-detalle__etiqueta {
+  display: block;
+  font-weight: 400;
+  color: var(--fc-texto-suave);
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.rol-detalle__valor {
+  display: block;
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

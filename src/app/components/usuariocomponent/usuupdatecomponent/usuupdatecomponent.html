@@ -1,0 +1,77 @@
+<section class="usuario-formulario">
+  <h1>Editar usuario #{{ id }}</h1>
+  @if (mensaje) {
+    <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensaje }}</p>
+  }
+  @if (mensajeRoles) {
+    <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensajeRoles }}</p>
+  }
+  @if (cargando) {
+    <p role="status">Cargando usuario…</p>
+  }
+  @if (encontrado && !rolesCargados && !mensajeRoles) {
+    <p role="status">Cargando roles…</p>
+  }
+  @if (encontrado) {
+    <form [formGroup]="form" (ngSubmit)="guardar()" class="usuario-formulario__campos">
+      <mat-form-field appearance="outline">
+        <mat-label>Nombre</mat-label>
+        <input matInput formControlName="nombre" maxlength="100" required />
+        <mat-error>Complete este campo sin dejar solo espacios. Máximo 100 caracteres.</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Apellido</mat-label>
+        <input matInput formControlName="apellido" maxlength="100" required />
+        <mat-error>Complete este campo sin dejar solo espacios. Máximo 100 caracteres.</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Correo electrónico</mat-label>
+        <input matInput formControlName="correo" maxlength="150" type="email" required />
+        <mat-error>
+          @if (form.get('correo')?.hasError('required')) {
+            El correo electrónico es obligatorio.
+          } @else if (form.get('correo')?.hasError('email')) {
+            Ingrese un correo electrónico con formato válido.
+          } @else if (form.get('correo')?.hasError('maxlength')) {
+            Máximo 150 caracteres.
+          }
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Rol</mat-label>
+        <mat-select formControlName="rolId" required>
+          @for (rol of roles; track rol.idRol) {
+            <mat-option [value]="rol.idRol">{{ rol.nombre }}</mat-option>
+          }
+        </mat-select>
+        <mat-error>Seleccione un rol.</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Estado</mat-label>
+        <mat-select formControlName="estado" required>
+          <mat-option value="ACTIVO">Activo</mat-option>
+          <mat-option value="INACTIVO">Inactivo</mat-option>
+        </mat-select>
+        <mat-error>Seleccione un estado.</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Nueva contraseña (opcional)</mat-label>
+        <input matInput formControlName="contrasena" type="password" autocomplete="new-password" />
+        <mat-hint>Deje el campo vacío para conservar la contraseña actual.</mat-hint>
+        <mat-error>Si escribe una nueva contraseña, debe tener al menos 6 caracteres.</mat-error>
+      </mat-form-field>
+      <div class="usuario-formulario__acciones">
+        <button
+          mat-flat-button
+          type="submit"
+          [disabled]="guardando || form.invalid || !rolesCargados"
+        >
+          {{ guardando ? 'Guardando…' : 'Guardar' }}
+        </button>
+        <a mat-stroked-button routerLink="/usuarios/listar">Cancelar</a>
+      </div>
+    </form>
+  } @else if (!cargando) {
+    <a mat-stroked-button routerLink="/usuarios/listar">Volver</a>
+  }
+</section>
