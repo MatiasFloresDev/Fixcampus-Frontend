@@ -1,0 +1,24 @@
+.reporte-formulario {
+  max-width: 760px;
+  padding: 24px;
+  background: var(--fc-blanco);
+  border: 1px solid var(--fc-borde);
+  border-radius: 14px;
+}
+
+.reporte-formulario__campos {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.reporte-formulario__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.reporte-formulario__evidencia {
+  border-top: 1px solid var(--fc-borde);
+  padding-top: 12px;
+}

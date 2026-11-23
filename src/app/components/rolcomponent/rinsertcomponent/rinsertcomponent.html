@@ -1,0 +1,30 @@
+<section class="rol-formulario">
+  <h1>Registrar rol</h1>
+  @if (mensaje) {
+    <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensaje }}</p>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="rol-formulario__campos">
+    <mat-form-field appearance="outline">
+      <mat-label>Nombre</mat-label>
+      <input matInput formControlName="nombre" maxlength="50" required />
+      <mat-error>Ingrese nombre sin dejar solo espacios (máximo 50 caracteres).</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Nivel de acceso</mat-label>
+      <input matInput formControlName="nivelAcceso" maxlength="50" required />
+      <mat-error>Ingrese nivel de acceso sin dejar solo espacios (máximo 50 caracteres).</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Descripción (opcional)</mat-label>
+      <textarea matInput formControlName="descripcion" maxlength="255" rows="3"></textarea>
+      <mat-error>Máximo 255 caracteres.</mat-error>
+    </mat-form-field>
+    <div class="rol-formulario__acciones">
+      <button mat-flat-button type="submit" [disabled]="guardando || form.invalid">
+        {{ guardando ? 'Guardando…' : 'Guardar' }}
+      </button>
+      <a mat-stroked-button routerLink="/roles/listar">Volver</a>
+    </div>
+  </form>
+</section>

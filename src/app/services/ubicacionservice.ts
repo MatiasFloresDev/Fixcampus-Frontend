@@ -1,37 +1,28 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { Accesoservice } from './accesoservice';
-import { UbicacionDTO } from '../models/UbicacionDTO';
-import { UbicacionFormularioDTO } from '../models/UbicacionFormularioDTO';
+import { UbicacionDTOInsert } from '../models/UbicacionDTOInsert';
+import { UbicacionDTOList } from '../models/UbicacionDTOList';
 
 @Injectable({ providedIn: 'root' })
 export class Ubicacionservice {
-  private api = environment.base + '/api/locations';
-  constructor(
-    private http: HttpClient,
-    private acceso: Accesoservice,
-  ) {}
-  listar(): Observable<UbicacionDTO[]> {
-    return this.http.get<UbicacionDTO[]>(this.api, { headers: this.acceso.obtenerCabeceras() });
+  private apiURL = environment.base + '/api/locations';
+  constructor(private http: HttpClient) {}
+
+  listar(): Observable<UbicacionDTOList[]> {
+    return this.http.get<UbicacionDTOList[]>(this.apiURL);
   }
-  obtener(id: number): Observable<UbicacionDTO> {
-    return this.http.get<UbicacionDTO>(this.api + '/' + id, {
-      headers: this.acceso.obtenerCabeceras(),
-    });
+  buscarPorId(id: number): Observable<UbicacionDTOList> {
+    return this.http.get<UbicacionDTOList>(this.apiURL + '/' + id);
   }
-  registrar(datos: UbicacionFormularioDTO): Observable<UbicacionDTO> {
-    return this.http.post<UbicacionDTO>(this.api, datos, {
-      headers: this.acceso.obtenerCabeceras(),
-    });
+  registrar(dto: UbicacionDTOInsert): Observable<UbicacionDTOList> {
+    return this.http.post<UbicacionDTOList>(this.apiURL, dto);
   }
-  actualizar(id: number, datos: UbicacionFormularioDTO): Observable<UbicacionDTO> {
-    return this.http.put<UbicacionDTO>(this.api + '/' + id, datos, {
-      headers: this.acceso.obtenerCabeceras(),
-    });
+  actualizar(id: number, dto: UbicacionDTOInsert): Observable<UbicacionDTOList> {
+    return this.http.put<UbicacionDTOList>(this.apiURL + '/' + id, dto);
   }
   eliminar(id: number): Observable<void> {
-    return this.http.delete<void>(this.api + '/' + id, { headers: this.acceso.obtenerCabeceras() });
+    return this.http.delete<void>(this.apiURL + '/' + id);
   }
 }

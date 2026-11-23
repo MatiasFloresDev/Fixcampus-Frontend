@@ -1,47 +1,38 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/environment';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ComentarioDTO } from '../models/ComentarioDTO';
-import { Accesoservice } from './accesoservice';
+import { environment } from '../../environments/environment';
+import { ComentarioDTOUpdate } from '../models/ComentarioDTOUpdate';
+import { ComentarioDTOInsert } from '../models/ComentarioDTOInsert';
+import { ComentarioDTOList } from '../models/ComentarioDTOList';
 
 @Injectable({ providedIn: 'root' })
 export class Comentarioservice {
-  private base = environment.base + '/api/comments';
+  private apiURL = environment.base + '/api/comments';
 
-  constructor(
-    private http: HttpClient,
-    private acceso: Accesoservice,
-  ) {}
+  constructor(private http: HttpClient) {}
 
-  listar(reporteId: number): Observable<ComentarioDTO[]> {
-    return this.http.get<ComentarioDTO[]>(this.base + '/reporte/' + reporteId, {
-      headers: this.acceso.obtenerCabeceras(),
-    });
+  listarPorReporte(reporteId: number): Observable<ComentarioDTOList[]> {
+    return this.http.get<ComentarioDTOList[]>(this.apiURL, { params: { reporteId } });
   }
 
-  registrar(reporteId: number, textoComentario: string): Observable<ComentarioDTO> {
-    return this.http.post<ComentarioDTO>(
-      this.base + '/reporte/' + reporteId,
-      { textoComentario },
-      {
-        headers: this.acceso.obtenerCabeceras(),
-      },
-    );
+  registrar(dto: ComentarioDTOInsert): Observable<ComentarioDTOList> {
+    return this.http.post<ComentarioDTOList>(this.apiURL, dto);
   }
 
-  actualizar(comentario: ComentarioDTO, textoComentario: string): Observable<ComentarioDTO> {
-    const { reporteId, usuarioId } = comentario;
-    return this.http.put<ComentarioDTO>(
-      this.base + '/' + comentario.idComentario,
-      { reporteId, usuarioId, textoComentario },
-      { headers: this.acceso.obtenerCabeceras() },
-    );
+  listar(): Observable<ComentarioDTOList[]> {
+    return this.http.get<ComentarioDTOList[]>(this.apiURL);
+  }
+
+  buscarPorId(id: number): Observable<ComentarioDTOList> {
+    return this.http.get<ComentarioDTOList>(this.apiURL + '/' + id);
+  }
+
+  actualizar(id: number, dto: ComentarioDTOUpdate): Observable<ComentarioDTOList> {
+    return this.http.put<ComentarioDTOList>(this.apiURL + '/' + id, dto);
   }
 
   eliminar(id: number): Observable<void> {
-    return this.http.delete<void>(this.base + '/' + id, {
-      headers: this.acceso.obtenerCabeceras(),
-    });
+    return this.http.delete<void>(this.apiURL + '/' + id);
   }
 }

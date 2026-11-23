@@ -1,0 +1,27 @@
+.rol-lista__cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.rol-lista__tabla {
+  overflow-x: auto;
+  border: 1px solid var(--fc-borde);
+  border-radius: 14px;
+  background: var(--fc-blanco);
+}
+
+.rol-lista__tabla table {
+  width: 100%;
+}
+
+.rol-lista__acciones {
+  display: flex;
+}
+
+.rol-lista__eliminar {
+  color: var(--fc-error);
+}

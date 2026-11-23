@@ -1,90 +1,67 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { ReporteDTOInsert } from '../models/ReporteDTOInsert';
+import { ReporteDTOUpdate } from '../models/ReporteDTOUpdate';
+import { ReporteDTOList } from '../models/ReporteDTOList';
 import { IncidenciasPorMesDTO } from '../models/IncidenciasPorMesDTO';
-import { ReporteDTO } from '../models/ReporteDTO';
-import { ReporteFormularioDTO } from '../models/ReporteFormularioDTO';
-import { SugerenciaCategoriaDTO } from '../models/SugerenciaCategoriaDTO';
-import { Accesoservice } from './accesoservice';
+import { IncidenciasPorCategoriaDTO } from '../models/IncidenciasPorCategoriaDTO';
 
 @Injectable({ providedIn: 'root' })
 export class Reporteservice {
-  private api = environment.base + '/api';
+  private apiURL = environment.base + '/api/reports';
 
-  constructor(
-    private http: HttpClient,
-    private acceso: Accesoservice,
-  ) {}
+  constructor(private http: HttpClient) {}
 
-  listar(prioridad = ''): Observable<ReporteDTO[]> {
-    const ruta = prioridad
-      ? '/reports/prioridad/' + encodeURIComponent(prioridad)
-      : this.acceso.rol() === 'ADMIN'
-        ? '/reports'
-        : '/reports/mis-reportes';
-    return this.http.get<ReporteDTO[]>(this.api + ruta, {
-      headers: this.acceso.obtenerCabeceras(),
-    });
+  listar(): Observable<ReporteDTOList[]> {
+    return this.http.get<ReporteDTOList[]>(this.apiURL);
   }
 
-  obtener(id: number): Observable<ReporteDTO> {
-    return this.http.get<ReporteDTO>(this.api + '/reports/' + id, {
-      headers: this.acceso.obtenerCabeceras(),
-    });
+  buscarPorId(id: number): Observable<ReporteDTOList> {
+    return this.http.get<ReporteDTOList>(this.apiURL + '/' + id);
   }
 
-  buscarPorEstado(estado: string): Observable<ReporteDTO[]> {
-    return this.http.get<ReporteDTO[]>(this.api + '/reports', {
-      headers: this.acceso.obtenerCabeceras(),
-      params: { estado },
-    });
+  registrar(dto: ReporteDTOInsert): Observable<ReporteDTOList> {
+    return this.http.post<ReporteDTOList>(this.apiURL, dto);
   }
 
-  buscarPorCategoria(categoriaId: number): Observable<ReporteDTO[]> {
-    return this.http.get<ReporteDTO[]>(this.api + '/reports/por-categoria', {
-      headers: this.acceso.obtenerCabeceras(),
-      params: { categoriaId },
-    });
-  }
-
-  buscarPorCorreo(correo: string): Observable<ReporteDTO[]> {
-    return this.http.get<ReporteDTO[]>(this.api + '/reports/por-correo', {
-      headers: this.acceso.obtenerCabeceras(),
-      params: { correo },
-    });
-  }
-
-  registrar(datos: ReporteFormularioDTO): Observable<ReporteDTO> {
-    return this.http.post<ReporteDTO>(this.api + '/reports', datos, {
-      headers: this.acceso.obtenerCabeceras(),
-    });
-  }
-
-  actualizar(id: number, datos: ReporteFormularioDTO): Observable<ReporteDTO> {
-    return this.http.put<ReporteDTO>(this.api + '/reports/' + id, datos, {
-      headers: this.acceso.obtenerCabeceras(),
-    });
+  actualizar(id: number, dto: ReporteDTOUpdate): Observable<ReporteDTOList> {
+    return this.http.put<ReporteDTOList>(this.apiURL + '/' + id, dto);
   }
 
   eliminar(id: number): Observable<void> {
-    return this.http.delete<void>(this.api + '/reports/' + id, {
-      headers: this.acceso.obtenerCabeceras(),
-    });
+    return this.http.delete<void>(this.apiURL + '/' + id);
   }
-
-  sugerirCategoria(descripcion: string): Observable<SugerenciaCategoriaDTO> {
-    return this.http.post<SugerenciaCategoriaDTO>(
-      this.api + '/reports/sugerir-categoria',
-      { descripcion },
-      { headers: this.acceso.obtenerCabeceras() },
+  incidenciasPorCategoria(): Observable<IncidenciasPorCategoriaDTO[]> {
+    return this.http.get<IncidenciasPorCategoriaDTO[]>(
+      this.apiURL + '/estadisticas/por-categoria',
     );
   }
 
-  incidenciasPorMes(): Observable<IncidenciasPorMesDTO[]> {
+  incidenciasPorUsuarioYMes(): Observable<IncidenciasPorMesDTO[]> {
     return this.http.get<IncidenciasPorMesDTO[]>(
-      this.api + '/reports/estadisticas/por-usuario-mes',
-      { headers: this.acceso.obtenerCabeceras() },
+      this.apiURL + '/estadisticas/por-usuario-mes',
     );
+  }
+
+  buscarPorEstado(estado: string): Observable<ReporteDTOList[]> {
+    return this.http.get<ReporteDTOList[]>(this.apiURL, { params: { estado } });
+  }
+
+  buscarPorCategoria(categoria: string): Observable<ReporteDTOList[]> {
+    return this.http.get<ReporteDTOList[]>(this.apiURL, { params: { categoria } });
+  }
+
+  buscarPorPrioridad(prioridad: string): Observable<ReporteDTOList[]> {
+    return this.http.get<ReporteDTOList[]>(this.apiURL + '/prioridad/' + prioridad);
+  }
+
+  buscarPorCorreo(correo: string): Observable<ReporteDTOList[]> {
+    return this.http.get<ReporteDTOList[]>(this.apiURL, { params: { correo } });
+  }
+
+  misReportes(): Observable<ReporteDTOList[]> {
+    return this.http.get<ReporteDTOList[]>(this.apiURL + '/mis-reportes');
   }
 }

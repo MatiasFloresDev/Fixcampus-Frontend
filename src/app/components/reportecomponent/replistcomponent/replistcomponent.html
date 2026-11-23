@@ -1,0 +1,99 @@
+<section class="reporte-lista">
+  <div class="reporte-lista__cabecera">
+    <h1>Listado de reportes</h1>
+    <a mat-flat-button routerLink="/reportes/insertar">Registrar reporte</a>
+  </div>
+  @if (mensaje) {
+    <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensaje }}</p>
+  }
+  @if (mensajeCategorias) {
+    <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensajeCategorias }}</p>
+  }
+  @if (cargando) {
+    <p role="status">Cargando reportes…</p>
+  } @else if (dataSource.length > 0) {
+    <div class="reporte-lista__tabla">
+      <table mat-table [dataSource]="dataSource">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let registro">{{ registro.idReporte }}</td>
+        </ng-container>
+        <ng-container matColumnDef="titulo">
+          <th mat-header-cell *matHeaderCellDef>Título</th>
+          <td mat-cell *matCellDef="let registro">{{ registro.titulo }}</td>
+        </ng-container>
+        <ng-container matColumnDef="categoria">
+          <th mat-header-cell *matHeaderCellDef>Categoría</th>
+          <td mat-cell *matCellDef="let registro">{{ nombreCategoria(registro.categoriaId) }}</td>
+        </ng-container>
+        <ng-container matColumnDef="prioridad">
+          <th mat-header-cell *matHeaderCellDef>Prioridad</th>
+          <td mat-cell *matCellDef="let registro">
+            <span
+              class="reporte-lista__etiqueta"
+              [class.reporte-lista__etiqueta--alta]="registro.prioridad === 'ALTA'"
+              [class.reporte-lista__etiqueta--media]="registro.prioridad === 'MEDIA'"
+              [class.reporte-lista__etiqueta--baja]="registro.prioridad === 'BAJA'"
+            >
+              {{ registro.prioridad || 'Sin asignar' }}
+            </span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let registro">
+            <span
+              class="reporte-lista__etiqueta"
+              [class.reporte-lista__etiqueta--pendiente]="registro.estado === 'PENDIENTE'"
+              [class.reporte-lista__etiqueta--resuelto]="registro.estado === 'RESUELTO'"
+            >
+              {{ registro.estado }}
+            </span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let registro">
+            <div class="reporte-lista__acciones">
+              <a
+                mat-icon-button
+                [routerLink]="['/reportes/detalle', registro.idReporte]"
+                [attr.aria-label]="'Ver reporte ' + registro.idReporte"
+              >
+                <mat-icon>visibility</mat-icon>
+              </a>
+              <a
+                mat-icon-button
+                [routerLink]="['/reportes/editar', registro.idReporte]"
+                [attr.aria-label]="'Editar reporte ' + registro.idReporte"
+              >
+                <mat-icon>edit</mat-icon>
+              </a>
+              @if (esAdmin) {<button
+                mat-icon-button
+                type="button"
+                class="reporte-lista__eliminar"
+                [disabled]="eliminando"
+                (click)="eliminar(registro)"
+                [attr.aria-label]="'Eliminar reporte ' + registro.idReporte"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>}
+              <a
+                mat-icon-button
+                [routerLink]="['/reportes/detalle', registro.idReporte]"
+                [attr.aria-label]="'Ver comentarios del reporte ' + registro.idReporte"
+              >
+                <mat-icon>chat_bubble_outline</mat-icon>
+              </a>
+            </div>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+  } @else if (!mensaje) {
+    <p>No hay reportes registrados.</p>
+  }
+</section>

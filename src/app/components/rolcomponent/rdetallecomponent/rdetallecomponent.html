@@ -1,0 +1,44 @@
+<section class="rol-detalle">
+  <h1>Detalle de rol</h1>
+  <div class="rol-detalle__acciones">
+    @if (registro) {
+      <a mat-flat-button [routerLink]="['/roles/editar', registro.idRol]">Editar</a>
+      <button
+        mat-stroked-button
+        type="button"
+        class="rol-detalle__eliminar"
+        (click)="eliminar()"
+        [disabled]="eliminando"
+      >
+        {{ eliminando ? 'Eliminando…' : 'Eliminar' }}
+      </button>
+    }
+    <a mat-stroked-button routerLink="/roles/listar">Volver</a>
+  </div>
+  @if (mensaje) {
+    <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensaje }}</p>
+  }
+  @if (cargando) {
+    <p role="status">Cargando registro…</p>
+  }
+  @if (registro) {
+    <div class="rol-detalle__datos">
+      <div class="rol-detalle__campo">
+        <strong class="rol-detalle__etiqueta">ID</strong>
+        <span class="rol-detalle__valor">{{ registro.idRol }}</span>
+      </div>
+      <div class="rol-detalle__campo">
+        <strong class="rol-detalle__etiqueta">Nombre</strong>
+        <span class="rol-detalle__valor">{{ registro.nombre }}</span>
+      </div>
+      <div class="rol-detalle__campo">
+        <strong class="rol-detalle__etiqueta">Nivel de acceso</strong>
+        <span class="rol-detalle__valor">{{ registro.nivelAcceso }}</span>
+      </div>
+      <div class="rol-detalle__campo">
+        <strong class="rol-detalle__etiqueta">Descripción</strong>
+        <span class="rol-detalle__valor">{{ registro.descripcion || 'Sin especificar' }}</span>
+      </div>
+    </div>
+  }
+</section>

@@ -1,24 +1,10 @@
 @use '@angular/material' as mat;
 
 html {
-  @include mat.theme(
-    (
-      color: (
-        primary: mat.$cyan-palette,
-        tertiary: mat.$green-palette,
-      ),
-      typography: 'Open Sans',
-      density: 0,
-    )
-  );
-  @include mat.theme-overrides(
-    (
-      primary: #0d6a62,
-      on-primary: white,
-      error: #9d2b21,
-      on-surface: #212529,
-      on-surface-variant: #5f6b70,
-    )
-  );
   color-scheme: light;
+  @include mat.theme((
+    color: (primary: mat.$green-palette, tertiary: mat.$blue-palette),
+    typography: Roboto,
+    density: 0,
+  ));
 }

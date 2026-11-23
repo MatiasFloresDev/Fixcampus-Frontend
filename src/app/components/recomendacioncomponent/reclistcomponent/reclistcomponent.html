@@ -1,0 +1,77 @@
+<section class="recomendacion-lista">
+  <div class="recomendacion-lista__cabecera">
+    <h1>Listado de recomendaciones</h1>
+    <a mat-flat-button routerLink="/recomendaciones/insertar">Registrar recomendación</a>
+  </div>
+  @if (mensaje) {
+    <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensaje }}</p>
+  }
+  @if (mensajeReportes) {
+    <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensajeReportes }}</p>
+  }
+  @if (cargando) {
+    <p role="status">Cargando registros…</p>
+  } @else if (dataSource.length > 0) {
+    <div class="recomendacion-lista__tabla">
+      <table mat-table [dataSource]="dataSource">
+        <ng-container matColumnDef="idRecomendacion">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let registro">{{ registro.idRecomendacion }}</td>
+        </ng-container>
+        <ng-container matColumnDef="reporteId">
+          <th mat-header-cell *matHeaderCellDef>Reporte</th>
+          <td mat-cell *matCellDef="let registro">{{ nombreReporte(registro.reporteId) }}</td>
+        </ng-container>
+        <ng-container matColumnDef="tituloSugerido">
+          <th mat-header-cell *matHeaderCellDef>Título sugerido</th>
+          <td mat-cell *matCellDef="let registro">{{ registro.tituloSugerido }}</td>
+        </ng-container>
+        <ng-container matColumnDef="prioridadSugerida">
+          <th mat-header-cell *matHeaderCellDef>Prioridad</th>
+          <td mat-cell *matCellDef="let registro">{{ registro.prioridadSugerida }}</td>
+        </ng-container>
+        <ng-container matColumnDef="fechaRecomendacion">
+          <th mat-header-cell *matHeaderCellDef>Fecha</th>
+          <td mat-cell *matCellDef="let registro">
+            {{ registro.fechaRecomendacion | date: 'dd/MM/yyyy HH:mm' }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let registro">
+            <div class="recomendacion-lista__acciones">
+              <a
+                mat-icon-button
+                [routerLink]="['/recomendaciones/detalle', registro.idRecomendacion]"
+                [attr.aria-label]="'Ver detalle del registro ' + registro.idRecomendacion"
+              >
+                <mat-icon>visibility</mat-icon>
+              </a>
+              <a
+                mat-icon-button
+                [routerLink]="['/recomendaciones/editar', registro.idRecomendacion]"
+                [attr.aria-label]="'Editar registro ' + registro.idRecomendacion"
+              >
+                <mat-icon>edit</mat-icon>
+              </a>
+              <button
+                mat-icon-button
+                type="button"
+                class="recomendacion-lista__eliminar"
+                (click)="eliminar(registro)"
+                [disabled]="eliminando"
+                [attr.aria-label]="'Eliminar registro ' + registro.idRecomendacion"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+  } @else if (!mensaje) {
+    <p>No hay registros de recomendaciones disponibles.</p>
+  }
+</section>

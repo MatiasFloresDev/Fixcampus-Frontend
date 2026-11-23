@@ -1,4 +1,4 @@
 export class UsuariosPorRolDTO {
-  nombreRol: string = '';
-  cantidadUsuarios: number = 0;
+  rol: string = '';
+  cantidad: number = 0;
 }

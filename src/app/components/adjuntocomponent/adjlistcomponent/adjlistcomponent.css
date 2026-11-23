@@ -1,0 +1,27 @@
+.adjunto-lista__cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.adjunto-lista__tabla {
+  overflow-x: auto;
+  border: 1px solid var(--fc-borde);
+  border-radius: 14px;
+  background: var(--fc-blanco);
+}
+
+.adjunto-lista__tabla table {
+  width: 100%;
+}
+
+.adjunto-lista__acciones {
+  display: flex;
+}
+
+.adjunto-lista__eliminar {
+  color: var(--fc-error);
+}
