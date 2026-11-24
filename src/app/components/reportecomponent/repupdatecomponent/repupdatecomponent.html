@@ -49,7 +49,7 @@
         <input matInput formControlName="detalleUbicacion" maxlength="255" placeholder="Aula 305" />
         <mat-error>Máximo 255 caracteres.</mat-error>
       </mat-form-field>
-      @if (esAdmin) {<mat-form-field appearance="outline">
+      <mat-form-field appearance="outline">
         <mat-label>Técnico asignado (opcional)</mat-label>
         <mat-select formControlName="tecnicoAsignadoId" canSelectNullableOptions>
           <mat-option [value]="null">Sin asignar</mat-option>
@@ -64,7 +64,7 @@
         <mat-label>Prioridad (opcional)</mat-label>
         <mat-select formControlName="prioridad" canSelectNullableOptions>
           <mat-option [value]="null">Sin asignar</mat-option>
-          <mat-option value="MUY_ALTA">Muy alta</mat-option><mat-option value="MUY_BAJA">Muy baja</mat-option><mat-option value="ALTA">Alta</mat-option>
+          <mat-option value="ALTA">Alta</mat-option>
           <mat-option value="MEDIA">Media</mat-option>
           <mat-option value="BAJA">Baja</mat-option>
         </mat-select>
@@ -72,12 +72,12 @@
       <mat-form-field appearance="outline">
         <mat-label>Estado</mat-label>
         <mat-select formControlName="estado" required>
-          <mat-option value="PENDIENTE">PENDIENTE</mat-option><mat-option value="ABIERTO">ABIERTO</mat-option><mat-option value="EN_REVISION">EN REVISION</mat-option><mat-option value="ASIGNADO">ASIGNADO</mat-option><mat-option value="EN_ATENCION">EN ATENCION</mat-option><mat-option value="CERRADO">CERRADO</mat-option>
+          <mat-option value="PENDIENTE">Pendiente</mat-option>
           <mat-option value="RESUELTO">Resuelto</mat-option>
         </mat-select>
         <mat-error>Seleccione un estado.</mat-error>
       </mat-form-field>
-      }<div class="reporte-formulario__acciones">
+      <div class="reporte-formulario__acciones">
         <button
           mat-flat-button
           type="submit"

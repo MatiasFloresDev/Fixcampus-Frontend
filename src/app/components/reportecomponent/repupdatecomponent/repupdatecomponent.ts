@@ -1,4 +1,3 @@
-import { Loginservice } from '../../../services/loginservice';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -15,6 +14,8 @@ import { ReporteDTOUpdate } from '../../../models/ReporteDTOUpdate';
 import { Usuarioservice } from '../../../services/usuarioservice';
 import { Rolservice } from '../../../services/rolservice';
 import { UsuarioDTOList } from '../../../models/UsuarioDTOList';
+import { Notificacionservice } from '../../../services/notificacionservice';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-repupdatecomponent',
@@ -45,20 +46,18 @@ export class Repupdatecomponent implements OnInit {
   tecnicos: UsuarioDTOList[] = [];
   tecnicosCargados = false;
 
-  esAdmin = false;
   constructor(
     private fb: FormBuilder,
-    private login: Loginservice,
     private service: Reporteservice,
     private categoriaService: Categoriaservice,
     private ubicacionService: Ubicacionservice,
     private usuarioService: Usuarioservice,
     private rolService: Rolservice,
+    private notificacionService: Notificacionservice,
     private route: ActivatedRoute,
     private router: Router,
     private cdr: ChangeDetectorRef,
   ) {
-    this.esAdmin = this.login.hasAnyRole(['ADMIN']);
     this.form = this.fb.group({
       categoriaId: [null as number | null, Validators.required],
       ubicacionId: [null as number | null, Validators.required],
@@ -123,10 +122,9 @@ export class Repupdatecomponent implements OnInit {
   }
 
   cargarTecnicos(): void {
-    if (!this.esAdmin) { this.tecnicosCargados = true; return; }
     this.rolService.listar().subscribe({
       next: (roles) => {
-        const rolesTecnicos = roles.filter((rol) => rol.nombre.toUpperCase().replace('ROLE_', '') === 'TECNICO');
+        const rolesTecnicos = roles.filter((rol) => rol.nombre.toUpperCase() === 'ROLE_TECNICO');
         this.usuarioService.listar().subscribe({
           next: (usuarios) => {
             this.tecnicos = usuarios.filter((usuario) =>
@@ -169,7 +167,7 @@ export class Repupdatecomponent implements OnInit {
       return;
     }
     if (
-      this.esAdmin && this.form.value.tecnicoAsignadoId !== null &&
+      this.form.value.tecnicoAsignadoId !== null &&
       !this.tecnicos.some((tecnico) => tecnico.idUsuario === this.form.value.tecnicoAsignadoId)
     ) {
       this.mensaje = 'Seleccione un técnico disponible o deje el reporte sin asignar.';
@@ -189,6 +187,17 @@ export class Repupdatecomponent implements OnInit {
     this.mensaje = '';
     this.service.actualizar(this.id, dto).subscribe({
       next: () => {
+        if (dto.estado === 'RESUELTO') {
+          this.notificacionService
+            .notificar({
+              destinatario: environment.correoAdminNotificaciones,
+              asunto: `Reporte #${this.id} marcado como RESUELTO`,
+              tituloReporte: dto.titulo,
+              estado: dto.estado,
+              detalle: dto.descripcion,
+            })
+            .subscribe();
+        }
         this.router.navigate(['/reportes/listar']);
       },
       error: () => {

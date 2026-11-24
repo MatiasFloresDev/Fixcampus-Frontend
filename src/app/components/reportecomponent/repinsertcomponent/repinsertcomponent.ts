@@ -14,6 +14,8 @@ import { UbicacionDTOList } from '../../../models/UbicacionDTOList';
 import { ReporteDTOInsert } from '../../../models/ReporteDTOInsert';
 import { Adjuntoservice } from '../../../services/adjuntoservice';
 import { AdjuntoDTOInsert } from '../../../models/AdjuntoDTOInsert';
+import { Notificacionservice } from '../../../services/notificacionservice';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-repinsertcomponent',
@@ -49,6 +51,7 @@ export class Repinsertcomponent implements OnInit {
     private categoriaService: Categoriaservice,
     private ubicacionService: Ubicacionservice,
     private adjuntoService: Adjuntoservice,
+    private notificacionService: Notificacionservice,
     private router: Router,
     private cdr: ChangeDetectorRef,
   ) {
@@ -127,6 +130,17 @@ export class Repinsertcomponent implements OnInit {
     this.service.registrar(dto).subscribe({
       next: (reporte) => {
         this.reporteCreadoId = reporte.idReporte;
+
+        this.notificacionService
+          .notificar({
+            destinatario: environment.correoAdminNotificaciones,
+            asunto: `Nuevo reporte #${reporte.idReporte}: ${reporte.titulo}`,
+            tituloReporte: reporte.titulo,
+            estado: reporte.estado,
+            detalle: reporte.descripcion,
+          })
+          .subscribe();
+
         if (!this.incluirAdjunto) {
           this.router.navigate(['/reportes/listar']);
           return;
