@@ -69,7 +69,7 @@
               >
                 <mat-icon>edit</mat-icon>
               </a>
-              @if (esAdmin) {<button
+              <button
                 mat-icon-button
                 type="button"
                 class="reporte-lista__eliminar"
@@ -78,7 +78,7 @@
                 [attr.aria-label]="'Eliminar reporte ' + registro.idReporte"
               >
                 <mat-icon>delete</mat-icon>
-              </button>}
+              </button>
               <a
                 mat-icon-button
                 [routerLink]="['/reportes/detalle', registro.idReporte]"

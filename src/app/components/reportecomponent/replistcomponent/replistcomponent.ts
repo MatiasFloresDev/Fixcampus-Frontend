@@ -1,4 +1,3 @@
-import { Loginservice } from '../../../services/loginservice';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
@@ -25,13 +24,11 @@ export class Replistcomponent implements OnInit {
   mensaje = '';
   mensajeCategorias = '';
 
-  esAdmin = false;
   constructor(
-    private login: Loginservice,
     private service: Reporteservice,
     private categoriaService: Categoriaservice,
     private cdr: ChangeDetectorRef,
-  ) { this.esAdmin = login.hasAnyRole(['ADMIN']); }
+  ) {}
 
   ngOnInit(): void {
     this.listar();
