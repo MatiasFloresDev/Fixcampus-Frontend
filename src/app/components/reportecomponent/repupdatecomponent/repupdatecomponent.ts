@@ -129,12 +129,12 @@ export class Repupdatecomponent implements OnInit {
     this.rolService.listar().subscribe({
       next: (roles) => {
         const rolesTecnicos = roles.filter(
-          (rol) => rol.nombre.toUpperCase().replace('ROLE_', '') === 'TECNICO',
+          (rol) => rol.nombre.trim().toUpperCase().replace('ROLE_', '') === 'TECNICO',
         );
         this.usuarioService.listar().subscribe({
           next: (usuarios) => {
             this.tecnicos = usuarios.filter((usuario) =>
-              rolesTecnicos.some((rol) => rol.idRol === usuario.rolId),
+              usuario.estado === 'ACTIVO' && rolesTecnicos.some((rol) => rol.idRol === usuario.rolId),
             );
             this.tecnicosCargados = true;
             this.cdr.markForCheck();
