@@ -1,0 +1,7 @@
+.mapa {
+  width: 100%;
+  height: clamp(240px, 55vh, 480px);
+  border: 1px solid #d6dbde;
+  border-radius: 12px;
+  margin: 12px 0;
+}

@@ -3,15 +3,17 @@
   <div class="reporte-detalle__acciones">
     @if (registro) {
       <a mat-flat-button [routerLink]="['/reportes/editar', registro.idReporte]">Editar</a>
-      @if (esAdmin) {<button
-        mat-stroked-button
-        type="button"
-        class="reporte-detalle__eliminar"
-        (click)="eliminar()"
-        [disabled]="eliminando || comentarioEnProceso"
-      >
-        {{ eliminando ? 'Eliminando…' : 'Eliminar' }}
-      </button>}
+      @if (esAdmin) {
+        <button
+          mat-stroked-button
+          type="button"
+          class="reporte-detalle__eliminar"
+          (click)="eliminar()"
+          [disabled]="eliminando || comentarioEnProceso"
+        >
+          {{ eliminando ? 'Eliminando…' : 'Eliminar' }}
+        </button>
+      }
     }
     <a mat-stroked-button routerLink="/reportes/listar">Volver</a>
   </div>
@@ -40,7 +42,9 @@
       </div>
       <div class="reporte-detalle__campo">
         <strong class="reporte-detalle__etiqueta">Categoría</strong>
-        <span>{{ categoria?.nombre || 'Categoría no disponible' }} (#{{ registro.categoriaId }})</span>
+        <span
+          >{{ categoria?.nombre || 'Categoría no disponible' }} (#{{ registro.categoriaId }})</span
+        >
       </div>
       <div class="reporte-detalle__campo">
         <strong class="reporte-detalle__etiqueta">Ubicación (#{{ registro.ubicacionId }})</strong>
@@ -87,24 +91,37 @@
       <div class="reporte-detalle__campo">
         <strong class="reporte-detalle__etiqueta">Fecha de asignación</strong>
         <span>
-          {{ registro.fechaAsignacion ? (registro.fechaAsignacion | date: 'dd/MM/yyyy HH:mm') : 'Sin asignar' }}
+          {{
+            registro.fechaAsignacion
+              ? (registro.fechaAsignacion | date: 'dd/MM/yyyy HH:mm')
+              : 'Sin asignar'
+          }}
         </span>
       </div>
       <div class="reporte-detalle__campo">
         <strong class="reporte-detalle__etiqueta">Fecha de resolución</strong>
         <span>
-          {{ registro.fechaResolucion ? (registro.fechaResolucion | date: 'dd/MM/yyyy HH:mm') : 'Sin resolver' }}
+          {{
+            registro.fechaResolucion
+              ? (registro.fechaResolucion | date: 'dd/MM/yyyy HH:mm')
+              : 'Sin resolver'
+          }}
         </span>
       </div>
     </div>
 
-    @if (esAdmin) {<app-comentarios-reporte
-      [reporteId]="registro.idReporte"
-      [usuarios]="usuarios"
-      [eliminando]="eliminando"
-      (guardandoChange)="comentarioEnProceso = $event"
-    ></app-comentarios-reporte>}
+    @if (esAdmin) {
+      <app-comentarios-reporte
+        [reporteId]="registro.idReporte"
+        [usuarios]="usuarios"
+        [eliminando]="eliminando"
+        (guardandoChange)="comentarioEnProceso = $event"
+      ></app-comentarios-reporte>
+    }
 
+    <a mat-stroked-button [routerLink]="['/reportes/mapa', registro.idReporte]"
+      >Ver ubicación en el mapa</a
+    >
     <app-adjuntos-reporte [reporteId]="registro.idReporte"></app-adjuntos-reporte>
   }
 </section>

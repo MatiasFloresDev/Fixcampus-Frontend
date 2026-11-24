@@ -22,6 +22,7 @@ export class Replistcomponent implements OnInit {
   categorias: CategoriaDTOList[] = [];
   cargando = true;
   eliminando = false;
+  aviso = window.history.state?.aviso || '';
   mensaje = '';
   mensajeCategorias = '';
 
@@ -31,7 +32,9 @@ export class Replistcomponent implements OnInit {
     private service: Reporteservice,
     private categoriaService: Categoriaservice,
     private cdr: ChangeDetectorRef,
-  ) { this.esAdmin = login.hasAnyRole(['ADMIN']); }
+  ) {
+    this.esAdmin = login.hasAnyRole(['ADMIN']);
+  }
 
   ngOnInit(): void {
     this.listar();

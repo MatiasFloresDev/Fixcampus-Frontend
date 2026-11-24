@@ -1,3 +1,5 @@
+import { Mapacomponent } from './components/mapacomponent/mapacomponent';
+import { Notificacionescomponent } from './components/notificacionescomponent/notificacionescomponent';
 import { Routes } from '@angular/router';
 import { Logincomponent } from './components/logincomponent/logincomponent';
 import { Homecomponent } from './components/homecomponent/homecomponent';
@@ -56,6 +58,13 @@ import { authGuard } from './core/guards/auth-guard';
 import { roleGuard } from './core/guards/role-guard';
 
 export const routes: Routes = [
+  { path: 'reportes/mapa/:id', component: Mapacomponent, canActivate: [authGuard] },
+  {
+    path: 'notificaciones',
+    component: Notificacionescomponent,
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ADMIN'] },
+  },
   { path: 'login', component: Logincomponent },
   { path: 'crear-cuenta', component: Usuinsertcomponent, data: { publico: true } },
   { path: '', component: Homecomponent, pathMatch: 'full' },

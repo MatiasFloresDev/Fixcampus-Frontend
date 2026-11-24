@@ -29,6 +29,29 @@
       <input matInput formControlName="tipo" maxlength="50" required />
       <mat-error>Ingrese tipo sin dejar solo espacios (máximo 50 caracteres).</mat-error>
     </mat-form-field>
+    <p>Coordenadas del lugar (opcionales). Completa ambas para mostrar el reporte en el mapa.</p>
+    <mat-form-field appearance="outline"
+      ><mat-label>Latitud</mat-label
+      ><input
+        matInput
+        type="number"
+        formControlName="latitud"
+        min="-90"
+        max="90"
+        step="any"
+      /><mat-error>La latitud debe estar entre -90 y 90.</mat-error></mat-form-field
+    >
+    <mat-form-field appearance="outline"
+      ><mat-label>Longitud</mat-label
+      ><input
+        matInput
+        type="number"
+        formControlName="longitud"
+        min="-180"
+        max="180"
+        step="any"
+      /><mat-error>La longitud debe estar entre -180 y 180.</mat-error></mat-form-field
+    >
     <div class="ubicacion-formulario__acciones">
       <button mat-flat-button type="submit" [disabled]="guardando || form.invalid">
         {{ guardando ? 'Guardando…' : 'Guardar' }}

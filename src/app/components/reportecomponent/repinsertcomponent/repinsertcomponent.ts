@@ -1,3 +1,4 @@
+import { Sugerenciacategoriacomponent } from '../../sugerenciacategoriacomponent/sugerenciacategoriacomponent';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -19,6 +20,7 @@ import { AdjuntoDTOInsert } from '../../../models/AdjuntoDTOInsert';
   selector: 'app-repinsertcomponent',
   standalone: true,
   imports: [
+    Sugerenciacategoriacomponent,
     ReactiveFormsModule,
     MatInputModule,
     MatFormFieldModule,
@@ -31,6 +33,7 @@ import { AdjuntoDTOInsert } from '../../../models/AdjuntoDTOInsert';
   styleUrl: './repinsertcomponent.css',
 })
 export class Repinsertcomponent implements OnInit {
+  avisoNotificacion = '';
   form: FormGroup;
   categorias: CategoriaDTOList[] = [];
   ubicaciones: UbicacionDTOList[] = [];
@@ -60,7 +63,10 @@ export class Repinsertcomponent implements OnInit {
       detalleUbicacion: ['', Validators.maxLength(255)],
     });
     this.formAdjunto = this.fb.group({
-      nombreArchivo: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(255)]],
+      nombreArchivo: [
+        '',
+        [Validators.required, Validators.pattern(/\S/), Validators.maxLength(255)],
+      ],
       urlArchivo: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(500)]],
       tipoArchivo: ['', Validators.maxLength(100)],
     });
@@ -127,8 +133,11 @@ export class Repinsertcomponent implements OnInit {
     this.service.registrar(dto).subscribe({
       next: (reporte) => {
         this.reporteCreadoId = reporte.idReporte;
+        this.avisoNotificacion = reporte.notificacionMensaje || '';
         if (!this.incluirAdjunto) {
-          this.router.navigate(['/reportes/listar']);
+          this.router.navigate(['/reportes/listar'], {
+            state: { aviso: 'Reporte guardado. ' + this.avisoNotificacion },
+          });
           return;
         }
         const evidencia: AdjuntoDTOInsert = {
@@ -139,11 +148,14 @@ export class Repinsertcomponent implements OnInit {
         };
         this.adjuntoService.registrar(evidencia).subscribe({
           next: () => {
-            this.router.navigate(['/reportes/listar']);
+            this.router.navigate(['/reportes/listar'], {
+              state: { aviso: 'Reporte guardado. ' + this.avisoNotificacion },
+            });
           },
           error: () => {
             this.guardando = false;
-            this.mensaje = 'El reporte se creó correctamente, pero la evidencia no pudo registrarse.';
+            this.mensaje =
+              'El reporte se creó correctamente, pero la evidencia no pudo registrarse.';
             this.cdr.markForCheck();
           },
         });

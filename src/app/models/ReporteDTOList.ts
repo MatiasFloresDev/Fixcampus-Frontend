@@ -1,4 +1,5 @@
 export class ReporteDTOList {
+  notificacionMensaje: string | null = null;
   usuarioReportanteNombre: string = '';
   tecnicoAsignadoNombre: string | null = null;
   idReporte: number = 0;

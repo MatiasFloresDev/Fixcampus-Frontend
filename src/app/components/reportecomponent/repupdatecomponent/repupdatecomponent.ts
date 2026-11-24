@@ -87,9 +87,8 @@ export class Repupdatecomponent implements OnInit {
       },
       error: (error) => {
         this.cargando = false;
-        this.mensaje = error.status === 404
-          ? 'No se encontró el reporte.'
-          : 'No se pudo cargar el reporte.';
+        this.mensaje =
+          error.status === 404 ? 'No se encontró el reporte.' : 'No se pudo cargar el reporte.';
         this.cdr.markForCheck();
       },
     });
@@ -123,10 +122,15 @@ export class Repupdatecomponent implements OnInit {
   }
 
   cargarTecnicos(): void {
-    if (!this.esAdmin) { this.tecnicosCargados = true; return; }
+    if (!this.esAdmin) {
+      this.tecnicosCargados = true;
+      return;
+    }
     this.rolService.listar().subscribe({
       next: (roles) => {
-        const rolesTecnicos = roles.filter((rol) => rol.nombre.toUpperCase().replace('ROLE_', '') === 'TECNICO');
+        const rolesTecnicos = roles.filter(
+          (rol) => rol.nombre.toUpperCase().replace('ROLE_', '') === 'TECNICO',
+        );
         this.usuarioService.listar().subscribe({
           next: (usuarios) => {
             this.tecnicos = usuarios.filter((usuario) =>
@@ -169,7 +173,8 @@ export class Repupdatecomponent implements OnInit {
       return;
     }
     if (
-      this.esAdmin && this.form.value.tecnicoAsignadoId !== null &&
+      this.esAdmin &&
+      this.form.value.tecnicoAsignadoId !== null &&
       !this.tecnicos.some((tecnico) => tecnico.idUsuario === this.form.value.tecnicoAsignadoId)
     ) {
       this.mensaje = 'Seleccione un técnico disponible o deje el reporte sin asignar.';
@@ -188,8 +193,10 @@ export class Repupdatecomponent implements OnInit {
     this.guardando = true;
     this.mensaje = '';
     this.service.actualizar(this.id, dto).subscribe({
-      next: () => {
-        this.router.navigate(['/reportes/listar']);
+      next: (reporte) => {
+        this.router.navigate(['/reportes/listar'], {
+          state: { aviso: 'Reporte actualizado. ' + (reporte.notificacionMensaje || '') },
+        });
       },
       error: () => {
         this.guardando = false;

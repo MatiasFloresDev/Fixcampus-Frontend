@@ -26,6 +26,8 @@ export class Uinsertcomponent {
     private cdr: ChangeDetectorRef,
   ) {
     this.form = this.fb.group({
+      latitud: [null, [Validators.min(-90), Validators.max(90)]],
+      longitud: [null, [Validators.min(-180), Validators.max(180)]],
       campus: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(100)]],
       edificio: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(100)]],
       piso: [null as number | null],
@@ -40,7 +42,13 @@ export class Uinsertcomponent {
       this.mensaje = 'Revise los campos del formulario.';
       return;
     }
+    if ((this.form.value.latitud === null) !== (this.form.value.longitud === null)) {
+      this.mensaje = 'Completa latitud y longitud juntas o deja ambas vacías.';
+      return;
+    }
     const dto: UbicacionDTOInsert = {
+      latitud: this.form.value.latitud ?? null,
+      longitud: this.form.value.longitud ?? null,
       campus: this.form.value.campus.trim(),
       edificio: this.form.value.edificio.trim(),
       piso: this.form.value.piso ?? null,

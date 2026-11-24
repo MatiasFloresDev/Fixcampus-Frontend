@@ -1,4 +1,6 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Iaservice } from '../../../services/iaservice';
+import { SugerenciaRecomendacionDTO } from '../../../models/SugerenciaRecomendacionDTO';
+import { ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MatInputModule } from '@angular/material/input';
@@ -24,7 +26,11 @@ import { RecomendacionDTOInsert } from '../../../models/RecomendacionDTOInsert';
   templateUrl: './recinsertcomponent.html',
   styleUrl: './recinsertcomponent.css',
 })
-export class Recinsertcomponent implements OnInit {
+export class Recinsertcomponent implements OnInit, OnDestroy {
+  generandoIA = false;
+  sugerencia: SugerenciaRecomendacionDTO | null = null;
+  mensajeIA = '';
+  consulta = 0;
   form: FormGroup;
   guardando = false;
   mensaje = '';
@@ -33,6 +39,7 @@ export class Recinsertcomponent implements OnInit {
   mensajeReportes = '';
 
   constructor(
+    private ia: Iaservice,
     private fb: FormBuilder,
     private service: Recomendacionservice,
     private reporteService: Reporteservice,
@@ -41,14 +48,26 @@ export class Recinsertcomponent implements OnInit {
   ) {
     this.form = this.fb.group({
       reporteId: [null as number | null, Validators.required],
-      tituloSugerido: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(200)]],
+      tituloSugerido: [
+        '',
+        [Validators.required, Validators.pattern(/\S/), Validators.maxLength(200)],
+      ],
       resumen: ['', [Validators.required, Validators.pattern(/\S/)]],
-      prioridadSugerida: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(30)]],
+      prioridadSugerida: [
+        '',
+        [Validators.required, Validators.pattern(/\S/), Validators.maxLength(30)],
+      ],
       justificacion: ['', [Validators.required, Validators.pattern(/\S/)]],
     });
   }
 
   ngOnInit(): void {
+    this.form.get('reporteId')?.valueChanges.subscribe(() => {
+      this.consulta++;
+      this.sugerencia = null;
+      this.mensajeIA = '';
+      this.generandoIA = false;
+    });
     this.reporteService.listar().subscribe({
       next: (data) => {
         this.reportes = data;
@@ -60,6 +79,41 @@ export class Recinsertcomponent implements OnInit {
         this.cdr.markForCheck();
       },
     });
+  }
+
+  sugerirConIA(): void {
+    if (this.generandoIA || this.guardando || !this.form.value.reporteId) return;
+    const consulta = ++this.consulta;
+    this.generandoIA = true;
+    this.sugerencia = null;
+    this.mensajeIA = '';
+    this.ia.sugerirRecomendacion(this.form.value.reporteId).subscribe({
+      next: (datos) => {
+        if (consulta !== this.consulta) return;
+        this.generandoIA = false;
+        this.sugerencia = datos;
+        this.cdr.markForCheck();
+      },
+      error: (error) => {
+        if (consulta !== this.consulta) return;
+        this.generandoIA = false;
+        this.mensajeIA =
+          error.error?.message ||
+          'No se pudo consultar Gemini. Puedes completar los campos manualmente.';
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  usarSugerencia(): void {
+    if (!this.sugerencia || this.guardando) return;
+    this.form.patchValue(this.sugerencia);
+    this.sugerencia = null;
+    this.mensajeIA = 'Revisa los campos y guarda la recomendación cuando esté correcta.';
+  }
+
+  ngOnDestroy(): void {
+    this.consulta++;
   }
 
   guardar(): void {
