@@ -1,4 +1,3 @@
-import { Loginservice } from '../../../services/loginservice';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Comentariosreportecomponent } from '../../comentariocomponent/comentariosreportecomponent/comentariosreportecomponent';
@@ -38,9 +37,7 @@ export class Repdetallecomponent implements OnInit {
   mensaje = '';
   mensajeRelaciones = '';
 
-  esAdmin = false;
   constructor(
-    private login: Loginservice,
     private service: Reporteservice,
     private categoriaService: Categoriaservice,
     private ubicacionService: Ubicacionservice,
@@ -48,7 +45,7 @@ export class Repdetallecomponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private cdr: ChangeDetectorRef,
-  ) { this.esAdmin = this.login.hasAnyRole(['ADMIN']); }
+  ) {}
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -95,7 +92,6 @@ export class Repdetallecomponent implements OnInit {
         this.cdr.markForCheck();
       },
     });
-    if (!this.esAdmin) return;
     this.usuarioService.listar().subscribe({
       next: (data) => {
         this.usuarios = data;
@@ -109,8 +105,6 @@ export class Repdetallecomponent implements OnInit {
   }
 
   nombreUsuario(id: number): string {
-    if (this.registro?.usuarioReportanteId === id && this.registro.usuarioReportanteNombre) return this.registro.usuarioReportanteNombre;
-    if (this.registro?.tecnicoAsignadoId === id && this.registro.tecnicoAsignadoNombre) return this.registro.tecnicoAsignadoNombre;
     const usuario = this.usuarios.find((usuario) => usuario.idUsuario === id);
     if (!usuario) {
       return 'Usuario #' + id;

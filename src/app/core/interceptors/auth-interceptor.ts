@@ -10,11 +10,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
 
-  if (
-    !req.url.startsWith(environment.base + '/') ||
-    req.url.endsWith('/login') ||
-    req.url.endsWith('/registro')
-  ) {
+  if (!req.url.startsWith(environment.base) || req.url.endsWith('/login')) {
     return next(req);
   }
 

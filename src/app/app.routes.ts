@@ -1,4 +1,3 @@
-import { Notificacionescomponent } from './components/notificacionescomponent/notificacionescomponent';
 import { Routes } from '@angular/router';
 import { Logincomponent } from './components/logincomponent/logincomponent';
 import { Homecomponent } from './components/homecomponent/homecomponent';
@@ -57,15 +56,8 @@ import { authGuard } from './core/guards/auth-guard';
 import { roleGuard } from './core/guards/role-guard';
 
 export const routes: Routes = [
-  {
-    path: 'notificaciones',
-    component: Notificacionescomponent,
-    canActivate: [authGuard, roleGuard],
-    data: { roles: ['ADMIN'] },
-  },
   { path: 'login', component: Logincomponent },
-  { path: 'crear-cuenta', component: Usuinsertcomponent, data: { publico: true } },
-  { path: '', component: Homecomponent, pathMatch: 'full' },
+  { path: '', component: Homecomponent, canActivate: [authGuard], pathMatch: 'full' },
 
   {
     path: 'categorias',
@@ -164,7 +156,7 @@ export const routes: Routes = [
         path: 'editar/:id',
         component: Repupdatecomponent,
         canActivate: [roleGuard],
-        data: { roles: ['ADMIN', 'USUARIO'] },
+        data: { roles: ['ADMIN'] },
       },
       { path: 'detalle/:id', component: Repdetallecomponent },
     ],
@@ -172,9 +164,8 @@ export const routes: Routes = [
 
   {
     path: 'comentarios',
-    data: { roles: ['ADMIN'] },
     component: Comentariocomponent,
-    canActivate: [authGuard, roleGuard],
+    canActivate: [authGuard],
     children: [
       { path: '', redirectTo: 'listar', pathMatch: 'full' },
       { path: 'listar', component: Comlistcomponent },
@@ -186,9 +177,8 @@ export const routes: Routes = [
 
   {
     path: 'adjuntos',
-    data: { roles: ['ADMIN'] },
     component: Adjuntocomponent,
-    canActivate: [authGuard, roleGuard],
+    canActivate: [authGuard],
     children: [
       { path: '', redirectTo: 'listar', pathMatch: 'full' },
       { path: 'listar', component: Adjlistcomponent },
@@ -282,7 +272,7 @@ export const routes: Routes = [
         path: 'reporte07',
         component: Reporte07component,
         canActivate: [roleGuard],
-        data: { roles: ['ADMIN'] },
+        data: { roles: ['ADMIN', 'USUARIO', 'TECNICO'] },
       },
       {
         path: 'reporte08',

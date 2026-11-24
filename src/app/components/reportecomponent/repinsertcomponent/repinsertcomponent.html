@@ -32,12 +32,6 @@
         <textarea matInput formControlName="descripcion" rows="4" required></textarea>
         <mat-error>Ingrese una descripción sin dejar solo espacios.</mat-error>
       </mat-form-field>
-      <app-sugerencia-categoria
-        [descripcion]="form.value.descripcion"
-        [categorias]="categorias"
-        [guardando]="guardando"
-        (seleccionar)="form.patchValue({ categoriaId: $event.idCategoria })"
-      ></app-sugerencia-categoria>
       <mat-form-field appearance="outline">
         <mat-label>Categoría</mat-label>
         <mat-select formControlName="categoriaId" required>
@@ -89,12 +83,7 @@
             </mat-form-field>
             <mat-form-field appearance="outline">
               <mat-label>Tipo del archivo (opcional)</mat-label>
-              <input
-                matInput
-                formControlName="tipoArchivo"
-                maxlength="100"
-                placeholder="image/jpeg"
-              />
+              <input matInput formControlName="tipoArchivo" maxlength="100" placeholder="image/jpeg" />
               <mat-error>Máximo 100 caracteres.</mat-error>
             </mat-form-field>
           </div>
@@ -105,11 +94,8 @@
           mat-flat-button
           type="submit"
           [disabled]="
-            guardando ||
-            form.invalid ||
-            !categoriasCargadas ||
-            !ubicacionesCargadas ||
-            (incluirAdjunto && formAdjunto.invalid)
+            guardando || form.invalid || !categoriasCargadas ||
+            !ubicacionesCargadas || (incluirAdjunto && formAdjunto.invalid)
           "
         >
           {{ guardando ? 'Guardando…' : 'Guardar' }}

@@ -22,10 +22,6 @@ export class Usuarioservice {
   }
 
   registrar(dto: UsuarioDTOInsert): Observable<UsuarioDTOList> {
-    return this.http.post<UsuarioDTOList>(this.apiURL, dto);
-  }
-
-  registrarPublico(dto: UsuarioDTOInsert): Observable<UsuarioDTOList> {
     return this.http.post<UsuarioDTOList>(environment.base + '/registro', dto);
   }
 
@@ -36,7 +32,7 @@ export class Usuarioservice {
   eliminar(id: number): Observable<void> {
     return this.http.delete<void>(this.apiURL + '/' + id);
   }
-
+  
   usuariosPorRol(): Observable<UsuariosPorRolDTO[]> {
     return this.http.get<UsuariosPorRolDTO[]>(this.apiURL + '/estadisticas/por-rol');
   }

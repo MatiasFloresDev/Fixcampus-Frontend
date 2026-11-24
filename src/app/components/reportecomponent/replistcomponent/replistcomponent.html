@@ -3,9 +3,6 @@
     <h1>Listado de reportes</h1>
     <a mat-flat-button routerLink="/reportes/insertar">Registrar reporte</a>
   </div>
-  @if (aviso) {
-    <p role="status">{{ aviso }}</p>
-  }
   @if (mensaje) {
     <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensaje }}</p>
   }
@@ -72,18 +69,16 @@
               >
                 <mat-icon>edit</mat-icon>
               </a>
-              @if (esAdmin) {
-                <button
-                  mat-icon-button
-                  type="button"
-                  class="reporte-lista__eliminar"
-                  [disabled]="eliminando"
-                  (click)="eliminar(registro)"
-                  [attr.aria-label]="'Eliminar reporte ' + registro.idReporte"
-                >
-                  <mat-icon>delete</mat-icon>
-                </button>
-              }
+              <button
+                mat-icon-button
+                type="button"
+                class="reporte-lista__eliminar"
+                [disabled]="eliminando"
+                (click)="eliminar(registro)"
+                [attr.aria-label]="'Eliminar reporte ' + registro.idReporte"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
               <a
                 mat-icon-button
                 [routerLink]="['/reportes/detalle', registro.idReporte]"

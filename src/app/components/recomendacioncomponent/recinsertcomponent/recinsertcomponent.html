@@ -25,35 +25,19 @@
         <mat-hint>No hay reportes disponibles.</mat-hint>
       }
     </mat-form-field>
-    <p>
-      Al solicitar una sugerencia se comparte el título y la descripción del reporte con Gemini.
-      Evita incluir datos personales.
-    </p>
-    <button
-      mat-stroked-button
-      type="button"
-      (click)="sugerirConIA()"
-      [disabled]="generandoIA || guardando || !form.value.reporteId"
-    >
-      {{ generandoIA ? 'Consultando Gemini…' : 'Sugerir recomendación con Gemini' }}
-    </button>
-    @if (mensajeIA) {
-      <p role="status">{{ mensajeIA }}</p>
-    }
-    @if (sugerencia) {
-      <section class="sugerencia">
-        <h2>Propuesta para revisar</h2>
-        <p>
-          <strong>{{ sugerencia.tituloSugerido }}</strong>
-        </p>
-        <p>{{ sugerencia.resumen }}</p>
-        <p>Prioridad: {{ sugerencia.prioridadSugerida }}</p>
-        <p>{{ sugerencia.justificacion }}</p>
-        <button mat-stroked-button type="button" (click)="usarSugerencia()" [disabled]="guardando">
-          Usar sugerencia
-        </button>
-      </section>
-    }
+
+    <div class="recomendacion-formulario__acciones">
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="sugerirConIA()"
+        [disabled]="!form.value.reporteId || generandoIA || guardando"
+      >
+        <mat-icon>auto_awesome</mat-icon>
+        {{ generandoIA ? 'Generando con IA…' : 'Sugerir con IA' }}
+      </button>
+    </div>
+
     <mat-form-field appearance="outline">
       <mat-label>Título sugerido</mat-label>
       <input matInput formControlName="tituloSugerido" maxlength="200" required />
@@ -78,7 +62,7 @@
       <button
         mat-flat-button
         type="submit"
-        [disabled]="guardando || form.invalid || !reportesCargados"
+        [disabled]="guardando || generandoIA || form.invalid || !reportesCargados"
       >
         {{ guardando ? 'Guardando…' : 'Guardar' }}
       </button>

@@ -12,9 +12,9 @@
         autocomplete="username"
         placeholder="usuario@upc.edu.pe"
       />
-      @if (form.get('correo')?.touched && form.get('correo')?.hasError('required')) {
+      @if (form.controls.correo.touched && form.controls.correo.hasError('required')) {
         <mat-error>Ingrese su correo electrónico.</mat-error>
-      } @else if (form.get('correo')?.touched && form.get('correo')?.hasError('email')) {
+      } @else if (form.controls.correo.touched && form.controls.correo.hasError('email')) {
         <mat-error>Ingrese un correo válido.</mat-error>
       }
     </mat-form-field>
@@ -27,7 +27,7 @@
         formControlName="contrasena"
         autocomplete="current-password"
       />
-      @if (form.get('contrasena')?.touched && form.get('contrasena')?.invalid) {
+      @if (form.controls.contrasena.touched && form.controls.contrasena.invalid) {
         <mat-error>Ingrese su contraseña.</mat-error>
       }
     </mat-form-field>
@@ -41,4 +41,3 @@
     </button>
   </form>
 </section>
-<p><a routerLink="/crear-cuenta">Crear cuenta</a></p>

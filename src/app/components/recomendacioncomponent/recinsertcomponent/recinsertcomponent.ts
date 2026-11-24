@@ -1,16 +1,16 @@
-import { Iaservice } from '../../../services/iaservice';
-import { SugerenciaRecomendacionDTO } from '../../../models/SugerenciaRecomendacionDTO';
-import { ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
 import { Reporteservice } from '../../../services/reporteservice';
 import { ReporteDTOList } from '../../../models/ReporteDTOList';
 import { Recomendacionservice } from '../../../services/recomendacionservice';
 import { RecomendacionDTOInsert } from '../../../models/RecomendacionDTOInsert';
+import { Iarecomendacionservice } from '../../../services/iarecomendacionservice';
 
 @Component({
   selector: 'app-recinsertcomponent',
@@ -22,52 +22,38 @@ import { RecomendacionDTOInsert } from '../../../models/RecomendacionDTOInsert';
     MatFormFieldModule,
     MatButtonModule,
     MatSelectModule,
+    MatIconModule,
   ],
   templateUrl: './recinsertcomponent.html',
   styleUrl: './recinsertcomponent.css',
 })
-export class Recinsertcomponent implements OnInit, OnDestroy {
-  generandoIA = false;
-  sugerencia: SugerenciaRecomendacionDTO | null = null;
-  mensajeIA = '';
-  consulta = 0;
+export class Recinsertcomponent implements OnInit {
   form: FormGroup;
   guardando = false;
+  generandoIA = false;
   mensaje = '';
   reportes: ReporteDTOList[] = [];
   reportesCargados = false;
   mensajeReportes = '';
 
   constructor(
-    private ia: Iaservice,
     private fb: FormBuilder,
     private service: Recomendacionservice,
     private reporteService: Reporteservice,
+    private iaService: Iarecomendacionservice,
     private router: Router,
     private cdr: ChangeDetectorRef,
   ) {
     this.form = this.fb.group({
       reporteId: [null as number | null, Validators.required],
-      tituloSugerido: [
-        '',
-        [Validators.required, Validators.pattern(/\S/), Validators.maxLength(200)],
-      ],
+      tituloSugerido: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(200)]],
       resumen: ['', [Validators.required, Validators.pattern(/\S/)]],
-      prioridadSugerida: [
-        '',
-        [Validators.required, Validators.pattern(/\S/), Validators.maxLength(30)],
-      ],
+      prioridadSugerida: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(30)]],
       justificacion: ['', [Validators.required, Validators.pattern(/\S/)]],
     });
   }
 
   ngOnInit(): void {
-    this.form.get('reporteId')?.valueChanges.subscribe(() => {
-      this.consulta++;
-      this.sugerencia = null;
-      this.mensajeIA = '';
-      this.generandoIA = false;
-    });
     this.reporteService.listar().subscribe({
       next: (data) => {
         this.reportes = data;
@@ -82,38 +68,29 @@ export class Recinsertcomponent implements OnInit, OnDestroy {
   }
 
   sugerirConIA(): void {
-    if (this.generandoIA || this.guardando || !this.form.value.reporteId) return;
-    const consulta = ++this.consulta;
+    const reporteId = this.form.value.reporteId;
+    const reporte = this.reportes.find((r) => r.idReporte === reporteId);
+    if (!reporte || this.generandoIA) return;
+
     this.generandoIA = true;
-    this.sugerencia = null;
-    this.mensajeIA = '';
-    this.ia.sugerirRecomendacion(this.form.value.reporteId).subscribe({
-      next: (datos) => {
-        if (consulta !== this.consulta) return;
+    this.mensaje = '';
+    this.iaService.generarSugerencia(reporte.titulo, reporte.descripcion).subscribe({
+      next: (sugerencia) => {
+        this.form.patchValue({
+          tituloSugerido: sugerencia.tituloSugerido,
+          resumen: sugerencia.resumen,
+          prioridadSugerida: sugerencia.prioridadSugerida,
+          justificacion: sugerencia.justificacion,
+        });
         this.generandoIA = false;
-        this.sugerencia = datos;
         this.cdr.markForCheck();
       },
-      error: (error) => {
-        if (consulta !== this.consulta) return;
+      error: () => {
         this.generandoIA = false;
-        this.mensajeIA =
-          error.error?.message ||
-          'No se pudo consultar Gemini. Puedes completar los campos manualmente.';
+        this.mensaje = 'No se pudo generar la recomendación con IA. Verifique su API Key o complete manualmente.';
         this.cdr.markForCheck();
       },
     });
-  }
-
-  usarSugerencia(): void {
-    if (!this.sugerencia || this.guardando) return;
-    this.form.patchValue(this.sugerencia);
-    this.sugerencia = null;
-    this.mensajeIA = 'Revisa los campos y guarda la recomendación cuando esté correcta.';
-  }
-
-  ngOnDestroy(): void {
-    this.consulta++;
   }
 
   guardar(): void {

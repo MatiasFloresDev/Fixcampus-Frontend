@@ -3,7 +3,7 @@
   gap: 36px;
 }
 
-
+/* HERO */
 .hero {
   display: grid;
   grid-template-columns: 1.1fr 1fr;
@@ -68,7 +68,7 @@
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
-
+/* SECCIONES Y CARDS */
 .seccion {
   display: grid;
   gap: 24px;
@@ -109,7 +109,7 @@
   align-items: start;
 }
 
-
+/* BENEFIICO CARDS */
 .beneficio-card {
   display: flex;
   align-items: flex-start;
@@ -144,7 +144,7 @@
   line-height: 1.5;
 }
 
-
+/* ESCENARIO CARDS */
 .escenario-card {
   background: var(--fc-blanco);
   border: 1px solid var(--fc-borde);
@@ -197,7 +197,7 @@
   color: var(--fc-texto-suave);
 }
 
-
+/* PASO Y ROL CARDS */
 .paso,
 .rol-card {
   background: var(--fc-blanco);
@@ -240,7 +240,7 @@
   height: 32px;
 }
 
-
+/* FOOTER */
 .landing-footer {
   display: flex;
   justify-content: space-between;
@@ -255,7 +255,7 @@
   margin-top: 12px;
 }
 
-
+/* RESPONSIVE */
 @media (max-width: 1024px) {
   .grid-tres {
     grid-template-columns: repeat(2, 1fr);
