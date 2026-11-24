@@ -1,0 +1,19 @@
+.rol-formulario {
+  max-width: 680px;
+  padding: 24px;
+  background: var(--fc-blanco);
+  border: 1px solid var(--fc-borde);
+  border-radius: 14px;
+}
+
+.rol-formulario__campos {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.rol-formulario__acciones {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}

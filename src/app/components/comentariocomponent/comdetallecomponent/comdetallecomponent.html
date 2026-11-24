@@ -1,0 +1,60 @@
+<section class="comentario-detalle">
+  <h1>Detalle de comentario</h1>
+  <div class="comentario-detalle__acciones">
+    @if (registro) {
+      <a mat-flat-button [routerLink]="['/comentarios/editar', registro.idComentario]">Editar</a>
+      <button
+        mat-stroked-button
+        type="button"
+        class="comentario-detalle__eliminar"
+        (click)="eliminar()"
+        [disabled]="eliminando"
+      >
+        {{ eliminando ? 'Eliminando…' : 'Eliminar' }}
+      </button>
+    }
+    <a mat-stroked-button routerLink="/comentarios/listar">Volver</a>
+  </div>
+  @if (mensaje) {
+    <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensaje }}</p>
+  }
+  @if (mensajeReporte) {
+    <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensajeReporte }}</p>
+  }
+  @if (mensajeUsuarios) {
+    <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensajeUsuarios }}</p>
+  }
+  @if (cargando) {
+    <p role="status">Cargando registro…</p>
+  }
+  @if (registro) {
+    <div class="comentario-detalle__datos">
+      <div class="comentario-detalle__campo">
+        <strong class="comentario-detalle__etiqueta">ID</strong>
+        <span class="comentario-detalle__valor">{{ registro.idComentario }}</span>
+      </div>
+      <div class="comentario-detalle__campo">
+        <strong class="comentario-detalle__etiqueta">Reporte</strong>
+        <span class="comentario-detalle__valor">
+          {{ reporte?.titulo || 'Reporte no disponible' }} (#{{ registro.reporteId }})
+        </span>
+      </div>
+      <div class="comentario-detalle__campo">
+        <strong class="comentario-detalle__etiqueta">Autor</strong>
+        <span class="comentario-detalle__valor">
+          {{ nombreUsuario(registro.usuarioId) }} (#{{ registro.usuarioId }})
+        </span>
+      </div>
+      <div class="comentario-detalle__campo">
+        <strong class="comentario-detalle__etiqueta">Comentario</strong>
+        <span class="comentario-detalle__valor">{{ registro.textoComentario }}</span>
+      </div>
+      <div class="comentario-detalle__campo">
+        <strong class="comentario-detalle__etiqueta">Fecha de creación</strong>
+        <span class="comentario-detalle__valor">
+          {{ registro.fechaComentario | date: 'dd/MM/yyyy HH:mm' }}
+        </span>
+      </div>
+    </div>
+  }
+</section>

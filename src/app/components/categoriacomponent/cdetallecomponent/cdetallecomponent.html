@@ -1,0 +1,40 @@
+<section class="categoria-detalle">
+  <h1>Detalle de categoría</h1>
+  <div class="categoria-detalle__acciones">
+    @if (registro) {
+      <a mat-flat-button [routerLink]="['/categorias/editar', registro.idCategoria]">Editar</a>
+      <button
+        mat-stroked-button
+        type="button"
+        class="categoria-detalle__eliminar"
+        (click)="eliminar()"
+        [disabled]="eliminando"
+      >
+        {{ eliminando ? 'Eliminando…' : 'Eliminar' }}
+      </button>
+    }
+    <a mat-stroked-button routerLink="/categorias/listar">Volver</a>
+  </div>
+  @if (mensaje) {
+    <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensaje }}</p>
+  }
+  @if (cargando) {
+    <p role="status">Cargando registro…</p>
+  }
+  @if (registro) {
+    <div class="categoria-detalle__datos">
+      <div class="categoria-detalle__campo">
+        <strong class="categoria-detalle__etiqueta">ID</strong>
+        <span class="categoria-detalle__valor">{{ registro.idCategoria }}</span>
+      </div>
+      <div class="categoria-detalle__campo">
+        <strong class="categoria-detalle__etiqueta">Nombre</strong>
+        <span class="categoria-detalle__valor">{{ registro.nombre }}</span>
+      </div>
+      <div class="categoria-detalle__campo">
+        <strong class="categoria-detalle__etiqueta">Descripción</strong>
+        <span class="categoria-detalle__valor">{{ registro.descripcion || 'Sin especificar' }}</span>
+      </div>
+    </div>
+  }
+</section>

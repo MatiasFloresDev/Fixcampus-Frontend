@@ -1,0 +1,13 @@
+<section class="container">
+  <h2>Incidencias por categoría</h2>
+
+  @if (mensaje) {
+    <p class="fc-mensaje fc-mensaje--error estado-texto" role="alert">{{ mensaje }}</p>
+  }
+
+  @if (lista.length > 0) {
+    <div class="grafico">
+      <canvas baseChart [type]="chartType" [data]="chartData" [options]="chartOptions"></canvas>
+    </div>
+  }
+</section>

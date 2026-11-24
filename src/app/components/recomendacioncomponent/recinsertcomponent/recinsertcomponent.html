@@ -1,0 +1,59 @@
+<section class="recomendacion-formulario">
+  <h1>Registrar recomendación</h1>
+  @if (mensaje) {
+    <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensaje }}</p>
+  }
+  <p>Solo se permite una recomendación por reporte.</p>
+  @if (mensajeReportes) {
+    <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensajeReportes }}</p>
+  }
+  @if (!reportesCargados && !mensajeReportes) {
+    <p role="status">Cargando reportes…</p>
+  }
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="recomendacion-formulario__campos">
+    <mat-form-field appearance="outline">
+      <mat-label>Reporte</mat-label>
+      <mat-select formControlName="reporteId" required>
+        @for (reporte of reportes; track reporte.idReporte) {
+          <mat-option [value]="reporte.idReporte">
+            #{{ reporte.idReporte }} · {{ reporte.titulo }}
+          </mat-option>
+        }
+      </mat-select>
+      <mat-error>Seleccione un reporte.</mat-error>
+      @if (reportesCargados && reportes.length === 0) {
+        <mat-hint>No hay reportes disponibles.</mat-hint>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Título sugerido</mat-label>
+      <input matInput formControlName="tituloSugerido" maxlength="200" required />
+      <mat-error>Complete este campo sin dejar solo espacios. Máximo 200 caracteres.</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Resumen</mat-label>
+      <textarea matInput formControlName="resumen" required rows="3"></textarea>
+      <mat-error>Complete este campo sin dejar solo espacios.</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Prioridad sugerida</mat-label>
+      <input matInput formControlName="prioridadSugerida" maxlength="30" required />
+      <mat-error>Complete este campo sin dejar solo espacios. Máximo 30 caracteres.</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Justificación</mat-label>
+      <textarea matInput formControlName="justificacion" required rows="3"></textarea>
+      <mat-error>Complete este campo sin dejar solo espacios.</mat-error>
+    </mat-form-field>
+    <div class="recomendacion-formulario__acciones">
+      <button
+        mat-flat-button
+        type="submit"
+        [disabled]="guardando || form.invalid || !reportesCargados"
+      >
+        {{ guardando ? 'Guardando…' : 'Guardar' }}
+      </button>
+      <a mat-stroked-button routerLink="/recomendaciones/listar">Cancelar</a>
+    </div>
+  </form>
+</section>

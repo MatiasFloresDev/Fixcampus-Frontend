@@ -1,0 +1,63 @@
+<section class="usuario-detalle">
+  <h1>Detalle de usuario</h1>
+  <div class="usuario-detalle__acciones">
+    @if (registro) {
+      <a mat-flat-button [routerLink]="['/usuarios/editar', registro.idUsuario]">Editar</a>
+      <button
+        mat-stroked-button
+        type="button"
+        class="usuario-detalle__eliminar"
+        (click)="eliminar()"
+        [disabled]="eliminando"
+      >
+        {{ eliminando ? 'Eliminando…' : 'Eliminar' }}
+      </button>
+    }
+    <a mat-stroked-button routerLink="/usuarios/listar">Volver</a>
+  </div>
+  @if (mensaje) {
+    <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensaje }}</p>
+  }
+  @if (mensajeRol) {
+    <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensajeRol }}</p>
+  }
+  @if (cargando) {
+    <p role="status">Cargando usuario…</p>
+  }
+  @if (registro) {
+    <div class="usuario-detalle__datos">
+      <div class="usuario-detalle__campo">
+        <strong class="usuario-detalle__etiqueta">ID</strong>
+        <span class="usuario-detalle__valor">{{ registro.idUsuario }}</span>
+      </div>
+      <div class="usuario-detalle__campo">
+        <strong class="usuario-detalle__etiqueta">Nombre</strong>
+        <span class="usuario-detalle__valor">{{ registro.nombre }}</span>
+      </div>
+      <div class="usuario-detalle__campo">
+        <strong class="usuario-detalle__etiqueta">Apellido</strong>
+        <span class="usuario-detalle__valor">{{ registro.apellido }}</span>
+      </div>
+      <div class="usuario-detalle__campo">
+        <strong class="usuario-detalle__etiqueta">Correo electrónico</strong>
+        <span class="usuario-detalle__valor">{{ registro.correo }}</span>
+      </div>
+      <div class="usuario-detalle__campo">
+        <strong class="usuario-detalle__etiqueta">Rol</strong>
+        <span class="usuario-detalle__valor">
+          {{ rol?.nombre || 'Rol no disponible' }} (#{{ registro.rolId }})
+        </span>
+      </div>
+      <div class="usuario-detalle__campo">
+        <strong class="usuario-detalle__etiqueta">Estado</strong>
+        <span class="usuario-detalle__valor">{{ registro.estado }}</span>
+      </div>
+      <div class="usuario-detalle__campo">
+        <strong class="usuario-detalle__etiqueta">Fecha de registro</strong>
+        <span class="usuario-detalle__valor">
+          {{ registro.fechaRegistro | date: 'dd/MM/yyyy HH:mm' }}
+        </span>
+      </div>
+    </div>
+  }
+</section>

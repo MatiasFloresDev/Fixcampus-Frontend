@@ -1,0 +1,30 @@
+<section class="comentario-formulario">
+  <h1>Editar comentario #{{ id }}</h1>
+  @if (mensaje) {
+    <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensaje }}</p>
+  }
+  @if (cargando) {
+    <p role="status">Cargando registro…</p>
+  }
+  @if (encontrado) {
+    <form [formGroup]="form" (ngSubmit)="guardar()" class="comentario-formulario__campos">
+      <mat-form-field appearance="outline">
+        <mat-label>Comentario</mat-label>
+        <textarea matInput formControlName="textoComentario" required rows="3"></textarea>
+        <mat-error>Complete este campo sin dejar solo espacios.</mat-error>
+      </mat-form-field>
+      <div class="comentario-formulario__acciones">
+        <button
+          mat-flat-button
+          type="submit"
+          [disabled]="guardando || form.invalid"
+        >
+          {{ guardando ? 'Guardando…' : 'Guardar' }}
+        </button>
+        <a mat-stroked-button routerLink="/comentarios/listar">Cancelar</a>
+      </div>
+    </form>
+  } @else if (!cargando) {
+    <a mat-stroked-button routerLink="/comentarios/listar">Volver</a>
+  }
+</section>

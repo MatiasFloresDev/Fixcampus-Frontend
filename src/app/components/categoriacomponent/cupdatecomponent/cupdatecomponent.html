@@ -1,0 +1,31 @@
+<section class="categoria-formulario">
+  <h1>Editar categoría #{{ id }}</h1>
+  @if (mensaje) {
+    <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensaje }}</p>
+  }
+  @if (cargando) {
+    <p role="status">Cargando registro…</p>
+  }
+  @if (encontrado) {
+    <form [formGroup]="form" (ngSubmit)="guardar()" class="categoria-formulario__campos">
+      <mat-form-field appearance="outline">
+        <mat-label>Nombre</mat-label>
+        <input matInput formControlName="nombre" maxlength="100" required />
+        <mat-error>Ingrese nombre sin dejar solo espacios (máximo 100 caracteres).</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Descripción (opcional)</mat-label>
+        <textarea matInput formControlName="descripcion" maxlength="255" rows="3"></textarea>
+        <mat-error>Máximo 255 caracteres.</mat-error>
+      </mat-form-field>
+      <div class="categoria-formulario__acciones">
+        <button mat-flat-button type="submit" [disabled]="guardando || form.invalid">
+          {{ guardando ? 'Guardando…' : 'Guardar' }}
+        </button>
+        <a mat-stroked-button routerLink="/categorias/listar">Volver</a>
+      </div>
+    </form>
+  } @else if (!cargando) {
+    <a mat-stroked-button routerLink="/categorias/listar">Volver</a>
+  }
+</section>

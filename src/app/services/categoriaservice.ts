@@ -1,43 +1,28 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { CategoriaDTO } from '../models/CategoriaDTO';
-import { CategoriaFormularioDTO } from '../models/CategoriaFormularioDTO';
-import { Accesoservice } from './accesoservice';
+import { CategoriaDTOInsert } from '../models/CategoriaDTOInsert';
+import { CategoriaDTOList } from '../models/CategoriaDTOList';
 
 @Injectable({ providedIn: 'root' })
 export class Categoriaservice {
-  private api = environment.base + '/api/categories';
-  constructor(
-    private http: HttpClient,
-    private acceso: Accesoservice,
-  ) {}
-  listar(): Observable<CategoriaDTO[]> {
-    return this.http.get<CategoriaDTO[]>(this.api, { headers: this.acceso.obtenerCabeceras() });
+  private apiURL = environment.base + '/api/categories';
+  constructor(private http: HttpClient) {}
+
+  listar(): Observable<CategoriaDTOList[]> {
+    return this.http.get<CategoriaDTOList[]>(this.apiURL);
   }
-  obtener(id: number): Observable<CategoriaDTO> {
-    return this.http.get<CategoriaDTO>(this.api + '/' + id, {
-      headers: this.acceso.obtenerCabeceras(),
-    });
+  buscarPorId(id: number): Observable<CategoriaDTOList> {
+    return this.http.get<CategoriaDTOList>(this.apiURL + '/' + id);
   }
-  registrar(datos: CategoriaFormularioDTO): Observable<CategoriaDTO> {
-    return this.http.post<CategoriaDTO>(this.api, datos, {
-      headers: this.acceso.obtenerCabeceras(),
-    });
+  registrar(dto: CategoriaDTOInsert): Observable<CategoriaDTOList> {
+    return this.http.post<CategoriaDTOList>(this.apiURL, dto);
   }
-  actualizar(id: number, datos: CategoriaFormularioDTO): Observable<CategoriaDTO> {
-    return this.http.put<CategoriaDTO>(this.api + '/' + id, datos, {
-      headers: this.acceso.obtenerCabeceras(),
-    });
+  actualizar(id: number, dto: CategoriaDTOInsert): Observable<CategoriaDTOList> {
+    return this.http.put<CategoriaDTOList>(this.apiURL + '/' + id, dto);
   }
   eliminar(id: number): Observable<void> {
-    return this.http.delete<void>(this.api + '/' + id, { headers: this.acceso.obtenerCabeceras() });
-  }
-  buscarDescripcion(palabraClave: string): Observable<CategoriaDTO[]> {
-    return this.http.get<CategoriaDTO[]>(this.api + '/buscar-descripcion', {
-      headers: this.acceso.obtenerCabeceras(),
-      params: { palabraClave },
-    });
+    return this.http.delete<void>(this.apiURL + '/' + id);
   }
 }

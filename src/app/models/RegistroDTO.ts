@@ -1,6 +1,0 @@
-export class RegistroDTO {
-  nombre: string = '';
-  apellido: string = '';
-  correo: string = '';
-  password: string = '';
-}

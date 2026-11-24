@@ -1,0 +1,52 @@
+<section class="ubicacion-detalle">
+  <h1>Detalle de ubicación</h1>
+  <div class="ubicacion-detalle__acciones">
+    @if (registro) {
+      <a mat-flat-button [routerLink]="['/ubicaciones/editar', registro.idUbicacion]">Editar</a>
+      <button
+        mat-stroked-button
+        type="button"
+        class="ubicacion-detalle__eliminar"
+        (click)="eliminar()"
+        [disabled]="eliminando"
+      >
+        {{ eliminando ? 'Eliminando…' : 'Eliminar' }}
+      </button>
+    }
+    <a mat-stroked-button routerLink="/ubicaciones/listar">Volver</a>
+  </div>
+  @if (mensaje) {
+    <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensaje }}</p>
+  }
+  @if (cargando) {
+    <p role="status">Cargando registro…</p>
+  }
+  @if (registro) {
+    <div class="ubicacion-detalle__datos">
+      <div class="ubicacion-detalle__campo">
+        <strong class="ubicacion-detalle__etiqueta">ID</strong>
+        <span class="ubicacion-detalle__valor">{{ registro.idUbicacion }}</span>
+      </div>
+      <div class="ubicacion-detalle__campo">
+        <strong class="ubicacion-detalle__etiqueta">Campus</strong>
+        <span class="ubicacion-detalle__valor">{{ registro.campus }}</span>
+      </div>
+      <div class="ubicacion-detalle__campo">
+        <strong class="ubicacion-detalle__etiqueta">Edificio</strong>
+        <span class="ubicacion-detalle__valor">{{ registro.edificio }}</span>
+      </div>
+      <div class="ubicacion-detalle__campo">
+        <strong class="ubicacion-detalle__etiqueta">Piso</strong>
+        <span class="ubicacion-detalle__valor">{{ registro.piso ?? 'Sin especificar' }}</span>
+      </div>
+      <div class="ubicacion-detalle__campo">
+        <strong class="ubicacion-detalle__etiqueta">Zona</strong>
+        <span class="ubicacion-detalle__valor">{{ registro.zona || 'Sin especificar' }}</span>
+      </div>
+      <div class="ubicacion-detalle__campo">
+        <strong class="ubicacion-detalle__etiqueta">Tipo</strong>
+        <span class="ubicacion-detalle__valor">{{ registro.tipo }}</span>
+      </div>
+    </div>
+  }
+</section>

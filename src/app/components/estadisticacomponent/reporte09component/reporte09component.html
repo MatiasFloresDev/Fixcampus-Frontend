@@ -1,0 +1,50 @@
+<section class="container">
+  <h2>Recomendaciones por prioridad sugerida</h2>
+
+  <div class="filtros">
+    <mat-form-field appearance="outline">
+      <mat-label>Prioridad sugerida</mat-label>
+      <input matInput [(ngModel)]="prioridad" placeholder="Ej. ALTA, MEDIA, BAJA" />
+    </mat-form-field>
+
+    <div class="acciones-filtro">
+      <button mat-flat-button type="button" (click)="buscar()">Buscar</button>
+    </div>
+  </div>
+
+  @if (mensaje) {
+    <p class="mensaje-estado" role="status">{{ mensaje }}</p>
+  }
+
+  @if (dataSource.length > 0) {
+    <div class="tabla-contenedor">
+      <table mat-table [dataSource]="dataSource">
+        <ng-container matColumnDef="idRecomendacion">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let element">{{ element.idRecomendacion }}</td>
+        </ng-container>
+        <ng-container matColumnDef="reporteId">
+          <th mat-header-cell *matHeaderCellDef>Reporte</th>
+          <td mat-cell *matCellDef="let element">#{{ element.reporteId }}</td>
+        </ng-container>
+        <ng-container matColumnDef="tituloSugerido">
+          <th mat-header-cell *matHeaderCellDef>Título sugerido</th>
+          <td mat-cell *matCellDef="let element">{{ element.tituloSugerido }}</td>
+        </ng-container>
+        <ng-container matColumnDef="prioridadSugerida">
+          <th mat-header-cell *matHeaderCellDef>Prioridad</th>
+          <td mat-cell *matCellDef="let element">{{ element.prioridadSugerida }}</td>
+        </ng-container>
+        <ng-container matColumnDef="fechaRecomendacion">
+          <th mat-header-cell *matHeaderCellDef>Fecha</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.fechaRecomendacion | date: 'dd/MM/yyyy HH:mm' }}
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+  }
+</section>
