@@ -1,23 +1,27 @@
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { environment } from '../../environments/environment';
 import { LoginRequestDTO } from '../models/LoginRequestDTO';
 import { LoginResponseDTO } from '../models/LoginResponseDTO';
+import { DatosTokenDTO } from '../models/DatosTokenDTO';
 
 @Injectable({
   providedIn: 'root',
 })
 export class Loginservice {
-  private readonly apiURL = `${environment.base}/login`;
-  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
-  private readonly jwtHelper = new JwtHelperService();
+  private apiURL = `${environment.base}/login`;
+  private isBrowser: boolean;
+  private jwtHelper = new JwtHelperService();
 
-  readonly sessionVersion = signal(0);
-
-  constructor(private readonly http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) plataforma: object,
+  ) {
+    this.isBrowser = isPlatformBrowser(plataforma);
+  }
 
   login(credentials: LoginRequestDTO): Observable<LoginResponseDTO> {
     return this.http.post<LoginResponseDTO>(this.apiURL, credentials).pipe(
@@ -34,8 +38,6 @@ export class Loginservice {
           sessionStorage.setItem('username', username);
           sessionStorage.setItem('roles', JSON.stringify(roles));
         }
-
-        this.sessionVersion.update((v) => v + 1);
       }),
     );
   }
@@ -55,18 +57,15 @@ export class Loginservice {
   }
 
   isAuthenticated(): boolean {
-    this.sessionVersion();
     return this.getToken() !== null;
   }
 
   getUsername(): string {
-    this.sessionVersion();
     if (!this.isBrowser || !this.isAuthenticated()) return '';
     return sessionStorage.getItem('username') ?? '';
   }
 
   getRoles(): string[] {
-    this.sessionVersion();
     if (!this.isBrowser || !this.isAuthenticated()) return [];
 
     const value = sessionStorage.getItem('roles');
@@ -84,12 +83,21 @@ export class Loginservice {
     return [];
   }
 
-  hasAnyRole(allowedRoles: readonly string[]): boolean {
-    const normalize = (role: string) =>
-      role.startsWith('ROLE_') ? role.slice('ROLE_'.length).toUpperCase() : role.toUpperCase();
+  hasAnyRole(allowedRoles: string[]): boolean {
+    for (const role of this.getRoles()) {
+      const actual = this.normalizarRol(role);
+      for (const permitido of allowedRoles) {
+        if (typeof permitido === 'string' && actual === this.normalizarRol(permitido)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 
-    const allowed = new Set(allowedRoles.map(normalize));
-    return this.getRoles().some((role) => allowed.has(normalize(role)));
+  private normalizarRol(role: string): string {
+    const nombre = role.trim().toUpperCase();
+    return nombre.startsWith('ROLE_') ? nombre.slice(5) : nombre;
   }
 
   logout(): void {
@@ -98,12 +106,17 @@ export class Loginservice {
       sessionStorage.removeItem('username');
       sessionStorage.removeItem('roles');
     }
-    this.sessionVersion.update((v) => v + 1);
   }
 
   private isExpired(token: string): boolean {
     try {
-      return this.jwtHelper.isTokenExpired(token);
+      const datos = this.jwtHelper.decodeToken<DatosTokenDTO>(token);
+      return (
+        !datos ||
+        typeof datos.exp !== 'number' ||
+        !Number.isFinite(datos.exp) ||
+        datos.exp * 1000 <= Date.now()
+      );
     } catch {
       return true;
     }
@@ -111,8 +124,8 @@ export class Loginservice {
 
   private extractRolesFromToken(token: string): string[] {
     try {
-      const decoded = this.jwtHelper.decodeToken<Record<string, unknown>>(token);
-      const rolesClaim = decoded?.['roles'];
+      const decoded = this.jwtHelper.decodeToken<DatosTokenDTO>(token);
+      const rolesClaim = decoded?.roles;
 
       if (typeof rolesClaim === 'string') {
         return rolesClaim
@@ -131,8 +144,8 @@ export class Loginservice {
 
   private extractSubjectFromToken(token: string): string {
     try {
-      const decoded = this.jwtHelper.decodeToken<Record<string, unknown>>(token);
-      return typeof decoded?.['sub'] === 'string' ? decoded['sub'] : '';
+      const decoded = this.jwtHelper.decodeToken<DatosTokenDTO>(token);
+      return typeof decoded?.sub === 'string' ? decoded.sub : '';
     } catch {
       return '';
     }

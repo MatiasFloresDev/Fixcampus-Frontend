@@ -1,6 +1,6 @@
-import { ChangeDetectorRef, Component, effect, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
-import { filter, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
@@ -18,41 +18,36 @@ export class Menucomponent implements OnInit, OnDestroy {
   private navSub?: Subscription;
 
   constructor(
-    private readonly loginService: Loginservice,
-    private readonly router: Router,
-    private readonly cdr: ChangeDetectorRef,
-  ) {
-    effect(() => {
-      this.loginService.sessionVersion();
-      this.cdr.markForCheck();
-    });
-  }
+    private loginService: Loginservice,
+    private router: Router,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit(): void {
-    this.navSub = this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe(() => {
+    this.navSub = this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
         this.cdr.markForCheck();
-      });
+      }
+    });
   }
 
   ngOnDestroy(): void {
     this.navSub?.unsubscribe();
   }
 
-  get isAuthenticated(): boolean {
+  isAuthenticated(): boolean {
     return this.loginService.isAuthenticated();
   }
 
-  get username(): string {
+  username(): string {
     return this.loginService.getUsername();
   }
 
-  get roles(): string {
+  roles(): string {
     return this.loginService.getRoles().join(', ');
   }
 
-  get esAdmin(): boolean {
+  esAdmin(): boolean {
     return this.loginService.hasAnyRole(['ADMIN']);
   }
 

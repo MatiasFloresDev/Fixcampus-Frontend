@@ -1,10 +1,11 @@
-import { Component, inject } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ChangeDetectorRef, Component } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { Loginservice } from '../../services/loginservice';
+import { LoginRequestDTO } from '../../models/LoginRequestDTO';
 
 @Component({
   selector: 'app-logincomponent',
@@ -14,18 +15,22 @@ import { Loginservice } from '../../services/loginservice';
   styleUrl: './logincomponent.css',
 })
 export class Logincomponent {
-  private readonly fb = inject(FormBuilder);
-  private readonly auth = inject(Loginservice);
-  private readonly router = inject(Router);
-  private readonly route = inject(ActivatedRoute);
-
-  readonly form = this.fb.nonNullable.group({
-    correo: ['', [Validators.required, Validators.email]],
-    contrasena: ['', Validators.required],
-  });
-
+  form: FormGroup;
   errorMessage = '';
   submitting = false;
+
+  constructor(
+    private fb: FormBuilder,
+    private auth: Loginservice,
+    private router: Router,
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef,
+  ) {
+    this.form = this.fb.group({
+      correo: ['', [Validators.required, Validators.email]],
+      contrasena: ['', Validators.required],
+    });
+  }
 
   submit(): void {
     if (this.form.invalid || this.submitting) {
@@ -36,7 +41,10 @@ export class Logincomponent {
     this.errorMessage = '';
     this.submitting = true;
 
-    this.auth.login(this.form.getRawValue()).subscribe({
+    const datos = new LoginRequestDTO();
+    datos.correo = this.form.value.correo;
+    datos.contrasena = this.form.value.contrasena;
+    this.auth.login(datos).subscribe({
       next: () => {
         this.submitting = false;
         const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
@@ -51,6 +59,7 @@ export class Logincomponent {
         this.submitting = false;
         this.errorMessage =
           'No se pudo iniciar sesión. Verifica tu correo y contraseña e inténtalo nuevamente.';
+        this.cdr.detectChanges();
       },
     });
   }

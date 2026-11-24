@@ -1,5 +1,4 @@
 <div class="landing">
-
   <section class="hero">
     <div class="hero__contenido">
       <span class="hero__etiqueta">FixCampus · Gestión de Incidencias</span>
@@ -10,7 +9,7 @@
       </p>
 
       <div class="hero__acciones">
-        @if (!isAuthenticated) {
+        @if (!isAuthenticated()) {
           <a mat-flat-button routerLink="/login" class="btn-primario">
             <mat-icon>login</mat-icon> Iniciar sesión
           </a>
@@ -34,7 +33,6 @@
     </div>
   </section>
 
-
   <section class="seccion">
     <div class="seccion__cabecera">
       <h2>Capacidades principales de FixCampus</h2>
@@ -45,7 +43,9 @@
         <mat-icon>bolt</mat-icon>
         <div>
           <strong>Registro rápido y preciso</strong>
-          <p>Categoriza incidencias y especifica campus, edificio, piso y aula exacta en segundos.</p>
+          <p>
+            Categoriza incidencias y especifica campus, edificio, piso y aula exacta en segundos.
+          </p>
         </div>
       </article>
 
@@ -53,7 +53,9 @@
         <mat-icon>photo_camera</mat-icon>
         <div>
           <strong>Evidencia y comentarios</strong>
-          <p>Adjunta hasta 3 enlaces de respaldo por reporte y coordina avances en cada incidencia.</p>
+          <p>
+            Adjunta hasta 3 enlaces de respaldo por reporte y coordina avances en cada incidencia.
+          </p>
         </div>
       </article>
 
@@ -61,12 +63,14 @@
         <mat-icon>engineering</mat-icon>
         <div>
           <strong>Asignación priorizada</strong>
-          <p>El administrador clasifica la prioridad (ALTA, MEDIA, BAJA) y asigna al técnico especialista.</p>
+          <p>
+            El administrador clasifica la prioridad (ALTA, MEDIA, BAJA) y asigna al técnico
+            especialista.
+          </p>
         </div>
       </article>
     </div>
   </section>
-
 
   <section class="seccion">
     <div class="seccion__cabecera">
@@ -120,14 +124,13 @@
           <span class="escenario-card__tag">Gestión</span>
           <h3>Seguimiento y analítica</h3>
           <p>
-            Filtra reportes por estado o prioridad, revisa comentarios técnicos y analiza métricas por
-            categoría y mes.
+            Filtra reportes por estado o prioridad, revisa comentarios técnicos y analiza métricas
+            por categoría y mes.
           </p>
         </div>
       </article>
     </div>
   </section>
-
 
   <section class="seccion">
     <div class="seccion__cabecera">
@@ -140,8 +143,8 @@
         <span class="paso__num">01</span>
         <h3>Reporta</h3>
         <p>
-          El usuario crea el reporte con título, descripción, categoría, ubicación y evidencia opcional.
-          El estado inicial es <strong>PENDIENTE</strong>.
+          El usuario crea el reporte con título, descripción, categoría, ubicación y evidencia
+          opcional. El estado inicial es <strong>PENDIENTE</strong>.
         </p>
       </article>
 
@@ -165,7 +168,6 @@
     </div>
   </section>
 
-
   <section class="seccion roles-box">
     <div class="seccion__cabecera">
       <h2>Roles dentro de la plataforma</h2>
@@ -177,8 +179,8 @@
         <mat-icon class="rol-card__icono">person</mat-icon>
         <h3>Usuario (USUARIO)</h3>
         <p>
-          Registra reportes, consulta listados y detalles, comenta incidencias y adjunta evidencias en
-          sus propios reportes.
+          Registra reportes, consulta listados y detalles, comenta incidencias y adjunta evidencias
+          en sus propios reportes.
         </p>
       </article>
 
@@ -201,7 +203,6 @@
       </article>
     </div>
   </section>
-
 
   <footer class="landing-footer">
     <span><strong>FixCampus</strong> · Sistema de Gestión de Incidencias del Campus</span>

@@ -12,13 +12,13 @@ import { Loginservice } from '../../services/loginservice';
   styleUrl: './homecomponent.css',
 })
 export class Homecomponent {
-  constructor(private readonly loginService: Loginservice) {}
+  constructor(private loginService: Loginservice) {}
 
-  get isAuthenticated(): boolean {
+  isAuthenticated(): boolean {
     return this.loginService.isAuthenticated();
   }
 
-  get esAdmin(): boolean {
+  esAdmin(): boolean {
     return this.loginService.hasAnyRole(['ADMIN']);
   }
 }
