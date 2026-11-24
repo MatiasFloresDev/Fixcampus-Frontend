@@ -19,7 +19,7 @@ export class Reporte05component {
   displayedColumns: string[] = ['idReporte', 'titulo', 'prioridad', 'estado', 'fechaCreacion'];
   estadoSeleccionado = '';
   estados = [
-    { value: 'PENDIENTE', viewValue: 'Pendiente' },{ value: 'ABIERTO', viewValue: 'ABIERTO' },{ value: 'EN_REVISION', viewValue: 'EN REVISION' },{ value: 'ASIGNADO', viewValue: 'ASIGNADO' },{ value: 'EN_ATENCION', viewValue: 'EN ATENCION' },{ value: 'CERRADO', viewValue: 'CERRADO' },
+    { value: 'PENDIENTE', viewValue: 'Pendiente' },
     { value: 'RESUELTO', viewValue: 'Resuelto' },
   ];
   mensaje = '';

@@ -3,7 +3,7 @@
   <div class="reporte-detalle__acciones">
     @if (registro) {
       <a mat-flat-button [routerLink]="['/reportes/editar', registro.idReporte]">Editar</a>
-      @if (esAdmin) {<button
+      <button
         mat-stroked-button
         type="button"
         class="reporte-detalle__eliminar"
@@ -11,7 +11,7 @@
         [disabled]="eliminando || comentarioEnProceso"
       >
         {{ eliminando ? 'Eliminando…' : 'Eliminar' }}
-      </button>}
+      </button>
     }
     <a mat-stroked-button routerLink="/reportes/listar">Volver</a>
   </div>
@@ -98,12 +98,12 @@
       </div>
     </div>
 
-    @if (esAdmin) {<app-comentarios-reporte
+    <app-comentarios-reporte
       [reporteId]="registro.idReporte"
       [usuarios]="usuarios"
       [eliminando]="eliminando"
       (guardandoChange)="comentarioEnProceso = $event"
-    ></app-comentarios-reporte>}
+    ></app-comentarios-reporte>
 
     <app-adjuntos-reporte [reporteId]="registro.idReporte"></app-adjuntos-reporte>
   }

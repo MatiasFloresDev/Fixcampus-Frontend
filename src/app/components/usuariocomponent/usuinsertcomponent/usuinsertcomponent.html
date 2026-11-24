@@ -1,5 +1,5 @@
 <section class="usuario-formulario">
-  <h1>{{ esPublico ? 'Crear cuenta' : 'Registrar usuario' }}</h1>
+  <h1>Registrar usuario</h1>
   @if (mensaje) {
     <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensaje }}</p>
   }
@@ -38,10 +38,6 @@
       />
       <mat-error>Ingrese una contraseña de al menos 6 caracteres, sin dejar solo espacios.</mat-error>
     </mat-form-field>
-    @if (!esPublico) {
-      <mat-form-field appearance="outline"><mat-label>Rol</mat-label><mat-select formControlName="rolId">@for (rol of roles; track rol.idRol) {<mat-option [value]="rol.idRol">{{ rol.nombre }}</mat-option>}</mat-select></mat-form-field>
-      <mat-form-field appearance="outline"><mat-label>Estado</mat-label><mat-select formControlName="estado"><mat-option value="ACTIVO">Activo</mat-option><mat-option value="INACTIVO">Inactivo</mat-option></mat-select></mat-form-field>
-    }
     <div class="usuario-formulario__acciones">
       <button
         mat-flat-button
@@ -50,7 +46,7 @@
       >
         {{ guardando ? 'Guardando…' : 'Guardar' }}
       </button>
-      <a mat-stroked-button [routerLink]="esPublico ? '/login' : '/usuarios/listar'">Cancelar</a>
+      <a mat-stroked-button routerLink="/usuarios/listar">Cancelar</a>
     </div>
   </form>
 </section>

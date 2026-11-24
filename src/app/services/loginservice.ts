@@ -15,6 +15,7 @@ export class Loginservice {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly jwtHelper = new JwtHelperService();
 
+  // Señal reactiva para forzar actualización inmediata de la UI (ej. Menucomponent)
   readonly sessionVersion = signal(0);
 
   constructor(private readonly http: HttpClient) {}
@@ -55,7 +56,7 @@ export class Loginservice {
   }
 
   isAuthenticated(): boolean {
-    this.sessionVersion();
+    this.sessionVersion(); // registra dependencia reactiva en templates/computed
     return this.getToken() !== null;
   }
 
