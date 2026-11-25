@@ -52,10 +52,9 @@ export class Uupdatecomponent implements OnInit {
         this.cargando = false;
         this.cdr.markForCheck();
       },
-      error: (error) => {
+      error: () => {
         this.cargando = false;
-        this.mensaje =
-          error.status === 404 ? 'No se encontró el registro.' : 'No se pudo cargar el registro.';
+        this.mensaje = 'No se pudo cargar el registro.';
         this.cdr.markForCheck();
       },
     });

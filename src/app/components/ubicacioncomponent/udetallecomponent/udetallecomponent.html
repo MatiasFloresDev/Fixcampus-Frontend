@@ -1,7 +1,7 @@
 <section class="ubicacion-detalle">
   <h1>Detalle de ubicación</h1>
   <div class="ubicacion-detalle__acciones">
-    @if (registro) {
+    @if (registro && esAdmin) {
       <a mat-flat-button [routerLink]="['/ubicaciones/editar', registro.idUbicacion]">Editar</a>
       <button
         mat-stroked-button
