@@ -37,10 +37,9 @@ export class Rdetallecomponent implements OnInit {
         this.cargando = false;
         this.cdr.markForCheck();
       },
-      error: (error) => {
+      error: () => {
         this.cargando = false;
-        this.mensaje =
-          error.status === 404 ? 'No se encontró el registro.' : 'No se pudo cargar el registro.';
+        this.mensaje = 'No se pudo cargar el registro.';
         this.cdr.markForCheck();
       },
     });
@@ -63,12 +62,9 @@ export class Rdetallecomponent implements OnInit {
       next: () => {
         this.router.navigate(['/roles/listar']);
       },
-      error: (error) => {
+      error: () => {
         this.eliminando = false;
-        this.mensaje =
-          error.status === 404
-            ? 'El registro ya no existe.'
-            : 'No se pudo eliminar. Puede estar asociado a otros registros.';
+        this.mensaje = 'No se pudo eliminar el registro.';
         this.cdr.markForCheck();
       },
     });

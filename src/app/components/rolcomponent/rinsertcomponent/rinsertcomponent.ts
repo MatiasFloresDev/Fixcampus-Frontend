@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { Rolservice } from '../../../services/rolservice';
 import { RolDTOInsert } from '../../../models/RolDTOInsert';
@@ -10,7 +11,14 @@ import { RolDTOInsert } from '../../../models/RolDTOInsert';
 @Component({
   selector: 'app-rinsertcomponent',
   standalone: true,
-  imports: [ReactiveFormsModule, MatInputModule, MatFormFieldModule, MatButtonModule, RouterLink],
+  imports: [
+    ReactiveFormsModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatButtonModule,
+    RouterLink,
+  ],
   templateUrl: './rinsertcomponent.html',
   styleUrl: './rinsertcomponent.css',
 })
@@ -18,6 +26,11 @@ export class Rinsertcomponent {
   form: FormGroup;
   guardando = false;
   mensaje = '';
+  nivelesAcceso = [
+    { value: 'TOTAL', viewValue: 'Total' },
+    { value: 'INTERMEDIO', viewValue: 'Intermedio' },
+    { value: 'BASICO', viewValue: 'Básico' },
+  ];
 
   constructor(
     private fb: FormBuilder,
@@ -27,7 +40,7 @@ export class Rinsertcomponent {
   ) {
     this.form = this.fb.group({
       nombre: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(50)]],
-      nivelAcceso: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(50)]],
+      nivelAcceso: ['', Validators.required],
       descripcion: ['', [Validators.maxLength(255)]],
     });
   }
@@ -40,7 +53,7 @@ export class Rinsertcomponent {
     }
     const dto: RolDTOInsert = {
       nombre: this.form.value.nombre.trim(),
-      nivelAcceso: this.form.value.nivelAcceso.trim(),
+      nivelAcceso: this.form.value.nivelAcceso,
       descripcion: this.form.value.descripcion?.trim() || null,
     };
     this.guardando = true;

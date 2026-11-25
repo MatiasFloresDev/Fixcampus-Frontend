@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { Rolservice } from '../../../services/rolservice';
 import { RolDTOInsert } from '../../../models/RolDTOInsert';
@@ -10,7 +11,14 @@ import { RolDTOInsert } from '../../../models/RolDTOInsert';
 @Component({
   selector: 'app-rupdatecomponent',
   standalone: true,
-  imports: [ReactiveFormsModule, MatInputModule, MatFormFieldModule, MatButtonModule, RouterLink],
+  imports: [
+    ReactiveFormsModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatButtonModule,
+    RouterLink,
+  ],
   templateUrl: './rupdatecomponent.html',
   styleUrl: './rupdatecomponent.css',
 })
@@ -21,6 +29,11 @@ export class Rupdatecomponent implements OnInit {
   id = 0;
   cargando = true;
   encontrado = false;
+  nivelesAcceso = [
+    { value: 'TOTAL', viewValue: 'Total' },
+    { value: 'INTERMEDIO', viewValue: 'Intermedio' },
+    { value: 'BASICO', viewValue: 'Básico' },
+  ];
 
   constructor(
     private fb: FormBuilder,
@@ -31,7 +44,7 @@ export class Rupdatecomponent implements OnInit {
   ) {
     this.form = this.fb.group({
       nombre: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(50)]],
-      nivelAcceso: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(50)]],
+      nivelAcceso: ['', Validators.required],
       descripcion: ['', [Validators.maxLength(255)]],
     });
   }
@@ -45,15 +58,17 @@ export class Rupdatecomponent implements OnInit {
     }
     this.service.buscarPorId(this.id).subscribe({
       next: (data) => {
-        this.form.patchValue(data);
+        this.form.patchValue({
+          ...data,
+          nivelAcceso: data.nivelAcceso?.trim().toUpperCase() || '',
+        });
         this.encontrado = true;
         this.cargando = false;
         this.cdr.markForCheck();
       },
-      error: (error) => {
+      error: () => {
         this.cargando = false;
-        this.mensaje =
-          error.status === 404 ? 'No se encontró el registro.' : 'No se pudo cargar el registro.';
+        this.mensaje = 'No se pudo cargar el registro.';
         this.cdr.markForCheck();
       },
     });
@@ -67,7 +82,7 @@ export class Rupdatecomponent implements OnInit {
     }
     const dto: RolDTOInsert = {
       nombre: this.form.value.nombre.trim(),
-      nivelAcceso: this.form.value.nivelAcceso.trim(),
+      nivelAcceso: this.form.value.nivelAcceso,
       descripcion: this.form.value.descripcion?.trim() || null,
     };
     this.guardando = true;
