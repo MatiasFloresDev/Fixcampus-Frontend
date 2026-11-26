@@ -1,12 +1,16 @@
 <header class="menu">
   <mat-toolbar class="menu__barra">
-    <a class="menu__marca" routerLink="/" aria-label="FixCampus, inicio">
+    <a
+      class="menu__marca"
+      [routerLink]="isAuthenticated ? '/home' : '/'"
+      aria-label="FixCampus, inicio"
+    >
       <mat-icon>school</mat-icon>FixCampus
     </a>
 
     @if (isAuthenticated) {
       <nav class="menu__navegacion" aria-label="Navegación principal">
-        <a mat-button routerLink="/">Inicio</a>
+        <a mat-button routerLink="/home">Inicio</a>
         <a mat-button routerLink="/reportes/listar">Reportes</a>
         <button mat-button type="button" [matMenuTriggerFor]="relacionados">Relacionados</button>
         <button mat-button type="button" [matMenuTriggerFor]="estadisticas">Estadísticas</button>
