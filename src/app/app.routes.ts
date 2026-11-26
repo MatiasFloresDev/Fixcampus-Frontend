@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { Landingcomponent } from './components/landingcomponent/landingcomponent';
 import { Logincomponent } from './components/logincomponent/logincomponent';
 import { Homecomponent } from './components/homecomponent/homecomponent';
 import { Categoriacomponent } from './components/categoriacomponent/categoriacomponent';
@@ -56,8 +57,9 @@ import { authGuard } from './core/guards/auth-guard';
 import { roleGuard } from './core/guards/role-guard';
 
 export const routes: Routes = [
-  { path: '', component: Homecomponent, pathMatch: 'full' },
+  { path: '', component: Landingcomponent, pathMatch: 'full' },
   { path: 'login', component: Logincomponent },
+  { path: 'home', component: Homecomponent, canActivate: [authGuard] },
 
   {
     path: 'categorias',
