@@ -14,6 +14,10 @@
   } @else if (dataSource.data.length > 0) {
     <div class="recomendacion-lista__tabla">
       <table mat-table [dataSource]="dataSource">
+        <ng-container matColumnDef="idRecomendacion">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let registro">{{ registro.idRecomendacion }}</td>
+        </ng-container>
         <ng-container matColumnDef="reporteId">
           <th mat-header-cell *matHeaderCellDef>Reporte</th>
           <td mat-cell *matCellDef="let registro">{{ nombreReporte(registro.reporteId) }}</td>

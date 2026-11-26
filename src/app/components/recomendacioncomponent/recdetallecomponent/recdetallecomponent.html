@@ -1,5 +1,10 @@
 <section class="recomendacion-detalle">
-  <h1>Detalle de recomendación</h1>
+  <h1>
+    Detalle de la recomendación
+    @if (registro) {
+      #{{ registro.idRecomendacion }}
+    }
+  </h1>
   <div class="recomendacion-detalle__acciones">
     @if (registro) {
       <a mat-flat-button [routerLink]="['/recomendaciones/editar', registro.idRecomendacion]">Editar</a>

@@ -1,5 +1,10 @@
 <section class="rol-formulario">
-  <h1>Editar rol #{{ id }}</h1>
+  <h1>
+    Editar rol
+    @if (encontrado) {
+      #{{ id }}
+    }
+  </h1>
   @if (mensaje) {
     <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensaje }}</p>
   }

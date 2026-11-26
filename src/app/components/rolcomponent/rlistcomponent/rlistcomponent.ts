@@ -15,7 +15,7 @@ import { RolDTOList } from '../../../models/RolDTOList';
   styleUrl: './rlistcomponent.css',
 })
 export class Rlistcomponent implements OnInit {
-  displayedColumns: string[] = ['nombre', 'nivelAcceso', 'acciones'];
+  displayedColumns: string[] = ['idRol', 'nombre', 'nivelAcceso', 'acciones'];
   dataSource = new MatTableDataSource<RolDTOList>([]);
   cargando = true;
   eliminando = false;

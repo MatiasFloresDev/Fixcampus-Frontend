@@ -1,5 +1,10 @@
 <section class="usuario-formulario">
-  <h1>Editar usuario #{{ id }}</h1>
+  <h1>
+    Editar usuario
+    @if (encontrado) {
+      #{{ id }}
+    }
+  </h1>
   @if (mensaje) {
     <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensaje }}</p>
   }

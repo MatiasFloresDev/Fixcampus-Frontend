@@ -46,6 +46,7 @@
   } @else {
     @for (comentario of comentarios; track comentario.idComentario) {
       <article class="comentarios-reporte__elemento">
+        <p class="comentarios-reporte__auxiliar">ID: {{ comentario.idComentario }}</p>
         @if (esAdmin) {
           <strong>{{ nombreUsuario(comentario.usuarioId) }}</strong>
         }

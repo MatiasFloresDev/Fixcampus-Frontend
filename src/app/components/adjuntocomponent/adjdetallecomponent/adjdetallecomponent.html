@@ -1,5 +1,10 @@
 <section class="adjunto-detalle">
-  <h1>Detalle de adjunto</h1>
+  <h1>
+    Detalle del adjunto
+    @if (registro) {
+      #{{ registro.idAdjunto }}
+    }
+  </h1>
   <div class="adjunto-detalle__acciones">
     @if (registro && esAdmin) {
       <a mat-flat-button [routerLink]="['/adjuntos/editar', registro.idAdjunto]">Editar</a>

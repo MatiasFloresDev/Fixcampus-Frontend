@@ -20,6 +20,7 @@ import { Loginservice } from '../../../services/loginservice';
 })
 export class Adjlistcomponent implements OnInit {
   displayedColumns: string[] = [
+    'idAdjunto',
     'reporteId',
     'nombreArchivo',
     'tipoArchivo',

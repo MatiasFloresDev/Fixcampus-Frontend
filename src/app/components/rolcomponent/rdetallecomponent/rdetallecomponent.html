@@ -1,5 +1,10 @@
 <section class="rol-detalle">
-  <h1>Detalle de rol</h1>
+  <h1>
+    Detalle del rol
+    @if (registro) {
+      #{{ registro.idRol }}
+    }
+  </h1>
   <div class="rol-detalle__acciones">
     @if (registro) {
       <a mat-flat-button [routerLink]="['/roles/editar', registro.idRol]">Editar</a>

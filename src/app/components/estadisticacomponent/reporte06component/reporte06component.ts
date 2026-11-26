@@ -27,7 +27,7 @@ import { CategoriaDTOList } from '../../../models/CategoriaDTOList';
 export class Reporte06component implements OnInit {
   dataSource = new MatTableDataSource<ReporteDTOList>([]);
   categorias: CategoriaDTOList[] = [];
-  displayedColumns: string[] = ['titulo', 'prioridad', 'estado', 'fechaCreacion'];
+  displayedColumns: string[] = ['idReporte', 'titulo', 'prioridad', 'estado', 'fechaCreacion'];
   categoriaSeleccionada = '';
   mensaje = '';
 

@@ -23,6 +23,10 @@
   @if (dataSource.data.length > 0) {
     <div class="tabla-contenedor">
       <table mat-table [dataSource]="dataSource">
+        <ng-container matColumnDef="idReporte">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let element">{{ element.idReporte }}</td>
+        </ng-container>
         <ng-container matColumnDef="titulo">
           <th mat-header-cell *matHeaderCellDef>Título</th>
           <td mat-cell *matCellDef="let element">{{ element.titulo }}</td>

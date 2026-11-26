@@ -18,7 +18,7 @@ import { CategoriaDTOList } from '../../../models/CategoriaDTOList';
   styleUrl: './replistcomponent.css',
 })
 export class Replistcomponent implements OnInit {
-  displayedColumns: string[] = ['titulo', 'categoria', 'prioridad', 'estado', 'acciones'];
+  displayedColumns: string[] = ['idReporte', 'titulo', 'categoria', 'prioridad', 'estado', 'acciones'];
   dataSource = new MatTableDataSource<ReporteDTOList>([]);
   categorias: CategoriaDTOList[] = [];
   cargando = true;

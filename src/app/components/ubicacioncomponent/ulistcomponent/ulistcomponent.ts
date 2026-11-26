@@ -16,7 +16,7 @@ import { UbicacionDTOList } from '../../../models/UbicacionDTOList';
   styleUrl: './ulistcomponent.css',
 })
 export class Ulistcomponent implements OnInit {
-  displayedColumns: string[] = ['campus', 'edificio', 'piso', 'tipo', 'acciones'];
+  displayedColumns: string[] = ['idUbicacion', 'campus', 'edificio', 'piso', 'tipo', 'acciones'];
   dataSource = new MatTableDataSource<UbicacionDTOList>([]);
   cargando = true;
   eliminando = false;

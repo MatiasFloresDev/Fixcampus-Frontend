@@ -17,7 +17,7 @@ import { RolDTOList } from '../../../models/RolDTOList';
   styleUrl: './usulistcomponent.css',
 })
 export class Usulistcomponent implements OnInit {
-  displayedColumns: string[] = ['nombre', 'correo', 'rol', 'estado', 'acciones'];
+  displayedColumns: string[] = ['idUsuario', 'nombre', 'correo', 'rol', 'estado', 'acciones'];
   dataSource = new MatTableDataSource<UsuarioDTOList>([]);
   roles: RolDTOList[] = [];
   mensajeRoles = '';

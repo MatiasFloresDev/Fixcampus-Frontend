@@ -28,6 +28,7 @@ export class Reporte09component implements OnInit {
   dataSource = new MatTableDataSource<RecomendacionDTOList>([]);
   reportes: ReporteDTOList[] = [];
   displayedColumns: string[] = [
+    'idRecomendacion',
     'reporteId',
     'tituloSugerido',
     'prioridadSugerida',

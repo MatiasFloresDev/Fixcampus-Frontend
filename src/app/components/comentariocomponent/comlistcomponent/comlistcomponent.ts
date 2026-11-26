@@ -50,8 +50,8 @@ export class Comlistcomponent implements OnInit {
 
   get displayedColumns(): string[] {
     return this.esAdmin
-      ? ['reporteId', 'usuarioId', 'textoComentario', 'fechaComentario', 'acciones']
-      : ['reporteId', 'textoComentario', 'fechaComentario', 'acciones'];
+      ? ['idComentario', 'reporteId', 'usuarioId', 'textoComentario', 'fechaComentario', 'acciones']
+      : ['idComentario', 'reporteId', 'textoComentario', 'fechaComentario', 'acciones'];
   }
 
   ngOnInit(): void {

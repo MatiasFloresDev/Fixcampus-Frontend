@@ -28,7 +28,7 @@ import { UsuarioDTOList } from '../../../models/UsuarioDTOList';
 export class Reporte08component implements OnInit {
   dataSource = new MatTableDataSource<ReporteDTOList>([]);
   usuarios: UsuarioDTOList[] = [];
-  displayedColumns: string[] = ['titulo', 'prioridad', 'estado', 'fechaCreacion'];
+  displayedColumns: string[] = ['idReporte', 'titulo', 'prioridad', 'estado', 'fechaCreacion'];
   correoSeleccionado = '';
   mensaje = '';
 

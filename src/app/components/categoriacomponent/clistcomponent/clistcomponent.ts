@@ -16,7 +16,7 @@ import { CategoriaDTOList } from '../../../models/CategoriaDTOList';
   styleUrl: './clistcomponent.css',
 })
 export class Clistcomponent implements OnInit {
-  displayedColumns: string[] = ['nombre', 'descripcion', 'acciones'];
+  displayedColumns: string[] = ['idCategoria', 'nombre', 'descripcion', 'acciones'];
   dataSource = new MatTableDataSource<CategoriaDTOList>([]);
   cargando = true;
   eliminando = false;

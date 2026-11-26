@@ -7,6 +7,7 @@
   } @else {
     @for (adjunto of adjuntos; track adjunto.idAdjunto) {
       <article class="adjuntos-reporte__elemento">
+        <p class="adjuntos-reporte__auxiliar">ID: {{ adjunto.idAdjunto }}</p>
         <a [href]="adjunto.urlArchivo" target="_blank" rel="noopener noreferrer">
           {{ adjunto.nombreArchivo }}
         </a>

@@ -13,6 +13,10 @@
   } @else if (dataSource.data.length > 0) {
     <div class="ubicacion-lista__tabla">
       <table mat-table [dataSource]="dataSource">
+        <ng-container matColumnDef="idUbicacion">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let registro">{{ registro.idUbicacion }}</td>
+        </ng-container>
         <ng-container matColumnDef="campus">
           <th mat-header-cell *matHeaderCellDef>Campus</th>
           <td mat-cell *matCellDef="let registro">{{ registro.campus }}</td>

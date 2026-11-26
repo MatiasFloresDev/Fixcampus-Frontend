@@ -24,7 +24,7 @@ import { ReporteDTOList } from '../../../models/ReporteDTOList';
 })
 export class Reporte07component {
   dataSource = new MatTableDataSource<ReporteDTOList>([]);
-  displayedColumns: string[] = ['titulo', 'prioridad', 'estado', 'fechaCreacion'];
+  displayedColumns: string[] = ['idReporte', 'titulo', 'prioridad', 'estado', 'fechaCreacion'];
   prioridadSeleccionada = '';
   prioridades = [
     { value: 'ALTA', viewValue: 'Alta' },

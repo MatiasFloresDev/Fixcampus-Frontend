@@ -1,5 +1,10 @@
 <section class="categoria-formulario">
-  <h1>Editar categoría #{{ id }}</h1>
+  <h1>
+    Editar categoría
+    @if (encontrado) {
+      #{{ id }}
+    }
+  </h1>
   @if (mensaje) {
     <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensaje }}</p>
   }

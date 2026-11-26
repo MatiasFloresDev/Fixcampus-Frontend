@@ -26,6 +26,7 @@ import { ReporteDTOList } from '../../../models/ReporteDTOList';
 })
 export class Reclistcomponent implements OnInit {
   displayedColumns: string[] = [
+    'idRecomendacion',
     'reporteId',
     'tituloSugerido',
     'prioridadSugerida',

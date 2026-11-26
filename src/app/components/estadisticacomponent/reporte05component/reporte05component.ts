@@ -24,7 +24,7 @@ import { ReporteDTOList } from '../../../models/ReporteDTOList';
 })
 export class Reporte05component {
   dataSource = new MatTableDataSource<ReporteDTOList>([]);
-  displayedColumns: string[] = ['titulo', 'prioridad', 'estado', 'fechaCreacion'];
+  displayedColumns: string[] = ['idReporte', 'titulo', 'prioridad', 'estado', 'fechaCreacion'];
   estadoSeleccionado = '';
   estados = [
     { value: 'PENDIENTE', viewValue: 'Pendiente' },
