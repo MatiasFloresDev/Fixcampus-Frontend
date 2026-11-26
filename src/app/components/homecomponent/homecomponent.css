@@ -1,285 +1,84 @@
-.landing {
-  display: grid;
-  gap: 36px;
+.home-panel {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem;
 }
 
-/* HERO */
-.hero {
-  display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 32px;
-  align-items: center;
-  background: var(--fc-blanco);
-  border: 1px solid var(--fc-borde);
-  border-radius: 16px;
-  padding: clamp(24px, 4vw, 44px);
-  box-shadow: 0 4px 16px rgba(13, 106, 98, 0.05);
-}
-
-.hero__etiquera {
-  display: inline-block;
-  color: var(--fc-verde-oscuro);
-  background: var(--fc-verde-claro);
-  padding: 4px 12px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 500;
-  margin-bottom: 14px;
-}
-
-.hero__contenido h1 {
-  font-size: clamp(26px, 3.2vw, 36px);
-  line-height: 1.25;
-  margin: 0 0 14px;
-  color: var(--fc-verde-oscuro);
-}
-
-.hero__descripcion {
-  color: var(--fc-texto-suave);
-  line-height: 1.6;
-  margin: 0 0 28px;
-  font-size: 16px;
-}
-
-.hero__acciones {
+.home-panel__cabecera {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-}
-
-.hero__acciones a mat-icon {
-  margin-right: 6px;
-}
-
-.hero__visual {
-  display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 1.75rem;
+  background: #ffffff;
+  border: 1px solid #d9e4e2;
+  border-radius: 12px;
 }
 
-.hero__imagen {
-  width: 100%;
-  height: auto;
-  max-height: 380px;
-  object-fit: cover;
-  border-radius: 14px;
-  display: block;
-  border: 1px solid var(--fc-borde);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-}
-
-/* SECCIONES Y CARDS */
-.seccion {
-  display: grid;
-  gap: 24px;
-}
-
-.seccion__cabecera {
-  text-align: center;
-  max-width: 700px;
-  margin: 0 auto;
-}
-
-.seccion__cabecera h2 {
-  margin: 0 0 8px;
-  font-size: 26px;
-  color: var(--fc-verde-oscuro);
-}
-
-.seccion__cabecera p {
-  margin: 0;
-  color: var(--fc-texto-suave);
-  font-size: 15px;
-}
-
-.seccion__etiqueta {
+.home-panel__etiqueta {
   display: inline-block;
-  color: var(--fc-verde-marca);
+  font-size: 0.8rem;
   font-weight: 600;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  margin-bottom: 6px;
+  color: #0d6a62;
+  background: #e6f3f1;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  margin-bottom: 0.4rem;
 }
 
-.grid-tres {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-  align-items: start;
+.home-panel__cabecera h1 {
+  margin: 0.25rem 0;
+  color: #16302d;
+  font-size: 1.65rem;
 }
 
-/* BENEFIICO CARDS */
-.beneficio-card {
+.home-panel__cabecera p {
+  margin: 0;
+  color: #4f6461;
+}
+
+.home-panel__acciones-principales {
   display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  padding: 20px;
-  background: var(--fc-fondo);
-  border: 1px solid var(--fc-borde);
-  border-radius: 14px;
-  height: 100%;
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
-.beneficio-card mat-icon {
-  color: var(--fc-verde-oscuro);
-  margin-top: 2px;
+.home-panel__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 1.25rem;
+}
+
+.modulo-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 1.35rem;
+  background: #ffffff;
+  border: 1px solid #d9e4e2;
+  border-radius: 12px;
+}
+
+.modulo-card mat-icon {
+  color: #0d6a62;
   font-size: 28px;
   width: 28px;
   height: 28px;
-  flex-shrink: 0;
 }
 
-.beneficio-card strong {
-  display: block;
-  margin-bottom: 6px;
-  font-size: 15px;
-  color: var(--fc-texto);
-}
-
-.beneficio-card p {
+.modulo-card h2 {
   margin: 0;
-  font-size: 13.5px;
-  color: var(--fc-texto-suave);
-  line-height: 1.5;
+  font-size: 1.15rem;
+  color: #16302d;
 }
 
-/* ESCENARIO CARDS */
-.escenario-card {
-  background: var(--fc-blanco);
-  border: 1px solid var(--fc-borde);
-  border-radius: 14px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.escenario-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
-}
-
-.escenario-card__img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-  display: block;
-  border-bottom: 1px solid var(--fc-borde);
-}
-
-.escenario-card__cuerpo {
-  padding: 20px;
-}
-
-.escenario-card__tag {
-  display: inline-block;
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--fc-verde-oscuro);
-  background: var(--fc-verde-claro);
-  padding: 3px 10px;
-  border-radius: 999px;
-  margin-bottom: 10px;
-}
-
-.escenario-card__cuerpo h3 {
-  margin: 0 0 8px;
-  font: 600 18px Poppins, sans-serif;
-  color: var(--fc-texto);
-}
-
-.escenario-card__cuerpo p {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.55;
-  color: var(--fc-texto-suave);
-}
-
-/* PASO Y ROL CARDS */
-.paso,
-.rol-card {
-  background: var(--fc-blanco);
-  border: 1px solid var(--fc-borde);
-  border-radius: 14px;
-  padding: 24px;
-  height: 100%;
-}
-
-.paso__num {
-  display: inline-block;
-  font: 700 14px Poppins, sans-serif;
-  color: var(--fc-verde-oscuro);
-  background: var(--fc-verde-claro);
-  padding: 4px 10px;
-  border-radius: 8px;
-  margin-bottom: 12px;
-}
-
-.paso h3,
-.rol-card h3 {
-  margin: 0 0 8px;
-  font: 600 18px Poppins, sans-serif;
-  color: var(--fc-texto);
-}
-
-.paso p,
-.rol-card p {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.55;
-  color: var(--fc-texto-suave);
-}
-
-.rol-card__icono {
-  color: var(--fc-verde-oscuro);
-  margin-bottom: 12px;
-  font-size: 32px;
-  width: 32px;
-  height: 32px;
-}
-
-/* FOOTER */
-.landing-footer {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-  padding: 18px 24px;
-  background: var(--fc-blanco);
-  border: 1px solid var(--fc-borde);
-  border-radius: 14px;
-  font-size: 13px;
-  color: var(--fc-texto-suave);
-  margin-top: 12px;
-}
-
-/* RESPONSIVE */
-@media (max-width: 1024px) {
-  .grid-tres {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .hero__etiqueta {
-    margin-top: 8px;
-  }
-}
-
-@media (max-width: 768px) {
-  .hero {
-    grid-template-columns: 1fr;
-    text-align: center;
-  }
-  .hero__acciones {
-    justify-content: center;
-  }
-  .hero__visual {
-    order: -1;
-  }
-  .grid-tres {
-    grid-template-columns: 1fr;
-  }
-  .escenario-card__img {
-    height: 200px;
-  }
+.modulo-card p {
+  margin: 0 0 0.5rem;
+  color: #4f6461;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  flex: 1;
 }
