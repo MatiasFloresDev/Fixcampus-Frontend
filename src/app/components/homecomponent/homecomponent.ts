@@ -14,15 +14,19 @@ import { Loginservice } from '../../services/loginservice';
 export class Homecomponent {
   constructor(private readonly loginService: Loginservice) {}
 
-  get isAuthenticated(): boolean {
-    return this.loginService.isAuthenticated();
+  get username(): string {
+    return this.loginService.getUsername();
+  }
+
+  get roles(): string {
+    return this.loginService.getRoles().join(', ');
   }
 
   get esAdmin(): boolean {
     return this.loginService.hasAnyRole(['ADMIN']);
   }
-  
+
   get puedeRegistrar(): boolean {
-  return this.loginService.hasAnyRole(['ADMIN', 'REPORTANTE']);
-}
+    return this.loginService.hasAnyRole(['ADMIN', 'REPORTANTE']);
+  }
 }
