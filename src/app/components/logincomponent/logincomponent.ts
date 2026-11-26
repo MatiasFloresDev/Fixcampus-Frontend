@@ -41,9 +41,12 @@ export class Logincomponent {
         this.submitting = false;
         const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
         const destination =
-          returnUrl?.startsWith('/') && !returnUrl.startsWith('//') && returnUrl !== '/login'
+          returnUrl?.startsWith('/') &&
+          !returnUrl.startsWith('//') &&
+          returnUrl !== '/login' &&
+          returnUrl !== '/'
             ? returnUrl
-            : '/';
+            : '/home';
 
         void this.router.navigateByUrl(destination);
       },
