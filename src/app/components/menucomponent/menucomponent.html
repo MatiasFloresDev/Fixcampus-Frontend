@@ -28,6 +28,8 @@
   <mat-menu #relacionados="matMenu">
     <a mat-menu-item routerLink="/comentarios/listar">Comentarios</a>
     <a mat-menu-item routerLink="/adjuntos/listar">Adjuntos</a>
+    <a mat-menu-item routerLink="/categorias/listar">Categorías</a>
+    <a mat-menu-item routerLink="/ubicaciones/listar">Ubicaciones</a>
     @if (esAdmin) {
       <a mat-menu-item routerLink="/recomendaciones/listar">Recomendaciones</a>
     }
@@ -51,8 +53,6 @@
   </mat-menu>
 
   <mat-menu #administracion="matMenu">
-    <a mat-menu-item routerLink="/categorias/listar">Categorías</a>
-    <a mat-menu-item routerLink="/ubicaciones/listar">Ubicaciones</a>
     <a mat-menu-item routerLink="/usuarios/listar">Usuarios</a>
     <a mat-menu-item routerLink="/roles/listar">Roles</a>
   </mat-menu>

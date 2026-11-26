@@ -56,8 +56,8 @@ import { authGuard } from './core/guards/auth-guard';
 import { roleGuard } from './core/guards/role-guard';
 
 export const routes: Routes = [
+  { path: '', component: Homecomponent, pathMatch: 'full' },
   { path: 'login', component: Logincomponent },
-  { path: '', component: Homecomponent, canActivate: [authGuard], pathMatch: 'full' },
 
   {
     path: 'categorias',
@@ -69,7 +69,7 @@ export const routes: Routes = [
         path: 'listar',
         component: Clistcomponent,
         canActivate: [roleGuard],
-        data: { roles: ['ADMIN', 'USUARIO', 'TECNICO'] },
+        data: { roles: ['ADMIN', 'REPORTANTE', 'TECNICO'] },
       },
       {
         path: 'insertar',
@@ -87,7 +87,7 @@ export const routes: Routes = [
         path: 'detalle/:id',
         component: Cdetallecomponent,
         canActivate: [roleGuard],
-        data: { roles: ['ADMIN', 'USUARIO', 'TECNICO'] },
+        data: { roles: ['ADMIN', 'REPORTANTE', 'TECNICO'] },
       },
     ],
   },
@@ -102,7 +102,7 @@ export const routes: Routes = [
         path: 'listar',
         component: Ulistcomponent,
         canActivate: [roleGuard],
-        data: { roles: ['ADMIN', 'USUARIO', 'TECNICO'] },
+        data: { roles: ['ADMIN', 'REPORTANTE', 'TECNICO'] },
       },
       {
         path: 'insertar',
@@ -120,7 +120,7 @@ export const routes: Routes = [
         path: 'detalle/:id',
         component: Udetallecomponent,
         canActivate: [roleGuard],
-        data: { roles: ['ADMIN', 'USUARIO', 'TECNICO'] },
+        data: { roles: ['ADMIN', 'REPORTANTE', 'TECNICO'] },
       },
     ],
   },
@@ -150,7 +150,7 @@ export const routes: Routes = [
         path: 'insertar',
         component: Repinsertcomponent,
         canActivate: [roleGuard],
-        data: { roles: ['ADMIN', 'USUARIO'] },
+        data: { roles: ['ADMIN', 'REPORTANTE'] },
       },
       {
         path: 'editar/:id',
@@ -170,7 +170,12 @@ export const routes: Routes = [
       { path: '', redirectTo: 'listar', pathMatch: 'full' },
       { path: 'listar', component: Comlistcomponent },
       { path: 'insertar', component: Cominsertcomponent },
-      { path: 'editar/:id', component: Comupdatecomponent },
+      {
+        path: 'editar/:id',
+        component: Comupdatecomponent,
+        canActivate: [roleGuard],
+        data: { roles: ['ADMIN'] },
+      },
       { path: 'detalle/:id', component: Comdetallecomponent },
     ],
   },
@@ -186,7 +191,7 @@ export const routes: Routes = [
         path: 'insertar',
         component: Adjinsertcomponent,
         canActivate: [roleGuard],
-        data: { roles: ['ADMIN', 'USUARIO'] },
+        data: { roles: ['ADMIN', 'REPORTANTE'] },
       },
       {
         path: 'editar/:id',
@@ -260,25 +265,25 @@ export const routes: Routes = [
         path: 'reporte05',
         component: Reporte05component,
         canActivate: [roleGuard],
-        data: { roles: ['ADMIN', 'USUARIO', 'TECNICO'] },
+        data: { roles: ['ADMIN', 'REPORTANTE', 'TECNICO'] },
       },
       {
         path: 'reporte06',
         component: Reporte06component,
         canActivate: [roleGuard],
-        data: { roles: ['ADMIN', 'USUARIO', 'TECNICO'] },
+        data: { roles: ['ADMIN', 'REPORTANTE', 'TECNICO'] },
       },
       {
         path: 'reporte07',
         component: Reporte07component,
         canActivate: [roleGuard],
-        data: { roles: ['ADMIN', 'USUARIO', 'TECNICO'] },
+        data: { roles: ['ADMIN', 'REPORTANTE', 'TECNICO'] },
       },
       {
         path: 'reporte08',
         component: Reporte08component,
         canActivate: [roleGuard],
-        data: { roles: ['ADMIN', 'USUARIO', 'TECNICO'] },
+        data: { roles: ['ADMIN', 'REPORTANTE', 'TECNICO'] },
       },
       {
         path: 'reporte09',

@@ -21,4 +21,8 @@ export class Homecomponent {
   get esAdmin(): boolean {
     return this.loginService.hasAnyRole(['ADMIN']);
   }
+  
+  get puedeRegistrar(): boolean {
+  return this.loginService.hasAnyRole(['ADMIN', 'REPORTANTE']);
+}
 }
