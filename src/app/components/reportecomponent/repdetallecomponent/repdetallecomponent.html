@@ -1,7 +1,7 @@
 <section class="reporte-detalle">
   <h1>Detalle de reporte</h1>
   <div class="reporte-detalle__acciones">
-    @if (registro) {
+    @if (registro && esAdmin) {
       <a mat-flat-button [routerLink]="['/reportes/editar', registro.idReporte]">Editar</a>
       <button
         mat-stroked-button
@@ -40,10 +40,10 @@
       </div>
       <div class="reporte-detalle__campo">
         <strong class="reporte-detalle__etiqueta">Categoría</strong>
-        <span>{{ categoria?.nombre || 'Categoría no disponible' }} (#{{ registro.categoriaId }})</span>
+        <span>{{ categoria?.nombre || 'Categoría no disponible' }}</span>
       </div>
       <div class="reporte-detalle__campo">
-        <strong class="reporte-detalle__etiqueta">Ubicación (#{{ registro.ubicacionId }})</strong>
+        <strong class="reporte-detalle__etiqueta">Ubicación</strong>
         @if (ubicacion) {
           <p>Campus: {{ ubicacion.campus }} · Edificio: {{ ubicacion.edificio }}</p>
           <p>Piso: {{ ubicacion.piso ?? 'Sin especificar' }}</p>
@@ -56,22 +56,20 @@
         <strong class="reporte-detalle__etiqueta">Detalle de ubicación</strong>
         <span>{{ registro.detalleUbicacion || 'Sin especificar' }}</span>
       </div>
-      <div class="reporte-detalle__campo">
-        <strong class="reporte-detalle__etiqueta">Autor</strong>
-        <span>
-          {{ nombreUsuario(registro.usuarioReportanteId) }} (#{{ registro.usuarioReportanteId }})
-        </span>
-      </div>
-      <div class="reporte-detalle__campo">
-        <strong class="reporte-detalle__etiqueta">Técnico asignado</strong>
-        @if (registro.tecnicoAsignadoId !== null) {
-          <span>
-            {{ nombreUsuario(registro.tecnicoAsignadoId) }} (#{{ registro.tecnicoAsignadoId }})
-          </span>
-        } @else {
-          <span>Sin asignar</span>
-        }
-      </div>
+      @if (esAdmin) {
+        <div class="reporte-detalle__campo">
+          <strong class="reporte-detalle__etiqueta">Autor</strong>
+          <span>{{ nombreUsuario(registro.usuarioReportanteId) }}</span>
+        </div>
+        <div class="reporte-detalle__campo">
+          <strong class="reporte-detalle__etiqueta">Técnico asignado</strong>
+          @if (registro.tecnicoAsignadoId !== null) {
+            <span>{{ nombreUsuario(registro.tecnicoAsignadoId) }}</span>
+          } @else {
+            <span>Sin asignar</span>
+          }
+        </div>
+      }
       <div class="reporte-detalle__campo">
         <strong class="reporte-detalle__etiqueta">Prioridad</strong>
         <span>{{ registro.prioridad || 'Sin asignar' }}</span>

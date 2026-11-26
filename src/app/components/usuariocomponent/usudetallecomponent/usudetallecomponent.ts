@@ -44,10 +44,9 @@ export class Usudetallecomponent implements OnInit {
         this.cargando = false;
         this.cdr.markForCheck();
       },
-      error: (error) => {
+      error: () => {
         this.cargando = false;
-        this.mensaje =
-          error.status === 404 ? 'No se encontró el registro.' : 'No se pudo cargar el registro.';
+        this.mensaje = 'No se pudo cargar el registro.';
         this.cdr.markForCheck();
       },
     });
@@ -83,12 +82,9 @@ export class Usudetallecomponent implements OnInit {
       next: () => {
         this.router.navigate(['/usuarios/listar']);
       },
-      error: (error) => {
+      error: () => {
         this.eliminando = false;
-        this.mensaje =
-          error.status === 404
-            ? 'El registro ya no existe.'
-            : 'No se pudo eliminar el usuario. Puede estar asociado a otros registros.';
+        this.mensaje = 'No se pudo eliminar el usuario.';
         this.cdr.markForCheck();
       },
     });

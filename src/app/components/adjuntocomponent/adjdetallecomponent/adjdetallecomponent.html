@@ -1,7 +1,7 @@
 <section class="adjunto-detalle">
   <h1>Detalle de adjunto</h1>
   <div class="adjunto-detalle__acciones">
-    @if (registro) {
+    @if (registro && esAdmin) {
       <a mat-flat-button [routerLink]="['/adjuntos/editar', registro.idAdjunto]">Editar</a>
       <button
         mat-stroked-button
@@ -33,7 +33,7 @@
       <div class="adjunto-detalle__campo">
         <strong class="adjunto-detalle__etiqueta">Reporte</strong>
         <span class="adjunto-detalle__valor">
-          {{ reporte?.titulo || 'Reporte no disponible' }} (#{{ registro.reporteId }})
+          {{ reporte?.titulo || 'Reporte no disponible' }}
         </span>
       </div>
       <div class="adjunto-detalle__campo">

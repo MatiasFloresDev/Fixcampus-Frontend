@@ -46,7 +46,9 @@
   } @else {
     @for (comentario of comentarios; track comentario.idComentario) {
       <article class="comentarios-reporte__elemento">
-        <strong>{{ nombreUsuario(comentario.usuarioId) }}</strong>
+        @if (esAdmin) {
+          <strong>{{ nombreUsuario(comentario.usuarioId) }}</strong>
+        }
         <p class="comentarios-reporte__auxiliar">
           {{ comentario.fechaComentario | date: 'dd/MM/yyyy HH:mm' }}
         </p>

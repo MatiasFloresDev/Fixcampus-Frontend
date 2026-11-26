@@ -1,6 +1,7 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Usuarioservice } from '../../../services/usuarioservice';
@@ -11,18 +12,25 @@ import { RolDTOList } from '../../../models/RolDTOList';
 @Component({
   selector: 'app-usulistcomponent',
   standalone: true,
-  imports: [MatTableModule, MatButtonModule, MatIconModule, RouterLink],
+  imports: [MatTableModule, MatPaginatorModule, MatButtonModule, MatIconModule, RouterLink],
   templateUrl: './usulistcomponent.html',
   styleUrl: './usulistcomponent.css',
 })
 export class Usulistcomponent implements OnInit {
-  displayedColumns: string[] = ['idUsuario', 'nombre', 'correo', 'rol', 'estado', 'acciones'];
-  dataSource: UsuarioDTOList[] = [];
+  displayedColumns: string[] = ['nombre', 'correo', 'rol', 'estado', 'acciones'];
+  dataSource = new MatTableDataSource<UsuarioDTOList>([]);
   roles: RolDTOList[] = [];
   mensajeRoles = '';
   cargando = true;
   eliminando = false;
   mensaje = '';
+
+  @ViewChild(MatPaginator) set paginator(paginator: MatPaginator) {
+    if (paginator) {
+      this.dataSource.paginator = paginator;
+    }
+  }
+
   constructor(
     private service: Usuarioservice,
     private rolService: Rolservice,
@@ -39,16 +47,13 @@ export class Usulistcomponent implements OnInit {
     this.mensaje = '';
     this.service.listar().subscribe({
       next: (data) => {
-        this.dataSource = data;
+        this.dataSource.data = data;
         this.cargando = false;
         this.cdr.markForCheck();
       },
-      error: (error) => {
+      error: () => {
         this.cargando = false;
-        this.mensaje =
-          error.status === 0
-            ? 'No se pudo conectar con el servidor.'
-            : 'No se pudieron cargar los registros.';
+        this.mensaje = 'No se pudieron cargar los registros.';
         this.cdr.markForCheck();
       },
     });
@@ -69,7 +74,7 @@ export class Usulistcomponent implements OnInit {
 
   nombreRol(id: number): string {
     const rol = this.roles.find((rol) => rol.idRol === id);
-    return rol?.nombre || 'Rol #' + id;
+    return rol?.nombre || 'Rol no disponible';
   }
 
   eliminar(registro: UsuarioDTOList): void {
@@ -90,12 +95,9 @@ export class Usulistcomponent implements OnInit {
         this.eliminando = false;
         this.listar();
       },
-      error: (error) => {
+      error: () => {
         this.eliminando = false;
-        this.mensaje =
-          error.status === 404
-            ? 'El registro ya no existe. Actualice el listado.'
-            : 'No se pudo eliminar el usuario. Puede estar asociado a otros registros.';
+        this.mensaje = 'No se pudo eliminar el usuario.';
         this.cdr.markForCheck();
       },
     });

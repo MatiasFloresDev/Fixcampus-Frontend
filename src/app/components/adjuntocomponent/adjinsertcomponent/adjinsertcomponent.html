@@ -16,7 +16,7 @@
       <mat-select formControlName="reporteId" required>
         @for (reporte of reportes; track reporte.idReporte) {
           <mat-option [value]="reporte.idReporte">
-            #{{ reporte.idReporte }} · {{ reporte.titulo }}
+            {{ reporte.titulo }}
           </mat-option>
         }
       </mat-select>

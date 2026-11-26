@@ -9,6 +9,7 @@ import { Reporteservice } from '../../../services/reporteservice';
 import { ReporteDTOList } from '../../../models/ReporteDTOList';
 import { Adjuntoservice } from '../../../services/adjuntoservice';
 import { AdjuntoDTOInsert } from '../../../models/AdjuntoDTOInsert';
+import { Loginservice } from '../../../services/loginservice';
 
 @Component({
   selector: 'app-adjinsertcomponent',
@@ -36,6 +37,7 @@ export class Adjinsertcomponent implements OnInit {
     private fb: FormBuilder,
     private service: Adjuntoservice,
     private reporteService: Reporteservice,
+    private loginService: Loginservice,
     private router: Router,
     private cdr: ChangeDetectorRef,
   ) {
@@ -48,7 +50,11 @@ export class Adjinsertcomponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.reporteService.listar().subscribe({
+    const consulta$ = this.loginService.hasAnyRole(['ADMIN'])
+      ? this.reporteService.listar()
+      : this.reporteService.misReportes();
+
+    consulta$.subscribe({
       next: (data) => {
         this.reportes = data;
         this.reportesCargados = true;
@@ -82,7 +88,6 @@ export class Adjinsertcomponent implements OnInit {
       error: (error) => {
         this.guardando = false;
         this.mensaje = 'No se pudo guardar el adjunto.';
-        if (error.status === 403) this.mensaje = 'No tiene permiso para guardar este registro.';
         if (error.error?.message === 'Un reporte puede tener como máximo 3 evidencias') {
           this.mensaje = 'Este reporte ya tiene tres adjuntos. No se pueden registrar más.';
         }

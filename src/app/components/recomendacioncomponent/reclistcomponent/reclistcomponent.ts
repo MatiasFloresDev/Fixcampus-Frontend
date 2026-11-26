@@ -1,7 +1,8 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Recomendacionservice } from '../../../services/recomendacionservice';
@@ -12,25 +13,37 @@ import { ReporteDTOList } from '../../../models/ReporteDTOList';
 @Component({
   selector: 'app-reclistcomponent',
   standalone: true,
-  imports: [DatePipe, RouterLink, MatTableModule, MatButtonModule, MatIconModule],
+  imports: [
+    DatePipe,
+    RouterLink,
+    MatTableModule,
+    MatPaginatorModule,
+    MatButtonModule,
+    MatIconModule,
+  ],
   templateUrl: './reclistcomponent.html',
   styleUrl: './reclistcomponent.css',
 })
 export class Reclistcomponent implements OnInit {
   displayedColumns: string[] = [
-    'idRecomendacion',
     'reporteId',
     'tituloSugerido',
     'prioridadSugerida',
     'fechaRecomendacion',
     'acciones',
   ];
-  dataSource: RecomendacionDTOList[] = [];
+  dataSource = new MatTableDataSource<RecomendacionDTOList>([]);
   reportes: ReporteDTOList[] = [];
   cargando = true;
   eliminando = false;
   mensaje = '';
   mensajeReportes = '';
+
+  @ViewChild(MatPaginator) set paginator(paginator: MatPaginator) {
+    if (paginator) {
+      this.dataSource.paginator = paginator;
+    }
+  }
 
   constructor(
     private service: Recomendacionservice,
@@ -48,7 +61,7 @@ export class Reclistcomponent implements OnInit {
     this.mensaje = '';
     this.service.listar().subscribe({
       next: (data) => {
-        this.dataSource = data;
+        this.dataSource.data = data;
         this.cargando = false;
         this.cdr.markForCheck();
       },
@@ -75,8 +88,7 @@ export class Reclistcomponent implements OnInit {
 
   nombreReporte(id: number): string {
     const reporte = this.reportes.find((reporte) => reporte.idReporte === id);
-    if (!reporte) return 'Reporte #' + id;
-    return '#' + id + ' · ' + reporte.titulo;
+    return reporte ? reporte.titulo : 'Reporte no disponible';
   }
 
   eliminar(registro: RecomendacionDTOList): void {
@@ -92,10 +104,9 @@ export class Reclistcomponent implements OnInit {
         this.eliminando = false;
         this.listar();
       },
-      error: (error) => {
+      error: () => {
         this.eliminando = false;
         this.mensaje = 'No se pudo eliminar la recomendación.';
-        if (error.status === 403) this.mensaje = 'No tiene permiso para eliminar este registro.';
         this.cdr.markForCheck();
       },
     });

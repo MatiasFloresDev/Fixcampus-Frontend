@@ -11,7 +11,7 @@
           {{ adjunto.nombreArchivo }}
         </a>
         <p class="adjuntos-reporte__auxiliar">
-          Adjunto #{{ adjunto.idAdjunto }} · {{ adjunto.tipoArchivo || 'Tipo no especificado' }}
+          {{ adjunto.tipoArchivo || 'Tipo no especificado' }}
         </p>
         <p class="adjuntos-reporte__auxiliar">{{ adjunto.fechaSubida | date: 'dd/MM/yyyy HH:mm' }}</p>
       </article>

@@ -7,19 +7,26 @@
   <form [formGroup]="form" (ngSubmit)="guardar()" class="rol-formulario__campos">
     <mat-form-field appearance="outline">
       <mat-label>Nombre</mat-label>
-      <input matInput formControlName="nombre" maxlength="50" required />
+      <input matInput formControlName="nombre" maxlength="50" placeholder="Ej. ROLE_SOPORTE" required />
       <mat-error>Ingrese nombre sin dejar solo espacios (máximo 50 caracteres).</mat-error>
     </mat-form-field>
+
     <mat-form-field appearance="outline">
       <mat-label>Nivel de acceso</mat-label>
-      <input matInput formControlName="nivelAcceso" maxlength="50" required />
-      <mat-error>Ingrese nivel de acceso sin dejar solo espacios (máximo 50 caracteres).</mat-error>
+      <mat-select formControlName="nivelAcceso" required>
+        @for (n of nivelesAcceso; track n.value) {
+          <mat-option [value]="n.value">{{ n.viewValue }}</mat-option>
+        }
+      </mat-select>
+      <mat-error>Seleccione un nivel de acceso.</mat-error>
     </mat-form-field>
+
     <mat-form-field appearance="outline">
       <mat-label>Descripción (opcional)</mat-label>
       <textarea matInput formControlName="descripcion" maxlength="255" rows="3"></textarea>
       <mat-error>Máximo 255 caracteres.</mat-error>
     </mat-form-field>
+
     <div class="rol-formulario__acciones">
       <button mat-flat-button type="submit" [disabled]="guardando || form.invalid">
         {{ guardando ? 'Guardando…' : 'Guardar' }}

@@ -58,6 +58,6 @@ export class Menucomponent implements OnInit, OnDestroy {
 
   cerrarSesion(): void {
     this.loginService.logout();
-    void this.router.navigateByUrl('/login', { replaceUrl: true });
+    void this.router.navigateByUrl('/', { replaceUrl: true });
   }
 }

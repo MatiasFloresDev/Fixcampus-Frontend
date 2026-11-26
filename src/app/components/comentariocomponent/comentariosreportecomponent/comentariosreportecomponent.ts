@@ -3,9 +3,8 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnChanges,
+  OnInit,
   Output,
-  SimpleChanges,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -13,6 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { Comentarioservice } from '../../../services/comentarioservice';
+import { Loginservice } from '../../../services/loginservice';
 import { ComentarioDTOList } from '../../../models/ComentarioDTOList';
 import { ComentarioDTOInsert } from '../../../models/ComentarioDTOInsert';
 import { UsuarioDTOList } from '../../../models/UsuarioDTOList';
@@ -24,7 +24,7 @@ import { UsuarioDTOList } from '../../../models/UsuarioDTOList';
   templateUrl: './comentariosreportecomponent.html',
   styleUrl: './comentariosreportecomponent.css',
 })
-export class Comentariosreportecomponent implements OnChanges {
+export class Comentariosreportecomponent implements OnInit {
   @Input() reporteId: number = 0;
   @Input() usuarios: UsuarioDTOList[] = [];
   @Input() eliminando = false;
@@ -40,6 +40,7 @@ export class Comentariosreportecomponent implements OnChanges {
 
   constructor(
     private comentarioService: Comentarioservice,
+    private loginService: Loginservice,
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
   ) {
@@ -48,18 +49,17 @@ export class Comentariosreportecomponent implements OnChanges {
     });
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['reporteId']) {
-      this.listarComentarios();
-    }
+  get esAdmin(): boolean {
+    return this.loginService.hasAnyRole(['ADMIN']);
+  }
+
+  ngOnInit(): void {
+    this.listarComentarios();
   }
 
   nombreUsuario(id: number): string {
     const usuario = this.usuarios.find((usuario) => usuario.idUsuario === id);
-    if (!usuario) {
-      return 'Usuario #' + id;
-    }
-    return usuario.nombre + ' ' + usuario.apellido;
+    return usuario ? `${usuario.nombre} ${usuario.apellido}` : 'No disponible';
   }
 
   listarComentarios(): void {
@@ -85,8 +85,10 @@ export class Comentariosreportecomponent implements OnChanges {
 
   comentar(): void {
     if (
-      !Number.isInteger(this.reporteId) || this.reporteId <= 0 ||
-      this.guardandoComentario || this.eliminando
+      !Number.isInteger(this.reporteId) ||
+      this.reporteId <= 0 ||
+      this.guardandoComentario ||
+      this.eliminando
     ) {
       return;
     }

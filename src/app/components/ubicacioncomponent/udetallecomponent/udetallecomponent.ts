@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { Ubicacionservice } from '../../../services/ubicacionservice';
+import { Loginservice } from '../../../services/loginservice';
 import { UbicacionDTOList } from '../../../models/UbicacionDTOList';
 
 @Component({
@@ -19,10 +20,15 @@ export class Udetallecomponent implements OnInit {
 
   constructor(
     private service: Ubicacionservice,
+    private loginService: Loginservice,
     private route: ActivatedRoute,
     private router: Router,
     private cdr: ChangeDetectorRef,
   ) {}
+
+  get esAdmin(): boolean {
+    return this.loginService.hasAnyRole(['ADMIN']);
+  }
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -37,10 +43,9 @@ export class Udetallecomponent implements OnInit {
         this.cargando = false;
         this.cdr.markForCheck();
       },
-      error: (error) => {
+      error: () => {
         this.cargando = false;
-        this.mensaje =
-          error.status === 404 ? 'No se encontró el registro.' : 'No se pudo cargar el registro.';
+        this.mensaje = 'No se pudo cargar el registro.';
         this.cdr.markForCheck();
       },
     });
@@ -63,12 +68,9 @@ export class Udetallecomponent implements OnInit {
       next: () => {
         this.router.navigate(['/ubicaciones/listar']);
       },
-      error: (error) => {
+      error: () => {
         this.eliminando = false;
-        this.mensaje =
-          error.status === 404
-            ? 'El registro ya no existe.'
-            : 'No se pudo eliminar. Puede estar asociado a otros registros.';
+        this.mensaje = 'No se pudo eliminar el registro.';
         this.cdr.markForCheck();
       },
     });

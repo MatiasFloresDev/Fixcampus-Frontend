@@ -1,20 +1,18 @@
 <section class="ubicacion-lista">
   <div class="ubicacion-lista__cabecera">
     <h1>Listado de ubicaciones</h1>
-    <a mat-flat-button routerLink="/ubicaciones/insertar">Registrar ubicación</a>
+    @if (esAdmin) {
+      <a mat-flat-button routerLink="/ubicaciones/insertar">Registrar ubicación</a>
+    }
   </div>
   @if (mensaje) {
     <p class="fc-mensaje fc-mensaje--error" role="alert">{{ mensaje }}</p>
   }
   @if (cargando) {
     <p role="status">Cargando registros…</p>
-  } @else if (dataSource.length > 0) {
+  } @else if (dataSource.data.length > 0) {
     <div class="ubicacion-lista__tabla">
       <table mat-table [dataSource]="dataSource">
-        <ng-container matColumnDef="idUbicacion">
-          <th mat-header-cell *matHeaderCellDef>ID</th>
-          <td mat-cell *matCellDef="let registro">{{ registro.idUbicacion }}</td>
-        </ng-container>
         <ng-container matColumnDef="campus">
           <th mat-header-cell *matHeaderCellDef>Campus</th>
           <td mat-cell *matCellDef="let registro">{{ registro.campus }}</td>
@@ -42,29 +40,37 @@
               >
                 <mat-icon>visibility</mat-icon>
               </a>
-              <a
-                mat-icon-button
-                [routerLink]="['/ubicaciones/editar', registro.idUbicacion]"
-                [attr.aria-label]="'Editar registro ' + registro.idUbicacion"
-              >
-                <mat-icon>edit</mat-icon>
-              </a>
-              <button
-                mat-icon-button
-                type="button"
-                (click)="eliminar(registro)"
-                [disabled]="eliminando"
-                [attr.aria-label]="'Eliminar registro ' + registro.idUbicacion"
-                class="ubicacion-lista__eliminar"
-              >
-                <mat-icon>delete</mat-icon>
-              </button>
+              @if (esAdmin) {
+                <a
+                  mat-icon-button
+                  [routerLink]="['/ubicaciones/editar', registro.idUbicacion]"
+                  [attr.aria-label]="'Editar registro ' + registro.idUbicacion"
+                >
+                  <mat-icon>edit</mat-icon>
+                </a>
+                <button
+                  mat-icon-button
+                  type="button"
+                  (click)="eliminar(registro)"
+                  [disabled]="eliminando"
+                  [attr.aria-label]="'Eliminar registro ' + registro.idUbicacion"
+                  class="ubicacion-lista__eliminar"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              }
             </div>
           </td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
+      <mat-paginator
+        [pageSize]="8"
+        [pageSizeOptions]="[5, 8, 10, 20]"
+        showFirstLastButtons
+        aria-label="Seleccionar página"
+      ></mat-paginator>
     </div>
   } @else if (!mensaje) {
     <p>No hay registros de ubicaciones disponibles.</p>

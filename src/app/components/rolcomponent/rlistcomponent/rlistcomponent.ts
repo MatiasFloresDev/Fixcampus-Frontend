@@ -1,6 +1,7 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Rolservice } from '../../../services/rolservice';
@@ -9,16 +10,23 @@ import { RolDTOList } from '../../../models/RolDTOList';
 @Component({
   selector: 'app-rlistcomponent',
   standalone: true,
-  imports: [MatTableModule, MatButtonModule, MatIconModule, RouterLink],
+  imports: [MatTableModule, MatPaginatorModule, MatButtonModule, MatIconModule, RouterLink],
   templateUrl: './rlistcomponent.html',
   styleUrl: './rlistcomponent.css',
 })
 export class Rlistcomponent implements OnInit {
-  displayedColumns: string[] = ['idRol', 'nombre', 'nivelAcceso', 'acciones'];
-  dataSource: RolDTOList[] = [];
+  displayedColumns: string[] = ['nombre', 'nivelAcceso', 'acciones'];
+  dataSource = new MatTableDataSource<RolDTOList>([]);
   cargando = true;
   eliminando = false;
   mensaje = '';
+
+  @ViewChild(MatPaginator) set paginator(paginator: MatPaginator) {
+    if (paginator) {
+      this.dataSource.paginator = paginator;
+    }
+  }
+
   constructor(
     private service: Rolservice,
     private cdr: ChangeDetectorRef,
@@ -33,16 +41,13 @@ export class Rlistcomponent implements OnInit {
     this.mensaje = '';
     this.service.listar().subscribe({
       next: (data) => {
-        this.dataSource = data;
+        this.dataSource.data = data;
         this.cargando = false;
         this.cdr.markForCheck();
       },
-      error: (error) => {
+      error: () => {
         this.cargando = false;
-        this.mensaje =
-          error.status === 0
-            ? 'No se pudo conectar con el servidor.'
-            : 'No se pudieron cargar los registros.';
+        this.mensaje = 'No se pudieron cargar los registros.';
         this.cdr.markForCheck();
       },
     });
@@ -66,12 +71,9 @@ export class Rlistcomponent implements OnInit {
         this.eliminando = false;
         this.listar();
       },
-      error: (error) => {
+      error: () => {
         this.eliminando = false;
-        this.mensaje =
-          error.status === 404
-            ? 'El registro ya no existe. Actualice el listado.'
-            : 'No se pudo eliminar. Puede estar asociado a otros registros.';
+        this.mensaje = 'No se pudo eliminar el registro.';
         this.cdr.markForCheck();
       },
     });

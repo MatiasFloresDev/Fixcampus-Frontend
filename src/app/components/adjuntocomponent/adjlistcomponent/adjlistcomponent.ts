@@ -1,42 +1,58 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Adjuntoservice } from '../../../services/adjuntoservice';
 import { AdjuntoDTOList } from '../../../models/AdjuntoDTOList';
 import { Reporteservice } from '../../../services/reporteservice';
 import { ReporteDTOList } from '../../../models/ReporteDTOList';
+import { Loginservice } from '../../../services/loginservice';
 
 @Component({
   selector: 'app-adjlistcomponent',
   standalone: true,
-  imports: [DatePipe, RouterLink, MatTableModule, MatButtonModule, MatIconModule],
+  imports: [DatePipe, RouterLink, MatTableModule, MatPaginatorModule, MatButtonModule, MatIconModule],
   templateUrl: './adjlistcomponent.html',
   styleUrl: './adjlistcomponent.css',
 })
 export class Adjlistcomponent implements OnInit {
   displayedColumns: string[] = [
-    'idAdjunto',
     'reporteId',
     'nombreArchivo',
     'tipoArchivo',
     'fechaSubida',
     'acciones',
   ];
-  dataSource: AdjuntoDTOList[] = [];
+  dataSource = new MatTableDataSource<AdjuntoDTOList>([]);
   reportes: ReporteDTOList[] = [];
   cargando = true;
   eliminando = false;
   mensaje = '';
   mensajeReportes = '';
 
+  @ViewChild(MatPaginator) set paginator(paginator: MatPaginator) {
+    if (paginator) {
+      this.dataSource.paginator = paginator;
+    }
+  }
+
   constructor(
     private service: Adjuntoservice,
     private reporteService: Reporteservice,
+    private loginService: Loginservice,
     private cdr: ChangeDetectorRef,
   ) {}
+
+  get esAdmin(): boolean {
+    return this.loginService.hasAnyRole(['ADMIN']);
+  }
+
+  get puedeRegistrar(): boolean {
+    return this.loginService.hasAnyRole(['ADMIN', 'REPORTANTE']);
+  }
 
   ngOnInit(): void {
     this.listar();
@@ -48,7 +64,7 @@ export class Adjlistcomponent implements OnInit {
     this.mensaje = '';
     this.service.listar().subscribe({
       next: (data) => {
-        this.dataSource = data;
+        this.dataSource.data = data;
         this.cargando = false;
         this.cdr.markForCheck();
       },
@@ -75,8 +91,7 @@ export class Adjlistcomponent implements OnInit {
 
   nombreReporte(id: number): string {
     const reporte = this.reportes.find((reporte) => reporte.idReporte === id);
-    if (!reporte) return 'Reporte #' + id;
-    return '#' + id + ' · ' + reporte.titulo;
+    return reporte ? reporte.titulo : 'Reporte no disponible';
   }
 
   eliminar(registro: AdjuntoDTOList): void {
@@ -92,10 +107,9 @@ export class Adjlistcomponent implements OnInit {
         this.eliminando = false;
         this.listar();
       },
-      error: (error) => {
+      error: () => {
         this.eliminando = false;
         this.mensaje = 'No se pudo eliminar el adjunto.';
-        if (error.status === 403) this.mensaje = 'No tiene permiso para eliminar este registro.';
         this.cdr.markForCheck();
       },
     });
