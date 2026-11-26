@@ -8,6 +8,7 @@ import { Reporteservice } from '../../../services/reporteservice';
 import { Categoriaservice } from '../../../services/categoriaservice';
 import { Ubicacionservice } from '../../../services/ubicacionservice';
 import { Usuarioservice } from '../../../services/usuarioservice';
+import { Loginservice } from '../../../services/loginservice';
 import { ReporteDTOList } from '../../../models/ReporteDTOList';
 import { CategoriaDTOList } from '../../../models/CategoriaDTOList';
 import { UbicacionDTOList } from '../../../models/UbicacionDTOList';
@@ -42,10 +43,15 @@ export class Repdetallecomponent implements OnInit {
     private categoriaService: Categoriaservice,
     private ubicacionService: Ubicacionservice,
     private usuarioService: Usuarioservice,
+    private loginService: Loginservice,
     private route: ActivatedRoute,
     private router: Router,
     private cdr: ChangeDetectorRef,
   ) {}
+
+  get esAdmin(): boolean {
+    return this.loginService.hasAnyRole(['ADMIN']);
+  }
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -61,11 +67,9 @@ export class Repdetallecomponent implements OnInit {
         this.cargarRelaciones(data);
         this.cdr.markForCheck();
       },
-      error: (error) => {
+      error: () => {
         this.cargando = false;
-        this.mensaje = error.status === 404
-          ? 'No se encontró el reporte.'
-          : 'No se pudo cargar el reporte.';
+        this.mensaje = 'No se pudo cargar el reporte.';
         this.cdr.markForCheck();
       },
     });
@@ -92,24 +96,24 @@ export class Repdetallecomponent implements OnInit {
         this.cdr.markForCheck();
       },
     });
-    this.usuarioService.listar().subscribe({
-      next: (data) => {
-        this.usuarios = data;
-        this.cdr.markForCheck();
-      },
-      error: () => {
-        this.mensajeRelaciones = 'No se pudieron cargar los nombres de los usuarios.';
-        this.cdr.markForCheck();
-      },
-    });
+
+    if (this.esAdmin) {
+      this.usuarioService.listar().subscribe({
+        next: (data) => {
+          this.usuarios = data;
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.mensajeRelaciones = 'No se pudieron cargar los nombres de los usuarios.';
+          this.cdr.markForCheck();
+        },
+      });
+    }
   }
 
   nombreUsuario(id: number): string {
     const usuario = this.usuarios.find((usuario) => usuario.idUsuario === id);
-    if (!usuario) {
-      return 'Usuario #' + id;
-    }
-    return usuario.nombre + ' ' + usuario.apellido;
+    return usuario ? `${usuario.nombre} ${usuario.apellido}` : 'No disponible';
   }
 
   eliminar(): void {

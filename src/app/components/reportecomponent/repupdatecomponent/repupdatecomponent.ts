@@ -84,11 +84,9 @@ export class Repupdatecomponent implements OnInit {
         this.cargando = false;
         this.cdr.markForCheck();
       },
-      error: (error) => {
+      error: () => {
         this.cargando = false;
-        this.mensaje = error.status === 404
-          ? 'No se encontró el reporte.'
-          : 'No se pudo cargar el reporte.';
+        this.mensaje = 'No se pudo cargar el reporte.';
         this.cdr.markForCheck();
       },
     });
