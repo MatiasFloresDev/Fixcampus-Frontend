@@ -6,6 +6,7 @@ import { Adjuntoservice } from '../../../services/adjuntoservice';
 import { AdjuntoDTOList } from '../../../models/AdjuntoDTOList';
 import { Reporteservice } from '../../../services/reporteservice';
 import { ReporteDTOList } from '../../../models/ReporteDTOList';
+import { Loginservice } from '../../../services/loginservice';
 
 @Component({
   selector: 'app-adjdetallecomponent',
@@ -25,10 +26,15 @@ export class Adjdetallecomponent implements OnInit {
   constructor(
     private service: Adjuntoservice,
     private reporteService: Reporteservice,
+    private loginService: Loginservice,
     private route: ActivatedRoute,
     private router: Router,
     private cdr: ChangeDetectorRef,
   ) {}
+
+  get esAdmin(): boolean {
+    return this.loginService.hasAnyRole(['ADMIN']);
+  }
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -44,10 +50,9 @@ export class Adjdetallecomponent implements OnInit {
         this.cargarRelaciones(data.reporteId);
         this.cdr.markForCheck();
       },
-      error: (error) => {
+      error: () => {
         this.cargando = false;
         this.mensaje = 'No se pudo cargar el adjunto.';
-        if (error.status === 404) this.mensaje = 'No se encontró el registro.';
         this.cdr.markForCheck();
       },
     });
@@ -78,10 +83,9 @@ export class Adjdetallecomponent implements OnInit {
       next: () => {
         this.router.navigate(['/adjuntos/listar']);
       },
-      error: (error) => {
+      error: () => {
         this.eliminando = false;
         this.mensaje = 'No se pudo eliminar el adjunto.';
-        if (error.status === 403) this.mensaje = 'No tiene permiso para eliminar este registro.';
         this.cdr.markForCheck();
       },
     });

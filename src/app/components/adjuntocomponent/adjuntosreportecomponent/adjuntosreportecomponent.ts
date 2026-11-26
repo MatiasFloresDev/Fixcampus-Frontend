@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Adjuntoservice } from '../../../services/adjuntoservice';
 import { AdjuntoDTOList } from '../../../models/AdjuntoDTOList';
@@ -10,7 +10,7 @@ import { AdjuntoDTOList } from '../../../models/AdjuntoDTOList';
   templateUrl: './adjuntosreportecomponent.html',
   styleUrl: './adjuntosreportecomponent.css',
 })
-export class Adjuntosreportecomponent implements OnChanges {
+export class Adjuntosreportecomponent implements OnInit {
   @Input() reporteId: number = 0;
 
   adjuntos: AdjuntoDTOList[] = [];
@@ -22,10 +22,8 @@ export class Adjuntosreportecomponent implements OnChanges {
     private cdr: ChangeDetectorRef,
   ) {}
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['reporteId']) {
-      this.listarAdjuntos();
-    }
+  ngOnInit(): void {
+    this.listarAdjuntos();
   }
 
   listarAdjuntos(): void {
