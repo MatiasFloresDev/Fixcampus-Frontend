@@ -44,10 +44,9 @@ export class Recdetallecomponent implements OnInit {
         this.cargarRelaciones(data.reporteId);
         this.cdr.markForCheck();
       },
-      error: (error) => {
+      error: () => {
         this.cargando = false;
         this.mensaje = 'No se pudo cargar la recomendación.';
-        if (error.status === 404) this.mensaje = 'No se encontró el registro.';
         this.cdr.markForCheck();
       },
     });
@@ -78,10 +77,9 @@ export class Recdetallecomponent implements OnInit {
       next: () => {
         this.router.navigate(['/recomendaciones/listar']);
       },
-      error: (error) => {
+      error: () => {
         this.eliminando = false;
         this.mensaje = 'No se pudo eliminar la recomendación.';
-        if (error.status === 403) this.mensaje = 'No tiene permiso para eliminar este registro.';
         this.cdr.markForCheck();
       },
     });

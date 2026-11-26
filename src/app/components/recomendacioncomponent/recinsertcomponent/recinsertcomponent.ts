@@ -35,6 +35,11 @@ export class Recinsertcomponent implements OnInit {
   reportes: ReporteDTOList[] = [];
   reportesCargados = false;
   mensajeReportes = '';
+  prioridades = [
+    { value: 'ALTA', viewValue: 'Alta' },
+    { value: 'MEDIA', viewValue: 'Media' },
+    { value: 'BAJA', viewValue: 'Baja' },
+  ];
 
   constructor(
     private fb: FormBuilder,
@@ -48,7 +53,7 @@ export class Recinsertcomponent implements OnInit {
       reporteId: [null as number | null, Validators.required],
       tituloSugerido: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(200)]],
       resumen: ['', [Validators.required, Validators.pattern(/\S/)]],
-      prioridadSugerida: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(30)]],
+      prioridadSugerida: ['', Validators.required],
       justificacion: ['', [Validators.required, Validators.pattern(/\S/)]],
     });
   }
@@ -79,7 +84,7 @@ export class Recinsertcomponent implements OnInit {
         this.form.patchValue({
           tituloSugerido: sugerencia.tituloSugerido,
           resumen: sugerencia.resumen,
-          prioridadSugerida: sugerencia.prioridadSugerida,
+          prioridadSugerida: sugerencia.prioridadSugerida?.toUpperCase() || 'MEDIA',
           justificacion: sugerencia.justificacion,
         });
         this.generandoIA = false;
@@ -87,7 +92,8 @@ export class Recinsertcomponent implements OnInit {
       },
       error: () => {
         this.generandoIA = false;
-        this.mensaje = 'No se pudo generar la recomendación con IA. Verifique su API Key o complete manualmente.';
+        this.mensaje =
+          'No se pudo generar la recomendación con IA. Verifique su API Key o complete manualmente.';
         this.cdr.markForCheck();
       },
     });
@@ -103,7 +109,7 @@ export class Recinsertcomponent implements OnInit {
       reporteId: this.form.value.reporteId,
       tituloSugerido: this.form.value.tituloSugerido.trim(),
       resumen: this.form.value.resumen.trim(),
-      prioridadSugerida: this.form.value.prioridadSugerida.trim(),
+      prioridadSugerida: this.form.value.prioridadSugerida,
       justificacion: this.form.value.justificacion.trim(),
     };
     this.guardando = true;
@@ -115,7 +121,6 @@ export class Recinsertcomponent implements OnInit {
       error: (error) => {
         this.guardando = false;
         this.mensaje = 'No se pudo guardar la recomendación.';
-        if (error.status === 403) this.mensaje = 'No tiene permiso para guardar este registro.';
         if (error.error?.message === 'Este reporte ya tiene una recomendación') {
           this.mensaje = 'Este reporte ya tiene una recomendación. Puede editar la existente.';
         }

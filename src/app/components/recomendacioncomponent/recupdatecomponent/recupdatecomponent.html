@@ -13,27 +13,31 @@
         <input matInput formControlName="tituloSugerido" maxlength="200" required />
         <mat-error>Complete este campo sin dejar solo espacios. Máximo 200 caracteres.</mat-error>
       </mat-form-field>
+
       <mat-form-field appearance="outline">
         <mat-label>Resumen</mat-label>
         <textarea matInput formControlName="resumen" required rows="3"></textarea>
         <mat-error>Complete este campo sin dejar solo espacios.</mat-error>
       </mat-form-field>
+
       <mat-form-field appearance="outline">
         <mat-label>Prioridad sugerida</mat-label>
-        <input matInput formControlName="prioridadSugerida" maxlength="30" required />
-        <mat-error>Complete este campo sin dejar solo espacios. Máximo 30 caracteres.</mat-error>
+        <mat-select formControlName="prioridadSugerida" required>
+          @for (p of prioridades; track p.value) {
+            <mat-option [value]="p.value">{{ p.viewValue }}</mat-option>
+          }
+        </mat-select>
+        <mat-error>Seleccione una prioridad.</mat-error>
       </mat-form-field>
+
       <mat-form-field appearance="outline">
         <mat-label>Justificación</mat-label>
         <textarea matInput formControlName="justificacion" required rows="3"></textarea>
         <mat-error>Complete este campo sin dejar solo espacios.</mat-error>
       </mat-form-field>
+
       <div class="recomendacion-formulario__acciones">
-        <button
-          mat-flat-button
-          type="submit"
-          [disabled]="guardando || form.invalid"
-        >
+        <button mat-flat-button type="submit" [disabled]="guardando || form.invalid">
           {{ guardando ? 'Guardando…' : 'Guardar' }}
         </button>
         <a mat-stroked-button routerLink="/recomendaciones/listar">Cancelar</a>
