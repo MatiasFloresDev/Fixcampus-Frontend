@@ -1,0 +1,279 @@
+.landing {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3rem;
+  color: #16302d;
+}
+
+/* HERO */
+.hero {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  align-items: center;
+  gap: 2.25rem;
+  padding: 2.25rem;
+  background: #ffffff;
+  border: 1px solid #d9e4e2;
+  border-radius: 16px;
+}
+
+.hero__etiqueta {
+  display: inline-block;
+  padding: 0.3rem 0.75rem;
+  margin-bottom: 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #0d6a62;
+  background: #e6f3f1;
+  border-radius: 999px;
+}
+
+.hero__contenido h1 {
+  margin: 0 0 1rem;
+  font-size: 2.15rem;
+  line-height: 1.2;
+  color: #16302d;
+}
+
+.hero__descripcion {
+  margin: 0 0 1.5rem;
+  font-size: 1.02rem;
+  line-height: 1.6;
+  color: #4f6461;
+}
+
+.hero__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+}
+
+.btn-primario {
+  background-color: #0d6a62 !important;
+  color: #ffffff !important;
+}
+
+.hero__visual {
+  display: flex;
+  justify-content: center;
+}
+
+.hero__imagen {
+  width: 100%;
+  max-height: 340px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid #d9e4e2;
+}
+
+/* SECCIONES */
+.seccion {
+  margin-top: 2.75rem;
+}
+
+.seccion__cabecera {
+  margin-bottom: 1.5rem;
+}
+
+.seccion__etiqueta {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #0d6a62;
+  margin-bottom: 0.35rem;
+}
+
+.seccion__cabecera h2 {
+  margin: 0 0 0.4rem;
+  font-size: 1.55rem;
+  color: #16302d;
+}
+
+.seccion__cabecera p {
+  margin: 0;
+  color: #4f6461;
+  font-size: 0.96rem;
+}
+
+.grid-tres {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+/* BENEFICIOS */
+.beneficio-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  padding: 1.35rem;
+  background: #ffffff;
+  border: 1px solid #d9e4e2;
+  border-radius: 12px;
+}
+
+.beneficio-card mat-icon {
+  color: #0d6a62;
+  font-size: 26px;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+.beneficio-card strong {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 1.02rem;
+  color: #16302d;
+}
+
+.beneficio-card p {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: #4f6461;
+}
+
+/* ESCENARIOS */
+.escenario-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #d9e4e2;
+  border-radius: 12px;
+}
+
+.escenario-card__img {
+  width: 100%;
+  height: 185px;
+  object-fit: cover;
+}
+
+.escenario-card__cuerpo {
+  padding: 1.25rem;
+}
+
+.escenario-card__tag {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  margin-bottom: 0.55rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #0d6a62;
+  background: #e6f3f1;
+  border-radius: 999px;
+}
+
+.escenario-card__cuerpo h3 {
+  margin: 0 0 0.45rem;
+  font-size: 1.12rem;
+  color: #16302d;
+}
+
+.escenario-card__cuerpo p {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: #4f6461;
+}
+
+/* FLUJO EN 3 PASOS */
+.paso {
+  padding: 1.4rem;
+  background: #ffffff;
+  border: 1px solid #d9e4e2;
+  border-radius: 12px;
+}
+
+.paso__num {
+  display: inline-block;
+  margin-bottom: 0.6rem;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: #0d6a62;
+  border-radius: 6px;
+}
+
+.paso h3 {
+  margin: 0 0 0.45rem;
+  font-size: 1.12rem;
+  color: #16302d;
+}
+
+.paso p {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: #4f6461;
+}
+
+/* ROLES */
+.roles-box {
+  padding: 1.75rem;
+  background: #f5f9f8;
+  border: 1px solid #d9e4e2;
+  border-radius: 16px;
+}
+
+.rol-card {
+  padding: 1.35rem;
+  background: #ffffff;
+  border: 1px solid #d9e4e2;
+  border-radius: 12px;
+}
+
+.rol-card__icono {
+  color: #0d6a62;
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  margin-bottom: 0.5rem;
+}
+
+.rol-card h3 {
+  margin: 0 0 0.45rem;
+  font-size: 1.08rem;
+  color: #16302d;
+}
+
+.rol-card p {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: #4f6461;
+}
+
+/* FOOTER */
+.landing-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 2.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #d9e4e2;
+  font-size: 0.88rem;
+  color: #4f6461;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 1.5rem;
+  }
+
+  .hero__contenido h1 {
+    font-size: 1.75rem;
+  }
+
+  .grid-tres {
+    grid-template-columns: 1fr;
+  }
+}
