@@ -1,7 +1,8 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Comentarioservice } from '../../../services/comentarioservice';
@@ -10,24 +11,17 @@ import { Reporteservice } from '../../../services/reporteservice';
 import { ReporteDTOList } from '../../../models/ReporteDTOList';
 import { Usuarioservice } from '../../../services/usuarioservice';
 import { UsuarioDTOList } from '../../../models/UsuarioDTOList';
+import { Loginservice } from '../../../services/loginservice';
 
 @Component({
   selector: 'app-comlistcomponent',
   standalone: true,
-  imports: [DatePipe, RouterLink, MatTableModule, MatButtonModule, MatIconModule],
+  imports: [DatePipe, RouterLink, MatTableModule, MatPaginatorModule, MatButtonModule, MatIconModule],
   templateUrl: './comlistcomponent.html',
   styleUrl: './comlistcomponent.css',
 })
 export class Comlistcomponent implements OnInit {
-  displayedColumns: string[] = [
-    'idComentario',
-    'reporteId',
-    'usuarioId',
-    'textoComentario',
-    'fechaComentario',
-    'acciones',
-  ];
-  dataSource: ComentarioDTOList[] = [];
+  dataSource = new MatTableDataSource<ComentarioDTOList>([]);
   reportes: ReporteDTOList[] = [];
   usuarios: UsuarioDTOList[] = [];
   mensajeUsuarios = '';
@@ -36,12 +30,29 @@ export class Comlistcomponent implements OnInit {
   mensaje = '';
   mensajeReportes = '';
 
+  @ViewChild(MatPaginator) set paginator(paginator: MatPaginator) {
+    if (paginator) {
+      this.dataSource.paginator = paginator;
+    }
+  }
+
   constructor(
     private service: Comentarioservice,
     private reporteService: Reporteservice,
     private usuarioService: Usuarioservice,
+    private loginService: Loginservice,
     private cdr: ChangeDetectorRef,
   ) {}
+
+  get esAdmin(): boolean {
+    return this.loginService.hasAnyRole(['ADMIN']);
+  }
+
+  get displayedColumns(): string[] {
+    return this.esAdmin
+      ? ['reporteId', 'usuarioId', 'textoComentario', 'fechaComentario', 'acciones']
+      : ['reporteId', 'textoComentario', 'fechaComentario', 'acciones'];
+  }
 
   ngOnInit(): void {
     this.listar();
@@ -53,7 +64,7 @@ export class Comlistcomponent implements OnInit {
     this.mensaje = '';
     this.service.listar().subscribe({
       next: (data) => {
-        this.dataSource = data;
+        this.dataSource.data = data;
         this.cargando = false;
         this.cdr.markForCheck();
       },
@@ -76,28 +87,29 @@ export class Comlistcomponent implements OnInit {
         this.cdr.markForCheck();
       },
     });
-    this.usuarioService.listar().subscribe({
-      next: (data) => {
-        this.usuarios = data;
-        this.cdr.markForCheck();
-      },
-      error: () => {
-        this.mensajeUsuarios = 'No se pudieron cargar los autores. Se mostrarán sus IDs.';
-        this.cdr.markForCheck();
-      },
-    });
+
+    if (this.esAdmin) {
+      this.usuarioService.listar().subscribe({
+        next: (data) => {
+          this.usuarios = data;
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.mensajeUsuarios = 'No se pudieron cargar los autores.';
+          this.cdr.markForCheck();
+        },
+      });
+    }
   }
 
   nombreReporte(id: number): string {
     const reporte = this.reportes.find((reporte) => reporte.idReporte === id);
-    if (!reporte) return 'Reporte #' + id;
-    return '#' + id + ' · ' + reporte.titulo;
+    return reporte ? reporte.titulo : 'Reporte no disponible';
   }
 
   nombreUsuario(id: number): string {
     const usuario = this.usuarios.find((usuario) => usuario.idUsuario === id);
-    if (!usuario) return 'Usuario #' + id;
-    return usuario.nombre + ' ' + usuario.apellido;
+    return usuario ? `${usuario.nombre} ${usuario.apellido}` : 'No disponible';
   }
 
   eliminar(registro: ComentarioDTOList): void {
@@ -113,10 +125,9 @@ export class Comlistcomponent implements OnInit {
         this.eliminando = false;
         this.listar();
       },
-      error: (error) => {
+      error: () => {
         this.eliminando = false;
         this.mensaje = 'No se pudo eliminar el comentario.';
-        if (error.status === 403) this.mensaje = 'No tiene permiso para eliminar este registro.';
         this.cdr.markForCheck();
       },
     });

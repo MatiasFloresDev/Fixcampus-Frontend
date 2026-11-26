@@ -8,6 +8,7 @@ import { Reporteservice } from '../../../services/reporteservice';
 import { ReporteDTOList } from '../../../models/ReporteDTOList';
 import { Usuarioservice } from '../../../services/usuarioservice';
 import { UsuarioDTOList } from '../../../models/UsuarioDTOList';
+import { Loginservice } from '../../../services/loginservice';
 
 @Component({
   selector: 'app-comdetallecomponent',
@@ -30,10 +31,15 @@ export class Comdetallecomponent implements OnInit {
     private service: Comentarioservice,
     private reporteService: Reporteservice,
     private usuarioService: Usuarioservice,
+    private loginService: Loginservice,
     private route: ActivatedRoute,
     private router: Router,
     private cdr: ChangeDetectorRef,
   ) {}
+
+  get esAdmin(): boolean {
+    return this.loginService.hasAnyRole(['ADMIN']);
+  }
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -49,10 +55,9 @@ export class Comdetallecomponent implements OnInit {
         this.cargarRelaciones(data.reporteId);
         this.cdr.markForCheck();
       },
-      error: (error) => {
+      error: () => {
         this.cargando = false;
         this.mensaje = 'No se pudo cargar el comentario.';
-        if (error.status === 404) this.mensaje = 'No se encontró el registro.';
         this.cdr.markForCheck();
       },
     });
@@ -69,22 +74,24 @@ export class Comdetallecomponent implements OnInit {
         this.cdr.markForCheck();
       },
     });
-    this.usuarioService.listar().subscribe({
-      next: (data) => {
-        this.usuarios = data;
-        this.cdr.markForCheck();
-      },
-      error: () => {
-        this.mensajeUsuarios = 'No se pudieron cargar los autores. Se mostrarán sus IDs.';
-        this.cdr.markForCheck();
-      },
-    });
+
+    if (this.esAdmin) {
+      this.usuarioService.listar().subscribe({
+        next: (data) => {
+          this.usuarios = data;
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.mensajeUsuarios = 'No se pudieron cargar los autores.';
+          this.cdr.markForCheck();
+        },
+      });
+    }
   }
 
   nombreUsuario(id: number): string {
     const usuario = this.usuarios.find((usuario) => usuario.idUsuario === id);
-    if (!usuario) return 'Usuario #' + id;
-    return usuario.nombre + ' ' + usuario.apellido;
+    return usuario ? `${usuario.nombre} ${usuario.apellido}` : 'No disponible';
   }
 
   eliminar(): void {
@@ -99,10 +106,9 @@ export class Comdetallecomponent implements OnInit {
       next: () => {
         this.router.navigate(['/comentarios/listar']);
       },
-      error: (error) => {
+      error: () => {
         this.eliminando = false;
         this.mensaje = 'No se pudo eliminar el comentario.';
-        if (error.status === 403) this.mensaje = 'No tiene permiso para eliminar este registro.';
         this.cdr.markForCheck();
       },
     });

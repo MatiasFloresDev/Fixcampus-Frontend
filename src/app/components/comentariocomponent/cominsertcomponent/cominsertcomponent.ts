@@ -75,10 +75,9 @@ export class Cominsertcomponent implements OnInit {
       next: () => {
         this.router.navigate(['/comentarios/listar']);
       },
-      error: (error) => {
+      error: () => {
         this.guardando = false;
         this.mensaje = 'No se pudo guardar el comentario.';
-        if (error.status === 403) this.mensaje = 'No tiene permiso para guardar este registro.';
         this.cdr.markForCheck();
       },
     });

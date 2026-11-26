@@ -2,16 +2,20 @@
   <h1>Detalle de comentario</h1>
   <div class="comentario-detalle__acciones">
     @if (registro) {
-      <a mat-flat-button [routerLink]="['/comentarios/editar', registro.idComentario]">Editar</a>
-      <button
-        mat-stroked-button
-        type="button"
-        class="comentario-detalle__eliminar"
-        (click)="eliminar()"
-        [disabled]="eliminando"
-      >
-        {{ eliminando ? 'Eliminando…' : 'Eliminar' }}
-      </button>
+      @if (esAdmin) {
+        <a mat-flat-button [routerLink]="['/comentarios/editar', registro.idComentario]">Editar</a>
+      }
+      @if (esAdmin) {
+        <button
+          mat-stroked-button
+          type="button"
+          class="comentario-detalle__eliminar"
+          (click)="eliminar()"
+          [disabled]="eliminando"
+        >
+          {{ eliminando ? 'Eliminando…' : 'Eliminar' }}
+        </button>
+      }
     }
     <a mat-stroked-button routerLink="/comentarios/listar">Volver</a>
   </div>
@@ -36,15 +40,17 @@
       <div class="comentario-detalle__campo">
         <strong class="comentario-detalle__etiqueta">Reporte</strong>
         <span class="comentario-detalle__valor">
-          {{ reporte?.titulo || 'Reporte no disponible' }} (#{{ registro.reporteId }})
+          {{ reporte?.titulo || 'Reporte no disponible' }}
         </span>
       </div>
-      <div class="comentario-detalle__campo">
-        <strong class="comentario-detalle__etiqueta">Autor</strong>
-        <span class="comentario-detalle__valor">
-          {{ nombreUsuario(registro.usuarioId) }} (#{{ registro.usuarioId }})
-        </span>
-      </div>
+      @if (esAdmin) {
+        <div class="comentario-detalle__campo">
+          <strong class="comentario-detalle__etiqueta">Autor</strong>
+          <span class="comentario-detalle__valor">
+            {{ nombreUsuario(registro.usuarioId) }}
+          </span>
+        </div>
+      }
       <div class="comentario-detalle__campo">
         <strong class="comentario-detalle__etiqueta">Comentario</strong>
         <span class="comentario-detalle__valor">{{ registro.textoComentario }}</span>
