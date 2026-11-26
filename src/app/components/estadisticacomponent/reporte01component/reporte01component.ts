@@ -4,8 +4,6 @@ import { ChartData, ChartOptions } from 'chart.js';
 import { Reporteservice } from '../../../services/reporteservice';
 import { IncidenciasPorCategoriaDTO } from '../../../models/IncidenciasPorCategoriaDTO';
 
-type TipoGrafico = 'bar' | 'line' | 'pie' | 'doughnut' | 'radar';
-
 @Component({
   selector: 'app-reporte01component',
   standalone: true,
@@ -17,27 +15,65 @@ export class Reporte01component implements OnInit {
   lista: IncidenciasPorCategoriaDTO[] = [];
   mensaje = '';
 
-  public chartType: TipoGrafico = 'bar';
+  private readonly paleta = ['#0D6A62', '#408F86', '#5C8FAA', '#9A5B00', '#1E7E4A', '#2B5B84'];
 
-  public chartData: ChartData<TipoGrafico> = {
+  public chartType: 'bar' = 'bar';
+
+  public chartData: ChartData<'bar'> = {
     labels: [],
     datasets: [
       {
         label: 'Cantidad de incidencias',
         data: [],
-        backgroundColor: '#0D6A62',
-        borderColor: '#0D6A62',
+        backgroundColor: this.paleta,
         borderWidth: 1,
       },
     ],
   };
 
-  public chartOptions: ChartOptions = {
+  public chartOptions: ChartOptions<'bar'> = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { display: true, position: 'top' },
+      legend: {
+        display: true,
+        position: 'bottom',
+        onClick: () => {},
+        labels: {
+          padding: 16,
+          generateLabels: (chart) => {
+            const labels = chart.data.labels ?? [];
+            const dataset = chart.data.datasets[0];
+            if (!dataset) return [];
+            const colors = Array.isArray(dataset.backgroundColor)
+              ? (dataset.backgroundColor as string[])
+              : [dataset.backgroundColor as string];
+
+            return labels.map((label, index) => {
+              const color = colors[index % colors.length] || '#0D6A62';
+              return {
+                text: `${label}: ${dataset.data[index]}`,
+                fillStyle: color,
+                strokeStyle: color,
+                lineWidth: 1,
+                hidden: false,
+                index,
+              };
+            });
+          },
+        },
+      },
       title: { display: true, text: 'Incidencias por categoría' },
+    },
+    scales: {
+      x: {
+        title: { display: true, text: 'Categoría' },
+      },
+      y: {
+        beginAtZero: true,
+        ticks: { stepSize: 1, precision: 0 },
+        title: { display: true, text: 'Cantidad de incidencias' },
+      },
     },
   };
 
@@ -61,7 +97,7 @@ export class Reporte01component implements OnInit {
             {
               label: 'Cantidad de incidencias',
               data: data.map((item) => item.cantidad),
-              backgroundColor: ['#0D6A62', '#408F86', '#5C8FAA', '#9A5B00', '#1E7E4A'],
+              backgroundColor: data.map((_, i) => this.paleta[i % this.paleta.length]),
               borderWidth: 1,
             },
           ],
