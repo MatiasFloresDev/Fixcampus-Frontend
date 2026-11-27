@@ -34,7 +34,7 @@
     <a mat-menu-item routerLink="/adjuntos/listar">Adjuntos</a>
     <a mat-menu-item routerLink="/categorias/listar">Categorías</a>
     <a mat-menu-item routerLink="/ubicaciones/listar">Ubicaciones</a>
-    @if (esAdmin) {
+    @if (puedeVerRecomendaciones) {
       <a mat-menu-item routerLink="/recomendaciones/listar">Recomendaciones</a>
     }
   </mat-menu>

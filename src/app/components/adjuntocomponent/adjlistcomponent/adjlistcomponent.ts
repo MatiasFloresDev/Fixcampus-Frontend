@@ -52,7 +52,7 @@ export class Adjlistcomponent implements OnInit {
   }
 
   get puedeRegistrar(): boolean {
-    return this.loginService.hasAnyRole(['ADMIN', 'REPORTANTE']);
+    return this.loginService.hasAnyRole(['ADMIN', 'REPORTANTE', 'TECNICO']);
   }
 
   ngOnInit(): void {

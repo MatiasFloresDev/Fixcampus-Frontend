@@ -6,7 +6,7 @@
     }
   </h1>
   <div class="recomendacion-detalle__acciones">
-    @if (registro) {
+    @if (registro && esAdmin) {
       <a mat-flat-button [routerLink]="['/recomendaciones/editar', registro.idRecomendacion]">Editar</a>
       <button
         mat-stroked-button

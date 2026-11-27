@@ -56,6 +56,10 @@ export class Menucomponent implements OnInit, OnDestroy {
     return this.loginService.hasAnyRole(['ADMIN']);
   }
 
+  get puedeVerRecomendaciones(): boolean {
+    return this.loginService.hasAnyRole(['ADMIN', 'TECNICO']);
+  }
+
   cerrarSesion(): void {
     this.loginService.logout();
     void this.router.navigateByUrl('/', { replaceUrl: true });

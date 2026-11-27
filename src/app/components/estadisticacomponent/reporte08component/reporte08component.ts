@@ -95,11 +95,7 @@ export class Reporte08component implements OnInit {
     this.mensaje = 'Cargando tus reportes...';
     this.dataSource.data = [];
 
-    const consulta$ = this.loginService.hasAnyRole(['ADMIN', 'REPORTANTE'])
-      ? this.rS.misReportes()
-      : this.rS.buscarPorCorreo(this.loginService.getUsername());
-
-    consulta$.subscribe({
+    this.rS.misReportes().subscribe({
       next: (data) => {
         this.dataSource.data = [...data];
         this.mensaje = data.length === 0 ? 'No tienes reportes registrados.' : '';

@@ -27,6 +27,6 @@ export class Homecomponent {
   }
 
   get puedeRegistrar(): boolean {
-    return this.loginService.hasAnyRole(['ADMIN', 'REPORTANTE']);
+    return this.loginService.hasAnyRole(['ADMIN', 'REPORTANTE', 'TECNICO']);
   }
 }

@@ -6,6 +6,7 @@ import { Recomendacionservice } from '../../../services/recomendacionservice';
 import { RecomendacionDTOList } from '../../../models/RecomendacionDTOList';
 import { Reporteservice } from '../../../services/reporteservice';
 import { ReporteDTOList } from '../../../models/ReporteDTOList';
+import { Loginservice } from '../../../services/loginservice';
 
 @Component({
   selector: 'app-recdetallecomponent',
@@ -28,7 +29,12 @@ export class Recdetallecomponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private cdr: ChangeDetectorRef,
+    private loginService: Loginservice,
   ) {}
+
+  get esAdmin(): boolean {
+    return this.loginService.hasAnyRole(['ADMIN']);
+  }
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));

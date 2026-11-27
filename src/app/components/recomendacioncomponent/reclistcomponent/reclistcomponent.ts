@@ -9,6 +9,7 @@ import { Recomendacionservice } from '../../../services/recomendacionservice';
 import { RecomendacionDTOList } from '../../../models/RecomendacionDTOList';
 import { Reporteservice } from '../../../services/reporteservice';
 import { ReporteDTOList } from '../../../models/ReporteDTOList';
+import { Loginservice } from '../../../services/loginservice';
 
 @Component({
   selector: 'app-reclistcomponent',
@@ -50,7 +51,12 @@ export class Reclistcomponent implements OnInit {
     private service: Recomendacionservice,
     private reporteService: Reporteservice,
     private cdr: ChangeDetectorRef,
+    private loginService: Loginservice,
   ) {}
+
+  get esAdmin(): boolean {
+    return this.loginService.hasAnyRole(['ADMIN']);
+  }
 
   ngOnInit(): void {
     this.listar();

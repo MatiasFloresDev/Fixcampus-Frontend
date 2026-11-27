@@ -47,23 +47,25 @@
               >
                 <mat-icon>visibility</mat-icon>
               </a>
-              <a
-                mat-icon-button
-                [routerLink]="['/recomendaciones/editar', registro.idRecomendacion]"
-                [attr.aria-label]="'Editar registro ' + registro.idRecomendacion"
-              >
-                <mat-icon>edit</mat-icon>
-              </a>
-              <button
-                mat-icon-button
-                type="button"
-                class="recomendacion-lista__eliminar"
-                (click)="eliminar(registro)"
-                [disabled]="eliminando"
-                [attr.aria-label]="'Eliminar registro ' + registro.idRecomendacion"
-              >
-                <mat-icon>delete</mat-icon>
-              </button>
+              @if (esAdmin) {
+                <a
+                  mat-icon-button
+                  [routerLink]="['/recomendaciones/editar', registro.idRecomendacion]"
+                  [attr.aria-label]="'Editar registro ' + registro.idRecomendacion"
+                >
+                  <mat-icon>edit</mat-icon>
+                </a>
+                <button
+                  mat-icon-button
+                  type="button"
+                  class="recomendacion-lista__eliminar"
+                  (click)="eliminar(registro)"
+                  [disabled]="eliminando"
+                  [attr.aria-label]="'Eliminar registro ' + registro.idRecomendacion"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              }
             </div>
           </td>
         </ng-container>

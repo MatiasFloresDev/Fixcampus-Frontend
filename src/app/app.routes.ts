@@ -152,7 +152,7 @@ export const routes: Routes = [
         path: 'insertar',
         component: Repinsertcomponent,
         canActivate: [roleGuard],
-        data: { roles: ['ADMIN', 'REPORTANTE'] },
+        data: { roles: ['ADMIN', 'REPORTANTE', 'TECNICO'] },
       },
       {
         path: 'editar/:id',
@@ -193,7 +193,7 @@ export const routes: Routes = [
         path: 'insertar',
         component: Adjinsertcomponent,
         canActivate: [roleGuard],
-        data: { roles: ['ADMIN', 'REPORTANTE'] },
+        data: { roles: ['ADMIN', 'REPORTANTE', 'TECNICO'] },
       },
       {
         path: 'editar/:id',
@@ -209,12 +209,17 @@ export const routes: Routes = [
     path: 'recomendaciones',
     component: Recomendacioncomponent,
     canActivate: [authGuard, roleGuard],
-    data: { roles: ['ADMIN'] },
+    data: { roles: ['ADMIN', 'TECNICO'] },
     children: [
       { path: '', redirectTo: 'listar', pathMatch: 'full' },
       { path: 'listar', component: Reclistcomponent },
       { path: 'insertar', component: Recinsertcomponent },
-      { path: 'editar/:id', component: Recupdatecomponent },
+      {
+        path: 'editar/:id',
+        component: Recupdatecomponent,
+        canActivate: [roleGuard],
+        data: { roles: ['ADMIN'] },
+      },
       { path: 'detalle/:id', component: Recdetallecomponent },
     ],
   },
